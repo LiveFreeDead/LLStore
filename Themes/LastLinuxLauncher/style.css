@@ -1,0 +1,99 @@
+/* CSS Document */
+
+body{
+
+text-align:center;
+
+background:url(back.jpg) top center repeat-y;
+
+background-color:#000000;
+
+font-family:Arial;
+
+color:#FFFFFF;
+
+line-height:1.5em;
+
+font-size:14px;
+
+}
+
+
+#wrapper{
+
+margin: auto;
+
+width: 100%;
+
+text-align:centre;
+
+padding-left:1px;
+
+}
+
+#wrapper img {
+  width: 100%;
+}
+
+
+/* ......................................Content........................................................... */
+
+
+.line{
+
+border-top: 1px dashed #666666;
+
+}
+
+h1 {
+
+color:#CCCCCC;
+
+background:url(back.jpg) top left no-repeat;
+
+padding-top:2px;
+
+height: 53px;
+
+font-size:30px;
+
+letter-spacing:5px;
+
+margin:40px 0 20px 0;
+
+}
+
+h2 {
+
+color:#e3007a;
+
+padding-top:5px;
+
+font-size: 20px;
+
+letter-spacing:3px;
+
+
+}
+
+
+#content{
+
+width:100%;
+
+text-align:left;
+
+}
+
+
+.clear{
+
+clear:both;
+
+}
+
+.footer {
+
+height:50px;
+
+}
