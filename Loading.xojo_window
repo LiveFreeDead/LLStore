@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -1860,7 +1862,7 @@ End
 		Sub SaveSettings()
 		  Dim RL As String
 		  
-		  SettingsFile = AppPath+"LLStore_Settings.ini"
+		  SettingsFile = AppPath+"LLL_Settings.ini"
 		  RL = "[LLStore]" + Chr(10) 'Using a header so I can sort below without having to shufffle the first item, gets ignored
 		  
 		  RL = RL + "FontSizeCategories=" + Str(Main.Categories.FontSize)+Chr(10)
