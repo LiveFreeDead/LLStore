@@ -240,9 +240,12 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Function Exist(FileIn As String) As Boolean
 		  Dim F As FolderItem
+		  FileIn = FileIn.Trim
 		  If FileIn = "" Then Return False
-		  F = GetFolderItem(FileIn, FolderItem.PathTypeNative)
+		  'MsgBox "Is "+ FileIn
+		  F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
 		  If F <> Nil Then
+		    'MsgBox "FOUND!"
 		    If F.Exists Then Return True
 		  End If
 		  Return False

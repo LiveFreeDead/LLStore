@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -324,6 +322,111 @@ End
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h0
+		Sub CheckForLLStoreUpdates()
+		  ForceQuit = False ' Need to do this if using downloader as that aborts if it's set
+		  
+		  Dim CurrentVersion As Double
+		  Dim CurrentVersionS As String
+		  Dim OnlineVersion As Double
+		  Dim OnlineVersionS As String
+		  Dim F As FolderItem
+		  
+		  'Cleanup Updated Store
+		  If Exist(Slash(AppPath)+"llstoreold") Then Deltree Slash(AppPath)+"llstoreold"
+		  If Exist(Slash(AppPath)+"llstoreold.exe") Then Deltree Slash(AppPath)+"llstoreold.exe"
+		  
+		  'Check Version
+		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
+		  While Downloading = True
+		    App.DoEvents(3)
+		  Wend
+		  
+		  OnlineVersionS = LoadDataFromFile(Slash(TmpPath)+"version.ini").Trim
+		  OnlineVersion = OnlineVersionS.ToDouble
+		  
+		  CurrentVersionS = Str(App.MajorVersion)+"."+Str(App.MinorVersion)
+		  CurrentVersion = CurrentVersionS.ToDouble
+		  
+		  'MsgBox "String: " + CurrentVersionS + ">>" + OnlineVersionS
+		  
+		  If OnlineVersion > CurrentVersion Then 'Is Newer, download and apply
+		    
+		    'Updating
+		    Loading.Status.Text = "Updating " +CurrentVersionS+ " to " + OnlineVersionS
+		    Loading.Refresh
+		    App.DoEvents(1)
+		    
+		    'MsgBox Str(CurrentVersion) + ">>" + Str(OnlineVersion)
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		    
+		    While Downloading 'Wait for download to finish
+		      App.DoEvents(1)
+		    Wend
+		    
+		    'MsgBox "Waiting downloaded replacements"
+		    
+		    If TargetWindows Then
+		      'Do Windows .exe
+		      If Exist(Slash(TmpPath)+"llstore.exe") Then
+		        ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
+		        'MsgBox "Renamed .exe " + ShellFast.Result
+		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        'MsgBox "Waiting replaced with new .exe"
+		      End If
+		      
+		      If Exist(Slash(TmpPath)+"llstore") Then
+		        Deltree (Slash(AppPath)+"llstore")
+		        'MsgBox "Waiting, Deleted llstore"
+		        'ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
+		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        'MsgBox "Waiting replaced with new llstore"
+		      End If
+		      
+		    Else 'Linux
+		      If Exist(Slash(TmpPath)+"llstore") Then
+		        'Rename Existing as it's running
+		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
+		        'MsgBox "Waiting renamed to llstoreold"
+		        'Replace Original and Make Executable
+		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
+		        ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
+		        'MsgBox "Waiting replaced llstore and made executable"
+		      End If
+		      
+		      'Now do Windows .exe
+		      If Exist(Slash(TmpPath)+"llstore.exe") Then
+		        Deltree (Slash(AppPath)+"llstore.exe")
+		        'MsgBox "Waiting, Deleted llstore.exe"
+		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
+		        'MsgBox "Waiting replaced with new .exe"
+		      End If
+		    End If
+		    
+		    'ReRun the newer Store version
+		    
+		    If TargetWindows Then
+		      F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
+		      F.Launch
+		    Else
+		      F = GetFolderItem(Slash(AppPath)+"llstore", FolderItem.PathTypeShell)
+		      F.Launch
+		    End If
+		    
+		    'These Flags allow it to Quit after the update without rescanning when another timer triggers
+		    ForceQuit = True
+		    Quitting = True
+		    Main.Close
+		    Quit 'While testing and if Updated successfully (Bootstrap)
+		    
+		  Else ' Continue starting up
+		    
+		  End If
+		  
+		End Sub
+	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub CheckInstalled()
@@ -1935,6 +2038,12 @@ End
 		    'MsgBox ("Done")
 		    'Quit
 		    
+		    'Check For Updates
+		    Loading.Status.Text = "Check For Store Updates..."
+		    Loading.Refresh
+		    App.DoEvents(1)
+		    CheckForLLStoreUpdates
+		    
 		    'Get Scan Paths Here
 		    Loading.Status.Text = "Scanning Drives..."
 		    Loading.Refresh
@@ -2163,7 +2272,7 @@ End
 		    Test = RunCommandResults("curl --head --silent " + Chr(34) + GetURL + Chr(34))
 		    
 		    If Trim(Test) = "" Then 'No Internet or very dodgy item, just abort all internet and try the next item that gets sent here
-		      SaveDataToFile ("Failed Finding/Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
+		      SaveDataToFile ("Failed Header Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
 		    Else ' Try to get item
 		      If Test.IndexOf("404") >= 0 Then '404 not found
 		        'SaveDataToFile(GetURL+Chr(10)+Test, Slash(SpecialFolder.Desktop.NativePath)+"Debug.txt")
@@ -2172,7 +2281,7 @@ End
 		        Else 'Only show missing for actual Items, not just their screenshots and faders
 		          If Not TargetWindows Then RunCommand ("notify-send " + Chr(34) + "Skipping Missing Item: " + GetURL + Chr(34))
 		        End If
-		        SaveDataToFile ("Failed Finding/Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
+		        SaveDataToFile ("Failed Finding Remote: "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
 		      Else ' It exist, download it
 		        'SaveDataToFile(GetURL+Chr(10)+Test, Slash(SpecialFolder.Desktop.NativePath)+"Debug_Worked.txt")
 		        
@@ -2212,6 +2321,13 @@ End
 		          End If
 		        Wend
 		        
+		        'This was due to ForceQuit being enabled in Loading, make sure to remember this bug causing issue next time
+		        
+		        'For I = 0 To 10 '10 is about 1 second of looking for it
+		        'If Exist(QueueLocal(QueueUpTo) + ".partial") Then Exit 'If it is found, stop looking for it
+		        'App.DoEvents(100) 'Give it time to make the file exist after it completes, else it detects as not found (A bug??)
+		        'Next I
+		        
 		        If Exist(QueueLocal(QueueUpTo) + ".partial") Then 'If you don't have access to the file then it's better to try to delete it and then not move/overwrite as it asks if you want to try, this stops automation.
 		          If Exist(QueueLocal(QueueUpTo)) Then Deltree QueueLocal(QueueUpTo) 'Remove Existing item, only if Partial one is ready to rename
 		          
@@ -2225,13 +2341,17 @@ End
 		              App.DoEvents(1)
 		            Wend
 		          Else
-		            RunCommand ("mv -f " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34))
+		            'MsgBox "Move "+ QueueLocal(QueueUpTo) + ".partial"
+		            Sh.Execute ("mv -f " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34))
+		            While Sh.IsRunning
+		              App.DoEvents(1)
+		            Wend
 		          End If
 		          
 		          Deltree(Slash(RepositoryPathLocal) + "DownloadDone")
 		        Else 'Failed, Clean Up
 		          If Not TargetWindows Then RunCommand ("notify-send " + Chr(34) + "Failed Downloading Item: " + QueueLocal(QueueUpTo) + Chr(34))
-		          SaveDataToFile ("Failed Finding/Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
+		          SaveDataToFile ("Failed Finding Local: "+QueueLocal(QueueUpTo) + ".partial", Slash(RepositoryPathLocal) + "FailedDownload")
 		          FailedDownload = True
 		        End If
 		      End If
