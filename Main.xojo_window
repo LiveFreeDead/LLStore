@@ -404,7 +404,7 @@ Begin DesktopWindow Main
       HeadingIndex    =   -1
       Height          =   128
       Index           =   -2147483648
-      InitialValue    =   "MetaData\nInformation\nHere"
+      InitialValue    =   "https://www.LastOS.org\n\nWelcome to LLStore\nLastOS 2024"
       Italic          =   False
       Left            =   701
       LockBottom      =   True
@@ -777,6 +777,42 @@ End
 		  Description.Text = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("Description")).ReplaceAll(Chr(30),Chr(13)) 'Added to here as the Data firm doesn't do it anymore
 		  'Add extras so it shows Scrllbar always
 		  If TargetLinux Then Description.Text = Description.Text + Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)
+		  
+		  Dim InstSize As Double
+		  Dim License, Installed, InstSizeText, Categories As String
+		  License = "Unknown" '0
+		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("License")) = "1" Then License = "Paid"
+		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("License")) = "2" Then License = "Free"
+		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("License")) = "3" Then License = "Open"
+		  Installed = "No"
+		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("Installed")) = "T" Then Installed = "Yes"
+		  
+		  
+		  Categories = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("Categories")).ReplaceAll(";", ",")
+		  If Right(Categories, 1) = "," Then Categories = Left(Categories, Len(Categories)-1) 'Removes Last Comma
+		  
+		  
+		  'InstallSize
+		   InstSize = Val(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("InstalledSize")))
+		  If Left(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("BuildType")), 2) = "LL" Then
+		    InstSize = InstSize / 1000
+		  Else
+		    InstSize = InstSize / 1000000 '(Convert To MB)
+		  End If
+		  
+		  InstSizeText = InstSize.ToString("#.##") + " MB"
+		  
+		  'If InstSize > 0 Then
+		  
+		  'Meta Data
+		  MetaData.RemoveAllRows
+		  MetaData.AddRow ("URL:            " + Chr(9) + Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("URL")))
+		  MetaData.AddRow ("Category:" + Chr(9) + Categories)
+		  'MetaData.AddRow ("License:" + Chr(9) + License +", "+ Chr(9) + "Installed: "+ Chr(9) + Installed)
+		  MetaData.AddRow ("License:   " + Chr(9) + License)
+		  MetaData.AddRow ("Installed: " + Chr(9) + Installed)
+		  MetaData.AddRow ("Size:            " + Chr(9) + InstSizeText)
+		  
 		  
 		End Sub
 	#tag EndMethod
@@ -1945,7 +1981,7 @@ End
 		    
 		    If deltaY < -1 Then 'Zoom In
 		      MetaData.FontSize = MetaData.FontSize + 1
-		      If MetaData.FontSize >= 32 Then MetaData.FontSize = 32
+		      If MetaData.FontSize >= 18 Then MetaData.FontSize = 18
 		    End If
 		    Return True 'Stops Listbox Scrolling when zooming it
 		  End If
@@ -2235,6 +2271,14 @@ End
 		Visible=false
 		Group="Behavior"
 		InitialValue=""
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideInstalled"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
 		Type="Boolean"
 		EditorType=""
 	#tag EndViewProperty
