@@ -779,7 +779,7 @@ End
 		  If TargetLinux Then Description.Text = Description.Text + Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)
 		  
 		  Dim InstSize As Double
-		  Dim License, Installed, InstSizeText, Categories As String
+		  Dim License, Installed, InstSizeText, Categories, IsOnline As String
 		  License = "Unknown" '0
 		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("License")) = "1" Then License = "Paid"
 		  If Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("License")) = "2" Then License = "Free"
@@ -793,7 +793,7 @@ End
 		  
 		  
 		  'InstallSize
-		   InstSize = Val(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("InstalledSize")))
+		  InstSize = Val(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("InstalledSize")))
 		  If Left(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("BuildType")), 2) = "LL" Then
 		    InstSize = InstSize / 1000
 		  Else
@@ -804,6 +804,9 @@ End
 		  
 		  'If InstSize > 0 Then
 		  
+		  IsOnline = "No"
+		  If Left(Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("PathIni")), 2) = "ht" Then IsOnline = "Yes"
+		  
 		  'Meta Data
 		  MetaData.RemoveAllRows
 		  MetaData.AddRow ("URL:            " + Chr(9) + Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("URL")))
@@ -812,6 +815,7 @@ End
 		  MetaData.AddRow ("License:   " + Chr(9) + License)
 		  MetaData.AddRow ("Installed: " + Chr(9) + Installed)
 		  MetaData.AddRow ("Size:            " + Chr(9) + InstSizeText)
+		  MetaData.AddRow ("Online:      " + Chr(9) + IsOnline)
 		  
 		  
 		End Sub
@@ -869,14 +873,37 @@ End
 		    M.Checked =  HideInstalled
 		    base.Item(MC).Append M
 		    
+		    M = New MenuItem
+		    M.Text = "Online"
+		    M.Checked =  HideOnline
+		    base.Item(MC).Append M
 		    
-		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator)
-		    base.Item(MC).Append New MenuItem("Paid")
-		    base.Item(MC).Append New MenuItem("Free")
+		    M = New MenuItem
+		    M.Text = "Local"
+		    M.Checked =  HideLocal
+		    base.Item(MC).Append M
 		    
+		    
+		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator) 'Sep
+		    
+		    M = New MenuItem
+		    M.Text = "Paid"
+		    M.Checked =  HidePaid
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "Free"
+		    M.Checked =  HideFree
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "Open"
+		    M.Checked =  HideOpen
+		    base.Item(MC).Append M
 		    
 		  End If
 		  
+		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		  
 		  'Add to both
 		  base.Append New MenuItem("Re(Scan) for Items") '0
@@ -891,6 +918,9 @@ End
 		  base.Append New MenuItem("&Change Mode (Store/Launcher)") '0
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F7"
+		  
+		  
+		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		  
 		  'Last Item
 		  base.Append New MenuItem("&Settings") '0
@@ -934,7 +964,21 @@ End
 		  Case "Install" ' Hide Installed
 		    HideInstalled = Not HideInstalled
 		    GenerateItems()
-		    
+		  Case "Online" ' Hide Online Items
+		    HideOnline = Not HideOnline
+		    GenerateItems()
+		  Case "Local" ' Hide Online Items
+		    HideLocal = Not HideLocal
+		    GenerateItems()
+		  Case "Paid" ' Hide Paid Items
+		    HidePaid = Not HidePaid
+		    GenerateItems()
+		  Case "Free" ' Hide Free Items
+		    HideFree = Not HideFree
+		    GenerateItems()
+		  Case "Open" ' Hide Open Items
+		    HideOpen = Not HideOpen
+		    GenerateItems()
 		  Case "Add &Ma"
 		    AddManualLocation()
 		  Case "Re(Scan"
@@ -1044,7 +1088,15 @@ End
 		    If StoreMode = 0 Then ' Only do it for Installer
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "T" And HideInstalled = True Then Hidden = True ' Hide Installed
 		      
+		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) = "ht" And HideOnline = True Then Hidden = True 'Hide Online
+		      
+		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) <> "ht" And HideLocal = True Then Hidden = True 'Hide Local items
 		    End If
+		    
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "1" And HidePaid = True Then Hidden = True 'Hide Paid
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "2" And HideFree = True Then Hidden = True 'Hide Free
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "3" And HideOpen = True Then Hidden = True 'Hide Open
+		    
 		    
 		    If Hidden = False Then
 		      
@@ -1519,7 +1571,27 @@ End
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		HideFree As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		HideInstalled As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideLocal As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideOnline As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideOpen As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HidePaid As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
