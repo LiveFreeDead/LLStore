@@ -643,6 +643,7 @@ End
 		Sub Pressed()
 		  Settings.Hide
 		  Loading.SaveSettings
+		  Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
 		  Loading.RefreshDBs
 		End Sub
 	#tag EndEvent

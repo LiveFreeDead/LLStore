@@ -1250,7 +1250,8 @@ End
 		    
 		    
 		    'Check the Repo Cache if Enabled to do so
-		    If Settings.SetIgnoreCache.Value = False Then
+		    If Settings.SetIgnoreCache.Value = True Or Exist(Slash(AppPath)+"RepoBuilderNoCache") Then 'So if you have it set to ignore the cache or the file exists it does nothing (wont scan for it)
+		    Else
 		      DirToCheck = RepositoryPathLocal
 		      If TargetWindows Then
 		        F = GetFolderItem(DirToCheck.ReplaceAll("/","\"), FolderItem.PathTypeShell)
@@ -1529,10 +1530,13 @@ End
 		      If LineData <> "" Then Settings.SetUseLocalDBFiles.Value = IsTrue(LineData)
 		    Case "copyitemstobuiltrepo"
 		      If LineData <> "" Then Settings.SetCopyToRepoBuild.Value = IsTrue(LineData)
-		      'Case "ignorecachedrepoitems"
-		      'If LineData <> "" Then Settings.SetIgnoreCache.Value = IsTrue(LineData)
+		    Case "ignorecachedrepoitems"
+		      If LineData <> "" Then Settings.SetIgnoreCache.Value = IsTrue(LineData)
 		    Case "hideinstalledonstartup"
-		      If LineData <> "" Then Settings.SetHideInstalled.Value = IsTrue(LineData)
+		      If LineData <> "" Then
+		        Settings.SetHideInstalled.Value = IsTrue(LineData)
+		        Main.HideInstalled = IsTrue(LineData) 'Apply it to current settings
+		      End If
 		    Case "usemanuallocations"
 		      If LineData <> "" Then Settings.SetUseManualLocations.Value = IsTrue(LineData)
 		    Case "flatpaklocation"
@@ -1847,12 +1851,13 @@ End
 		        End If
 		      End If
 		    Next
-		    Deltree (DBOutPath+"lldb.ini")
+		    'Deltree (DBOutPath+"lldb.ini")
 		    'F = GetFolderItem(DBOutPath+"lldb.ini", FolderItem.PathTypeNative)
-		    'If F.Exists Then F.Delete 'Remove Existing DB (Will need to test if ReadOnly)
-		    OutputStream = TextOutputStream.Open(F)
-		    OutputStream.Write (DBOutText)
-		    OutputStream.Close
+		    ''If F.Exists Then F.Delete 'Remove Existing DB (Will need to test if ReadOnly)
+		    'OutputStream = TextOutputStream.Open(F)
+		    'OutputStream.Write (DBOutText)
+		    'OutputStream.Close
+		    SaveDataToFile (DBOutText, DBOutPath+"lldb.ini")
 		  Next
 		  
 		End Sub
@@ -1862,7 +1867,7 @@ End
 		Sub SaveSettings()
 		  Dim RL As String
 		  
-		  SettingsFile = AppPath+"LLL_Settings.ini"
+		  SettingsFile = Slash(AppPath)+"LLL_Settings.ini"
 		  RL = "[LLStore]" + Chr(10) 'Using a header so I can sort below without having to shufffle the first item, gets ignored
 		  
 		  RL = RL + "FontSizeCategories=" + Str(Main.Categories.FontSize)+Chr(10)
@@ -1877,16 +1882,19 @@ End
 		  RL = RL + "VideoVolume=" + Str(Settings.SetVideoVolume.Text) + Chr(10)
 		  RL = RL + "UseLocalDBs=" + Str(Settings.SetUseLocalDBFiles.Value) + Chr(10)
 		  RL = RL + "CopyItemsToBuiltRepo=" + Str(Settings.SetCopyToRepoBuild.Value) + Chr(10)
-		  'RL = RL + "IgnoreCachedRepoItems=" + Str(Settings.SetIgnoreCache.Value) + Chr(10)
+		  RL = RL + "IgnoreCachedRepoItems=" + Str(Settings.SetIgnoreCache.Value) + Chr(10)
 		  If Settings.SetFlatpakAsUser.Value = True Then
-		    RL = RL + "FlatpakLocation=User"
+		    RL = RL + "FlatpakLocation=User" + Chr(10)
 		  Else
-		    RL = RL + "FlatpakLocation=System"
+		    RL = RL + "FlatpakLocation=System" + Chr(10)
 		  End If
+		  
 		  RL = RL + "HideInstalledOnStartup=" + Str(Settings.SetHideInstalled.Value) + Chr(10)
+		  
 		  RL = RL + "UseManualLocations=" + Str(Settings.SetUseManualLocations.Value) + Chr(10)
 		  RL = RL + "UseOnlineRepositories=" + Str(Settings.SetUseOnlineRepos.Value) + Chr(10)
 		  
+		  'Msgbox RL
 		  
 		  'Save to actual Settings File
 		  SaveDataToFile(RL, SettingsFile)

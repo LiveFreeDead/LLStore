@@ -473,6 +473,10 @@ End
 		    Loading.RefreshDBs
 		  End If
 		  
+		  If Asc(Key) = 195 Or Asc(Key) = 205 Then 'F6 194 in Linux 204 in Windows?
+		    AddManualLocation()
+		  End If
+		  
 		  If Asc(Key) = 196 Or Asc(Key) = 206 Then 'F7 (Linux and Windows)
 		    If StoreMode = 0 Then
 		      StoreMode = 1
@@ -512,11 +516,19 @@ End
 		    Loading.FirstRunTime.RunMode = Timer.RunModes.Single
 		  End If
 		  
-		  If Asc(Key) = 197 Or Asc(Key) = 207 Then 'F8 (Linux and Windows)
+		  If Asc(Key) = 197 Or Asc(Key) = 207 Then 'F8 (Linux and Windows) SETTINGS
 		    Settings.Left = (Screen(0).AvailableWidth/2)-(Settings.Width/2)
 		    Settings.Top = (Screen(0).AvailableHeight/2)-(Settings.Height/2)
 		    If Settings.Visible = False Then Loading.LoadSettings 'Always reload settings when switching to it, just to make sure they match with whats stored, user has to press Save to update it
 		    Settings.Show
+		  End If
+		  
+		  If Asc(Key) = 198 Or Asc(Key) = 208 Then 'F9 (Linux and Windows) DEBUG
+		    Data.Width = Main.Width
+		    Data.Height = Main.Height
+		    Data.Left = (screen(0).AvailableWidth - Data.Width) / 2 'Center Form
+		    Data.top = (screen(0).AvailableHeight - Data.Height) / 2
+		    Data.Show
 		  End If
 		  
 		  If StoreMode = 0 Then
@@ -630,6 +642,29 @@ End
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h0
+		Sub AddManualLocation(FolderIn As String = "")
+		  Dim F As FolderItem
+		  If FolderIn  = "" Then
+		    Dim dlg As New SelectFolderDialog
+		    dlg.ActionButtonCaption = "Add"
+		    dlg.Title = "LLStore Add Manual Folder"
+		    dlg.PromptText = "Add Manual Folder to Scan for Items"
+		    'dlg.InitialDirectory = SpecialFolder.Documents
+		    F = dlg.ShowModal
+		  Else
+		    F = GetFolderItem(FolderIn, FolderItem.PathTypeShell)
+		  End If
+		  If F <> Nil And F.Exists Then
+		    Settings.SetManualLocations.Text = Settings.SetManualLocations.Text.Trim + Chr(10) + F.NativePath + Chr(10)
+		    
+		    Loading.SaveSettings
+		    Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
+		    Loading.RefreshDBs
+		  End If
+		End Sub
+	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub ChangeCat(CatPicked As String)
@@ -789,23 +824,49 @@ End
 		    base.Item(MC).Append New MenuItem("Un-Select ppGames")
 		    
 		    'MC = MC + 1
+		    
+		    base.Append New MenuItem("Hide") '0
+		    MC = MC + 1
+		    
+		    M = New MenuItem
+		    M.Text = "Installed"
+		    M.Checked =  HideInstalled
+		    base.Item(MC).Append M
+		    
+		    
+		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator)
+		    base.Item(MC).Append New MenuItem("Paid")
+		    base.Item(MC).Append New MenuItem("Free")
+		    
+		    
 		  End If
 		  
 		  
 		  'Add to both
+		  base.Append New MenuItem("Re(Scan) for Items") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "F5"
+		  
+		  base.Append New MenuItem("Add &Manual Location") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "F6"
 		  
 		  
 		  base.Append New MenuItem("&Change Mode (Store/Launcher)") '0
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F7"
 		  
-		  
 		  'Last Item
 		  base.Append New MenuItem("&Settings") '0
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F8"
 		  
+		  'Debug
+		  base.Append New MenuItem("&Debug") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "F9"
 		  
+		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
 		  
 		  
 		  hitItem = base.Popup '**** Waits here for response
@@ -821,11 +882,31 @@ End
 		    SelectItems (ContextText)
 		  Case "&Run Wi"
 		    RunGame(CurrentItemID, True)
+		    
+		  Case "&Debug"
+		    Data.Width = Main.Width
+		    Data.Height = Main.Height
+		    Data.Left = (screen(0).AvailableWidth - Data.Width) / 2 'Center Form
+		    Data.top = (screen(0).AvailableHeight - Data.Height) / 2
+		    Data.Show
+		    
 		  Case "&Settin"
 		    If Settings.Visible = False Then Loading.LoadSettings 'Always reload settings when switching to it, just to make sure they match with whats stored, user has to press Save to update it
 		    Settings.Left = (Screen(0).AvailableWidth/2)-(Settings.Width/2)
 		    Settings.Top = (Screen(0).AvailableHeight/2)-(Settings.Height/2)
 		    Settings.Show
+		  Case "Install" ' Hide Installed
+		    HideInstalled = Not HideInstalled
+		    GenerateItems()
+		    
+		  Case "Add &Ma"
+		    AddManualLocation()
+		  Case "Re(Scan"
+		    Loading.SaveSettings
+		    Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
+		    Loading.RefreshDBs
+		    
+		    
 		  End Select
 		End Sub
 	#tag EndMethod
@@ -921,6 +1002,12 @@ End
 		    
 		    If TargetWindows Then 'Hide all Linux stuff in Windows
 		      If Data.Items.CellTextAt(I, ColBuildType) = "LLApp" Or Data.Items.CellTextAt(I, ColBuildType) = "LLGame" Or Data.Items.CellTextAt(I, ColBuildType) = "LLFile" Then  Hidden = True 'Hide Linux Items if in Windows
+		    End If
+		    
+		    'Hide Conditions
+		    If StoreMode = 0 Then ' Only do it for Installer
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "T" And HideInstalled = True Then Hidden = True ' Hide Installed
+		      
 		    End If
 		    
 		    If Hidden = False Then
@@ -1393,6 +1480,10 @@ End
 
 	#tag Property, Flags = &h0
 		CurrentCatID As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideInstalled As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
