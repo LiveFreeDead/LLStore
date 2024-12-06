@@ -167,10 +167,14 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub Debug(Debugger As String)
-		  Var d As DateTime = DateTime.Now
-		  DebugOutput.WriteLine (d.Hour.ToString("00")+":"+d.Minute.ToString("00")+":"+d.Second.ToString("00")+Chr(9)+Debugger)
-		  DebugOutput.Flush ' Actually Write to file after each thing
-		  
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    Var d As DateTime = DateTime.Now
+		    DebugOutput.WriteLine (d.Hour.ToString("00")+":"+d.Minute.ToString("00")+":"+d.Second.ToString("00")+Chr(9)+Debugger)
+		    DebugOutput.Flush ' Actually Write to file after each thing
+		  Catch
+		  End Try
+		  #Pragma BreakOnExceptions On
 		End Sub
 	#tag EndMethod
 
@@ -1715,25 +1719,35 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Sub MakeFolder(Txt as String)
 		  Dim F As FolderItem
+		  Dim Path As String
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1 'Give it All the time it needs
 		  Dim S As string
-		  if TargetMacOS then
-		    s = "mkdir -p " + chr(34) + "/Volumes/" + replaceall(Txt,":","/") + chr(34)
-		  elseif TargetWindows then
-		    S = "mkdir " + chr(34) + Txt + chr(34)
-		  elseif TargetLinux then
-		    S = "mkdir -p " + chr(34) + Txt + chr(34)
-		  end if
-		  
-		  If TargetWindows Then 'Only windows has the stupid shell bug, so only it needs an external script called instead
-		    RunCommand (S + Chr(10)+"icacls"+ FixPath(Txt) + " /grant "+ "Users:F")
-		  Else
-		    RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done
-		    'Sh.Execute(S)
-		    'Sh.Execute("chmod 775 "+Chr(34)+Txt+Chr(34)) 'Change Read/Write/Execute to defaults, -R would do all files and folders, but we might not want this here
-		  End If
-		  
+		  Path = FixPath(Txt)
+		  Try
+		    if TargetMacOS then
+		      s = "mkdir -p " + chr(34) + "/Volumes/" + replaceall(Txt,":","/") + chr(34)
+		    elseif TargetWindows then
+		      Path = Path.ReplaceAll("/","\")
+		      S = "mkdir " + chr(34) + Path + chr(34)
+		    elseif TargetLinux then
+		      Path = Path.ReplaceAll("\","/")
+		      S = "mkdir -p " + chr(34) + Path + chr(34)
+		    end if
+		    
+		    If TargetWindows Then 'Only windows has the stupid shell bug, so only it needs an external script called instead
+		      Sh.Execute(S)
+		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
+		      Sh.Execute ("icacls"+ Path+ " /grant "+ "Users:F")
+		    Else
+		      'RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done, Can't do this here as it doesn't have a tmpPath folder to make the Script to make TmpPath
+		      Sh.Execute(S)
+		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
+		      Sh.Execute("chmod 775 "+Chr(34)+Path+Chr(34)) 'Change Read/Write/Execute to defaults, -R would do all files and folders, but we might not want this here
+		    End If
+		  Catch
+		    If Debugging Then Debug ("* Failed to Make Folder: "+Path)
+		  End Try
 		  'SaveDataToFile(S+Chr(10)+Sh.Result, SpecialFolder.Desktop.NativePath+"/DebugMakeFolder.txt")
 		  
 		End Sub
