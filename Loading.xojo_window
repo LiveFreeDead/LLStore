@@ -84,6 +84,9 @@ End
 		    Me.Hide
 		    Return True
 		  Else
+		    DebugOutput.Flush ' Actually Write to file after each thing
+		    DebugOutput.Close 'Close File when quiting
+		    If Debugging Then Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_Debug.txt") 'Copy Debug to Desktop
 		    Quit 'Just dump everything ,Loading is the last form we shut and does this step
 		    Return False
 		  End If
@@ -244,24 +247,41 @@ End
 		  Win7z = ToolPath + "7z.exe"
 		  WinWget = ToolPath + "wget.exe"
 		  
+		  
+		  'Clean Temp folders
+		  CleanTemp 'Clearing LLTemp folder entirly
+		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
+		  
+		  'Make Temp Folder
+		  MakeFolder (TmpPath)
+		  
+		  'Make Local paths and Debug File
 		  #Pragma BreakOnExceptions Off
-		  F = GetFolderItem(Slash(RepositoryPathLocal)+".lldb", FolderItem.PathTypeNative)
+		  F = GetFolderItem(Slash(RepositoryPathLocal)+".lldb", FolderItem.PathTypeShell)
 		  If Not F.Exists Then
 		    Try 
 		      MakeFolder(F.NativePath)
 		    Catch
 		    End Try
 		  End If
+		  
+		  'Debug
+		  DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
+		  DebugFile.Remove ' Delete the old Log file on every run
+		  If DebugFile.Exists Then
+		    DebugOutput = TextOutputStream.open(DebugFile)
+		  Else
+		    DebugOutput = TextOutputStream.Create(DebugFile)
+		  end if
+		  
+		  If Debugging Then Debug("Starting Up")
+		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
+		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
+		  
 		  #Pragma BreakOnExceptions On
 		  
 		  'Set Default Settings, these get replaced by the loading of Settings, but we need defaults when there isn't one
 		  Settings.SetFlatpakAsUser.Value = True
-		  
-		  'Clean Temp folders
-		  CleanTemp 'Clearing LLTemp folder entirly
-		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
-		  
-		  MakeFolder (TmpPath)
 		  
 		  'Centre Form
 		  self.Left = (screen(0).AvailableWidth - self.Width) / 2
@@ -457,12 +477,15 @@ End
 		  End If
 		  If F.IsFolder And F.IsReadable Then
 		    Data.ScanPaths.AddRow(FixPath(F.NativePath))
+		    If Debugging Then Debug("Adding Item Path: "+ FixPath(F.NativePath))
 		  End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub ExtractAll()
+		  If Debugging Then Debug("---------- Extract All ----------")
+		  
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call where it goes slow?, this also slows down loading a little
 		  
 		  Dim F As FolderItem
@@ -585,6 +608,7 @@ End
 		    Deltree(ScriptOutFile)
 		    Deltree(ScriptOutMkDirFile)
 		  End If
+		  If Debugging Then Debug("---------- End Extract All ----------")
 		  
 		End Sub
 	#tag EndMethod
@@ -722,6 +746,8 @@ End
 		Function GetItem(ItemInn As String, InnTmp As String = "") As Integer
 		  If ItemInn = "" Then Return  -1 'Nothing given
 		  
+		  If Debugging Then Debug("Get Item: "+ ItemInn)
+		  
 		  Dim I, J As Integer
 		  Dim F As FolderItem
 		  Dim Exten As String
@@ -755,6 +781,7 @@ End
 		  If ItemLLItem.Hidden = True Then Return -1 'Set as Hidden, hide it entirly.
 		  
 		  If Success = True Then ' Loaded Item fine, Add to Data
+		    If Debugging Then Debug("Success Loading: "+ ItemInn)
 		    ItemCount =  Data.Items.RowCount
 		    Data.Items.AddRow(Data.Items.RowCount.ToString("000000")) 'This adds the Leading 0's or prefixes it to 6 digits as it sort Alphabettical, fixed 1,10,100,2 to 001,002,010,100 for example
 		    
@@ -1048,6 +1075,8 @@ End
 		  
 		  ScannedRootFoldersCount = ScannedRootFoldersCount + 1
 		  ScannedRootFolders(ScannedRootFoldersCount) = Inn
+		  
+		  If Debugging Then Debug("Scanning For Items In: "+ Inn)
 		  
 		  #Pragma BreakOnExceptions False
 		  Try
@@ -1395,6 +1424,8 @@ End
 		  End If
 		  
 		  If Not F.Exists Then Return 'Dud file, get out of here
+		  
+		  If Debugging Then Debug("Loading Database From: "+ F.NativePath)
 		  
 		  'Load in whole file at once (Fastest Method)
 		  inputStream = TextInputStream.Open(F)
@@ -2146,6 +2177,20 @@ End
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    
+		    
+		    'Save Debug Of The Scanned Items:
+		    
+		    If Debugging Then
+		      If Data.Items.RowCount >=1 Then
+		        For I = 0 To Data.Items.RowCount - 1
+		          Debug("Item "+Str(I)+": "+ Data.Items.CellTextAt(I, Data.GetDBHeader("TitleName")))
+		        Next
+		      Else
+		        Debug("No Items Added To Known Items")
+		      End If
+		    End If
+		    
+		    
 		    'Centre Main Form (For now, will load in position once stored)
 		    Main.width=screen(0).AvailableWidth-(screen(0).AvailableWidth/6)
 		    Main.height=screen(0).AvailableHeight-(screen(0).AvailableHeight/12)
@@ -2281,6 +2326,8 @@ End
 		    'Check Remote file exist, else it'll fail
 		    Test = RunCommandResults("curl --head --silent " + Chr(34) + GetURL + Chr(34))
 		    
+		    If Debugging Then Debug(">> Download :"+ GetURL +" to " + QueueLocal(QueueUpTo) + " = "+ Test)
+		    
 		    If Trim(Test) = "" Then 'No Internet or very dodgy item, just abort all internet and try the next item that gets sent here
 		      SaveDataToFile ("Failed Header Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
 		    Else ' Try to get item
@@ -2359,10 +2406,12 @@ End
 		          End If
 		          
 		          Deltree(Slash(RepositoryPathLocal) + "DownloadDone")
+		          If Debugging Then Debug(">> Download Detected as Successful")
 		        Else 'Failed, Clean Up
 		          If Not TargetWindows Then RunCommand ("notify-send " + Chr(34) + "Failed Downloading Item: " + QueueLocal(QueueUpTo) + Chr(34))
 		          SaveDataToFile ("Failed Finding Local: "+QueueLocal(QueueUpTo) + ".partial", Slash(RepositoryPathLocal) + "FailedDownload")
 		          FailedDownload = True
+		          If Debugging Then Debug(">> Download Fail Detected ")
 		        End If
 		      End If
 		    End If    
@@ -2376,6 +2425,8 @@ End
 		  
 		  If ForceQuit = True Then
 		    CleanTemp
+		    DebugOutput.Flush 'Write cached data to file
+		    DebugOutput.Close 'Close File when quiting
 		    Quit 'This is just a precaution for if the wget loop keeps the app from quiting if a problem or forced quit occurs
 		  End If
 		  

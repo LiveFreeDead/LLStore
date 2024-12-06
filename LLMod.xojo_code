@@ -166,6 +166,15 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Debug(Debugger As String)
+		  Var d As DateTime = DateTime.Now
+		  DebugOutput.WriteLine (d.Hour.ToString("00")+":"+d.Minute.ToString("00")+":"+d.Second.ToString("00")+Chr(9)+Debugger)
+		  DebugOutput.Flush ' Actually Write to file after each thing
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Deltree(S As String)
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1
@@ -2453,6 +2462,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunWait(EXEName As String, PathIn As String = "", ArgsIn As String = "")
+		  If Debugging Then Debug("---------- RunWait: "+ PathIn+">"+EXEName+" | "+ArgsIn+" ----------")
+		  
 		  Dim theShell As New Shell
 		  theShell.Mode = 1 'Run and continue code
 		  theShell.TimeOut = -1 'Give it All the time it needs
@@ -2468,6 +2479,10 @@ Protected Module LLMod
 		  While theShell.IsRunning
 		    App.DoEvents(3)
 		  Wend
+		  If Debugging Then Debug(theShell.Result) ' Debug Print all of the Run Results
+		  
+		  If Debugging Then Debug("---------- End of RunWait ----------") ' Debug Print all of the Run Results
+		  
 		  Running = False
 		  
 		End Sub
@@ -2663,6 +2678,18 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		CurrentPath As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		DebugFile As FolderItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Debugging As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		DebugOutput As TextOutputStream
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
