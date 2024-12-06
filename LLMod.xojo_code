@@ -252,12 +252,19 @@ Protected Module LLMod
 		  FileIn = FileIn.Trim
 		  If FileIn = "" Then Return False
 		  'MsgBox "Is "+ FileIn
-		  F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
-		  If F <> Nil Then
-		    'MsgBox "FOUND!"
-		    If F.Exists Then Return True
-		  End If
-		  Return False
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
+		    If F <> Nil Then
+		      'MsgBox "FOUND!"
+		      If F.Exists Then Return True
+		    End If
+		    Return False
+		  Catch
+		    Return False
+		  End Try
+		  
+		  #Pragma BreakOnExceptions On
 		End Function
 	#tag EndMethod
 
@@ -3825,6 +3832,14 @@ Protected Module LLMod
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Debugging"
+			Visible=false
+			Group="Behavior"
+			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

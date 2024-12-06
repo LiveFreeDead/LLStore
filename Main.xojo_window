@@ -747,9 +747,14 @@ End
 		    WebWall = Slash(ThemePath) + "Screenshot.jpg" 'Default Theme Wallpaper used if no other given (could do Category Screenshots here if wanted)
 		  End If
 		  F = GetFolderItem(WebWall, FolderItem.PathTypeShell)
-		  ScreenShotCurrent = Picture.Open(F)
+		  If Exist(WebWall) Then
+		    ScreenShotCurrent = Picture.Open(F)
+		  Else
+		    ScreenShotCurrent = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight, 32)
+		    ScreenShotCurrent.Graphics.DrawingColor = &C000000
+		    ScreenShotCurrent.Graphics.FillRectangle(0,0,ScreenShotCurrent.Width,ScreenShotCurrent.Height)
+		  End If
 		  ScaleScreenShot
-		  
 		  'Fader
 		  WebWall = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("FileFader"))
 		  If WebWall = "" Or Not Exist(WebWall) Then
@@ -758,14 +763,25 @@ End
 		  F = GetFolderItem(WebWall, FolderItem.PathTypeShell)
 		  CurrentFader = Picture.Open(F)
 		  
+		  ''If Main.Backdrop is nil then make it black
+		  'If Main.Backdrop = Nil Then
+		  'Main.Backdrop = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight)
+		  'End If
+		  
+		  
 		  'Clone From Wallpaper to Icon BG
+		  #Pragma BreakOnExceptions Off
 		  If ItemFaderPic.Backdrop <> Nil And Main.Backdrop <> Nil Then ' Only do if Valid
-		    ItemFaderPic.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,ItemFaderPic.Width, ItemFaderPic.Height, ItemFaderPic.Left, ItemFaderPic.Top, ItemFaderPic.Width, ItemFaderPic.Height)
-		    'Draw Fader Icon on BG
-		    ItemFaderPic.Backdrop.Graphics.DrawPicture(CurrentFader,0,0,ItemFaderPic.Width, ItemFaderPic.Height,0,0,CurrentFader.Width, CurrentFader.Height)
-		    ItemFaderPic.Refresh
-		    
+		    Try
+		      ItemFaderPic.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,ItemFaderPic.Width, ItemFaderPic.Height, ItemFaderPic.Left, ItemFaderPic.Top, ItemFaderPic.Width, ItemFaderPic.Height)
+		      'Draw Fader Icon on BG
+		      ItemFaderPic.Backdrop.Graphics.DrawPicture(CurrentFader,0,0,ItemFaderPic.Width, ItemFaderPic.Height,0,0,CurrentFader.Width, CurrentFader.Height)
+		      ItemFaderPic.Refresh
+		    Catch
+		    End Try
 		  End If
+		  #Pragma BreakOnExceptions On
+		  
 		  
 		  'Description
 		  
@@ -1208,9 +1224,18 @@ End
 		  End If
 		  'ScaledWallpaper.Graphics.DrawingColor = &C000000
 		  'ScaledWallpaper.Graphics.FillRectangle(0,0,Main.Width,Main.Height)
-		  ScaledWallpaper.Graphics.DrawPicture(DefaultMainWallpaper,0, 0, Main.Width, Main.Height, 0, 0, DefaultMainWallpaper.Width, DefaultMainWallpaper.Height)
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    ScaledWallpaper.Graphics.DrawPicture(DefaultMainWallpaper,0, 0, Main.Width, Main.Height, 0, 0, DefaultMainWallpaper.Width, DefaultMainWallpaper.Height)
+		    Main.Backdrop = ScaledWallpaper
+		  Catch
+		    'No Wallpaper Found Make it Black
+		    ScaledWallpaper.Graphics.DrawingColor = &C000000
+		    ScaledWallpaper.Graphics.FillRectangle(0,0,Main.Width,Main.Height)
+		    Main.Backdrop = ScaledWallpaper
+		  End Try
+		  #Pragma BreakOnExceptions On
 		  
-		  Main.Backdrop = ScaledWallpaper
 		  
 		  ScaleScreenShot
 		  
@@ -1228,14 +1253,20 @@ End
 		  'Clone From Wallpaper to Fader BG
 		  StartButton.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,StartButton.Width, StartButton.Height, StartButton.Left, StartButton.Top, StartButton.Width, StartButton.Height)
 		  'Draw Start Button over BG
-		  StartButton.Backdrop.Graphics.DrawPicture(DefaultStartButton,0,0,StartButton.Width, StartButton.Height,0,0,DefaultStartButton.Width, DefaultStartButton.Height)
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    StartButton.Backdrop.Graphics.DrawPicture(DefaultStartButton,0,0,StartButton.Width, StartButton.Height,0,0,DefaultStartButton.Width, DefaultStartButton.Height)
+		  Catch
+		  End Try
+		  #Pragma BreakOnExceptions On
 		  
 		  If ItemFaderPic.Backdrop = Nil Then
 		    ItemFaderPic.Backdrop = New Picture(ItemFaderPic.Width,ItemFaderPic.Height, 32)
 		  End If
 		  ItemFaderPic.Backdrop.Graphics.DrawingColor = &C000000
-		  try 
+		  Try 
 		    'Remarked below line to not have Black BG
+		    'ItemFaderPic.Backdrop.Graphics.DrawingColor = &C000000
 		    'ItemFaderPic.Backdrop.Graphics.FillRectangle(0,0,ItemIcon.Width,ItemIcon.Height)
 		  Catch
 		  End Try
@@ -1245,8 +1276,12 @@ End
 		  
 		  'Draw Items Icon on BG
 		  If CurrentFader = Nil Then CurrentFader = DefaultFader
-		  ItemFaderPic.Backdrop.Graphics.DrawPicture(CurrentFader,0,0,ItemFaderPic.Width, ItemFaderPic.Height,0,0,DefaultFader.Width, DefaultFader.Height)
-		  
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    ItemFaderPic.Backdrop.Graphics.DrawPicture(CurrentFader,0,0,ItemFaderPic.Width, ItemFaderPic.Height,0,0,DefaultFader.Width, DefaultFader.Height)
+		  Catch
+		  End Try
+		  #Pragma BreakOnExceptions On
 		End Sub
 	#tag EndMethod
 
@@ -1446,6 +1481,8 @@ End
 		  
 		  If ScreenShotCurrent = Nil Or AvailableWidth < Screen(0).AvailableWidth Then
 		    ScreenShotCurrent = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight, 32)
+		    ScreenShotCurrent.Graphics.DrawingColor = &C000000
+		    ScreenShotCurrent.Graphics.FillRectangle(0,0,ScreenShotCurrent.Width,ScreenShotCurrent.Height)
 		  End If
 		  
 		  SSScale = ScreenShot.Width/ScreenShotCurrent.Width
@@ -1473,7 +1510,6 @@ End
 		  
 		  'Grab Background of main form
 		  ScaledScreenShot.Graphics.DrawPicture(Main.BackDrop,0, 0, ScreenShot.Width+1, ScreenShot.Height+1, ScreenShot.Left, ScreenShot.Top, ScreenShot.Width+1, ScreenShot.Height)
-		  
 		  
 		  
 		  ScaledScreenShot.Graphics.DrawPicture(ScreenShotCurrent,X,Y,RealSSWidth, RealSSHeight,0,0,ScreenShotCurrent.Width, ScreenShotCurrent.Height)
@@ -2348,6 +2384,46 @@ End
 	#tag EndViewProperty
 	#tag ViewProperty
 		Name="HideInstalled"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideFree"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideLocal"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideOnline"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideOpen"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HidePaid"
 		Visible=false
 		Group="Behavior"
 		InitialValue="False"

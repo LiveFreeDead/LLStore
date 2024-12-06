@@ -266,13 +266,17 @@ End
 		  End If
 		  
 		  'Debug
-		  DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
-		  If DebugFile.Exists Then
-		    DebugFile.Remove ' Delete the old Log file on every run
-		    DebugOutput = TextOutputStream.open(DebugFile)
-		  Else
-		    DebugOutput = TextOutputStream.Create(DebugFile)
-		  end if
+		  Try
+		    DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
+		    If Exist(Slash(TmpPath)+"DebugLog.txt") Then
+		      Deltree(Slash(TmpPath)+"DebugLog.txt")
+		      DebugOutput = TextOutputStream.open(DebugFile)
+		    Else
+		      DebugOutput = TextOutputStream.Create(DebugFile)
+		    end if
+		  Catch
+		    Debugging = False
+		  End Try
 		  
 		  If Debugging Then Debug("Starting Up")
 		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
@@ -315,24 +319,30 @@ End
 		  Dim RL As String
 		  
 		  'Get theme
-		  If StoreMode = 0 Then
-		    ThemePath = AppPath+"Themes/Theme.ini"
-		    F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		    InputStream = TextInputStream.Open(F)
-		    RL = InputStream.ReadLine.Trim
-		    inputStream.Close
-		    ThemePath = AppPath+"Themes/"+RL+"/"
-		    LoadTheme (RL)
-		    Loading.Visible = True 'Show the loading form here
-		  ElseIf StoreMode = 1 Then
-		    ThemePath = AppPath+"Themes/ThemeLauncher.ini"
-		    F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		    InputStream = TextInputStream.Open(F)
-		    RL = InputStream.ReadLine.Trim
-		    inputStream.Close
-		    ThemePath = AppPath+"Themes/"+RL+"/"
-		    LoadTheme (RL)
-		  End If
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    If StoreMode = 0 Then
+		      ThemePath = AppPath+"Themes/Theme.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		      Loading.Visible = True 'Show the loading form here
+		    ElseIf StoreMode = 1 Then
+		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		    End If
+		  Catch
+		    'No Theme files found
+		  End Try
+		  #Pragma BreakOnExceptions On
 		  
 		  'Load Settings
 		  LoadSettings
@@ -1511,6 +1521,7 @@ End
 		  SettingsFile = AppPath+"LLL_Settings.ini"
 		  F = GetFolderItem(SettingsFile,FolderItem.PathTypeNative)
 		  If Not F.Exists Then Return 'No Settings file found
+		  
 		  InputStream = TextInputStream.Open(F)
 		  While Not inputStream.EndOfFile 'If Empty file this skips it
 		    RL = inputStream.ReadAll.ConvertEncoding(Encodings.ASCII)
@@ -1615,10 +1626,23 @@ End
 		  
 		  ImgPath = ThemePath+"Wallpaper.jpg"
 		  F=GetFolderItem(ImgPath, FolderItem.PathTypeShell)
-		  DefaultMainWallpaper = Picture.Open(F)
+		  If Exist(ImgPath) Then
+		    DefaultMainWallpaper = Picture.Open(F)
+		  Else
+		    DefaultMainWallpaper = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight, 32)
+		    DefaultMainWallpaper.Graphics.DrawingColor = &C000000
+		    DefaultMainWallpaper.Graphics.FillRectangle(0,0,DefaultMainWallpaper.Width,DefaultMainWallpaper.Height)
+		  End If
 		  
-		  F=GetFolderItem(ThemePath+"Screenshot.jpg", FolderItem.PathTypeShell)
-		  ScreenShotCurrent = Picture.Open(F)
+		  If Exist(ThemePath+"Screenshot.jpg") Then
+		    F=GetFolderItem(ThemePath+"Screenshot.jpg", FolderItem.PathTypeShell)
+		    ScreenShotCurrent = Picture.Open(F)
+		  Else
+		    'No Need to make black if always transparent
+		    ScreenShotCurrent = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight, 32)
+		    ScreenShotCurrent.Graphics.DrawingColor = &C000000
+		    ScreenShotCurrent.Graphics.FillRectangle(0,0,ScreenShotCurrent.Width,ScreenShotCurrent.Height)
+		  End If
 		  
 		  Main.Backdrop = DefaultMainWallpaper
 		  
