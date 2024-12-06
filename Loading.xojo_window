@@ -267,8 +267,8 @@ End
 		  
 		  'Debug
 		  DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
-		  DebugFile.Remove ' Delete the old Log file on every run
 		  If DebugFile.Exists Then
+		    DebugFile.Remove ' Delete the old Log file on every run
 		    DebugOutput = TextOutputStream.open(DebugFile)
 		  Else
 		    DebugOutput = TextOutputStream.Create(DebugFile)
