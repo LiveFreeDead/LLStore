@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -485,6 +483,7 @@ End
 		  Else
 		    F = GetFolderItem(DirToCheck, FolderItem.PathTypeShell)
 		  End If
+		  If Debugging Then Debug("Checking if Item Path is a Folder and Readable: "+ FixPath(F.NativePath))
 		  If F.IsFolder And F.IsReadable Then
 		    Data.ScanPaths.AddRow(FixPath(F.NativePath))
 		    If Debugging Then Debug("Adding Item Path: "+ FixPath(F.NativePath))
@@ -1305,17 +1304,31 @@ End
 		    
 		    'Get Manual Locations
 		    If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
-		      IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
-		      If Exist(IniFile) Then
-		        ManIn = LoadDataFromFile(IniFile)
-		        Sp() = ManIn.Split(Chr(10))
-		        If Sp.Count >=1 Then
-		          For I = 0 To Sp.Count -1
-		            DirToCheck = Sp(I).Trim
-		            GetItemsPaths(DirToCheck, True)
-		          Next
-		        End If
+		      If Debugging Then Debug("---------- Get Manual Locations: ----------")
+		      Sp() = Settings.SetManualLocations.Text.Split(Chr(13))
+		      If Sp.Count >= 1 Then
+		        For I = 0 To Sp.Count - 1
+		          DirToCheck = Sp(I).Trim
+		          GetItemsPaths(DirToCheck, True)
+		        Next
+		        If Debugging Then Debug("---------- End  Manual Locations ----------")
 		      End If
+		      
+		      'If StoreMode = 0 Then
+		      'IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
+		      'Else
+		      'IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		      'End If
+		      'If Exist(IniFile) Then
+		      'ManIn = LoadDataFromFile(IniFile)
+		      'Sp() = ManIn.Split(Chr(10))
+		      'If Sp.Count >=1 Then
+		      'For I = 0 To Sp.Count -1
+		      'DirToCheck = Sp(I).Trim
+		      'GetItemsPaths(DirToCheck, True)
+		      'Next
+		      'End If
+		      'End If
 		    End If
 		    
 		    
@@ -1433,7 +1446,10 @@ End
 		    F = GetFolderItem(DBRootIn+".lldb/lldb.ini",FolderItem.PathTypeNative)
 		  End If
 		  
-		  If Not F.Exists Then Return 'Dud file, get out of here
+		  If Not F.Exists Then
+		    If Debugging Then Debug("Atempted to load Database From: "+ F.NativePath)
+		    Return 'Dud file, get out of here
+		  End If
 		  
 		  If Debugging Then Debug("Loading Database From: "+ F.NativePath)
 		  
@@ -1532,6 +1548,7 @@ End
 		  Dim Sp() As String
 		  Dim Lin, LineID, LineData As String
 		  Dim EqPos As Integer
+		  Dim IniFile As String
 		  
 		  RL = RL.ReplaceAll(Chr(13), Chr(10))
 		  SP()=RL.Split(Chr(10))
@@ -1593,6 +1610,19 @@ End
 		      If LineData <> "" Then Settings.SetUseOnlineRepos.Value = IsTrue(LineData)
 		    End Select
 		  Next
+		  
+		  
+		  'Get Manual Locations
+		  If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
+		    If StoreMode = 0 Then
+		      IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
+		    Else
+		      IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		    End If
+		    If Exist(IniFile) Then
+		      Settings.SetManualLocations.Text = LoadDataFromFile(IniFile)
+		    End If
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -1953,6 +1983,15 @@ End
 		  
 		  'Save to actual Settings File
 		  SaveDataToFile(RL, SettingsFile)
+		  
+		  'Save Manual Locations
+		  Dim IniFile As String
+		  If StoreMode = 0 Then
+		    IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
+		  Else
+		    IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		  End If
+		  SaveDataToFile(Settings.SetManualLocations.Text, IniFile)
 		End Sub
 	#tag EndMethod
 
@@ -2165,7 +2204,7 @@ End
 		    Loading.Status.Text = "Downloading Online Databases..."
 		    Loading.Refresh
 		    App.DoEvents(1)
-		    GetOnlineDBs
+		    If StoreMode = 0 Then GetOnlineDBs 'Only do this when in Installation mode
 		    
 		    'Hide Old Version (Only need to do this once as you load in Items)
 		    Loading.Status.Text = "Hiding Old Versions..."
