@@ -285,6 +285,7 @@ Protected Module LLMod
 		  
 		  'Below will only be used in Windows and Wine, so can use Disk Letters
 		  If TargetWindows Then
+		    PathIn = PathIn.ReplaceAll("%USBDrive%", Left(AppPath,2)) 'Convert USB/DVD your running off  to correct Path
 		    PathIn = PathIn.ReplaceAll("%AppPath%", ItemLLItem.PathApp)
 		    PathIn = PathIn.ReplaceAll("%ppGames%", NoSlash(ppGames))
 		    PathIn = PathIn.ReplaceAll("%ppApps%", NoSlash(ppApps))
@@ -452,6 +453,8 @@ Protected Module LLMod
 		    Dat = Dat.ReplaceAll("\","\\")
 		    PathIn = PathIn.ReplaceAll("%ppAppsDrive%", Dat)
 		    
+		    PathIn = PathIn.ReplaceAll("%USBDrive%", Left(AppPath,2)) 'Convert USB/DVD your running off  to correct Path
+		    
 		    'Use one from ssWPI for this path
 		    'Dat = "C:\Users\"+UserName+"\Desktop"
 		    'Dat = 
@@ -514,6 +517,8 @@ Protected Module LLMod
 		      Dat = "C:"
 		      PathIn = PathIn.ReplaceAll("%ppAppsDrive%", Dat)
 		      
+		      PathIn = PathIn.ReplaceAll("%USBDrive%", "z:") 'Convert USB/DVD your running off  to correct Path
+		      
 		      'Dat = "z:/home/"+UserName+"/Desktop"
 		      'Dat = Dat.ReplaceAll("/","\")
 		      'Dat = Dat.ReplaceAll("/","//")
@@ -538,6 +543,8 @@ Protected Module LLMod
 		  
 		  'Below will only be used in Windows and Wine, so can use Disk Letters
 		  If TargetWindows Then
+		    PathIn = PathIn.ReplaceAll("%USBDrive%", Left(AppPath,2)) 'Convert USB/DVD your running off  to correct Path
+		    
 		    PathIn = PathIn.ReplaceAll("%AppPath%", ItemLLItem.PathApp)
 		    PathIn = PathIn.ReplaceAll("%ppGames%", NoSlash(ppGames))
 		    PathIn = PathIn.ReplaceAll("%ppApps%", NoSlash(ppApps))
@@ -561,6 +568,8 @@ Protected Module LLMod
 		    
 		  Else 'Use Linux full paths instead (So can detect if installed etc first).
 		    If WinPaths Then
+		      PathIn = PathIn.ReplaceAll("%USBDrive%", "z:") 'Convert USB/DVD your running off  to correct Path
+		      
 		      PathIn = PathIn.ReplaceAll("%AppPath%", "z:"+ItemLLItem.PathApp)
 		      PathIn = PathIn.ReplaceAll("%ppGames%", "C:/ppGames")
 		      PathIn = PathIn.ReplaceAll("%ppApps%", "C:/ppApps")

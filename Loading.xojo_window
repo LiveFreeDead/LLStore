@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -1309,6 +1311,7 @@ End
 		      If Sp.Count >= 1 Then
 		        For I = 0 To Sp.Count - 1
 		          DirToCheck = Sp(I).Trim
+		          If TargetWindows Then DirToCheck = DirToCheck.ReplaceAll("%USBDrive%", Left(AppPath,2)) 'Convert Current USB drive to variable so when you load it back in it points to right location
 		          GetItemsPaths(DirToCheck, True)
 		        Next
 		        If Debugging Then Debug("---------- End  Manual Locations ----------")
@@ -2143,10 +2146,12 @@ End
 		    'Quit
 		    
 		    'Check For Updates
-		    Loading.Status.Text = "Check For Store Updates..."
-		    Loading.Refresh
-		    App.DoEvents(1)
-		    CheckForLLStoreUpdates
+		    If Settings.SetCheckForUpdates.Value = True Then
+		      Loading.Status.Text = "Check For Store Updates..."
+		      Loading.Refresh
+		      App.DoEvents(1)
+		      CheckForLLStoreUpdates
+		    End IF
 		    
 		    'Get Scan Paths Here
 		    Loading.Status.Text = "Scanning Drives..."
@@ -2201,10 +2206,12 @@ End
 		    ForceRefreshDBs = False
 		    
 		    'Get online Databases
-		    Loading.Status.Text = "Downloading Online Databases..."
-		    Loading.Refresh
-		    App.DoEvents(1)
-		    If StoreMode = 0 Then GetOnlineDBs 'Only do this when in Installation mode
+		    If Settings.SetUseOnlineRepos.Value = True Then
+		      Loading.Status.Text = "Downloading Online Databases..."
+		      Loading.Refresh
+		      App.DoEvents(1)
+		      If StoreMode = 0 Then GetOnlineDBs 'Only do this when in Installation mode
+		    End If
 		    
 		    'Hide Old Version (Only need to do this once as you load in Items)
 		    Loading.Status.Text = "Hiding Old Versions..."

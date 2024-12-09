@@ -658,6 +658,8 @@ End
 		  End If
 		  If F <> Nil And F.Exists Then
 		    Settings.SetManualLocations.Text = Settings.SetManualLocations.Text.Trim + Chr(10) + F.NativePath + Chr(10)
+		    If TargetWindows Then Settings.SetManualLocations.Text = Settings.SetManualLocations.Text.ReplaceAll(Left(AppPath,2), "%USBDrive%") 'Convert Current USB drive to variable so when you load it back in it points to right location
+		    
 		    
 		    Loading.SaveSettings
 		    Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
