@@ -1293,6 +1293,8 @@ End
 		  Dim RL As String
 		  Dim F As FolderItem
 		  
+		  SettingsLoaded = True
+		  
 		  SettingsFile = AppPath+"LLL_Settings.ini"
 		  F = GetFolderItem(SettingsFile,FolderItem.PathTypeNative)
 		  If Not F.Exists Then Return 'No Settings file found
@@ -1367,8 +1369,10 @@ End
 		      End If
 		    Case "useonlinerepositiories"
 		      If LineData <> "" Then Settings.SetUseOnlineRepos.Value = IsTrue(LineData)
+		      'MsgBox  LineData +" "+ IsTrue(LineData).ToString
 		    End Select
 		  Next
+		  App.DoEvents(1)' Update the Settings Form with the new Check values before we do anything, might fix it, else I'll need to use Variables
 		  
 		  
 		  'Get Manual Locations
@@ -1709,6 +1713,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub SaveSettings()
+		  If SettingsLoaded = False Then Return
+		  
 		  Dim RL As String
 		  
 		  SettingsFile = Slash(AppPath)+"LLL_Settings.ini"
@@ -1736,7 +1742,7 @@ End
 		  RL = RL + "HideInstalledOnStartup=" + Str(Settings.SetHideInstalled.Value) + Chr(10)
 		  
 		  RL = RL + "UseManualLocations=" + Str(Settings.SetUseManualLocations.Value) + Chr(10)
-		  RL = RL + "UseOnlineRepositories=" + Str(Settings.SetUseOnlineRepos.Value) + Chr(10)
+		  RL = RL + "UseOnlineRepositiories=" + Str(Settings.SetUseOnlineRepos.Value) + Chr(10)
 		  
 		  'Msgbox RL
 		  
@@ -1909,6 +1915,7 @@ End
 		    'Quit
 		    
 		    'Check For Updates
+		    'Msgbox RunningInIDE.ToString
 		    If Settings.SetCheckForUpdates.Value = True And RunningInIDE = False Then
 		      Loading.Status.Text = "Check For Store Updates..."
 		      Loading.Refresh
@@ -2295,9 +2302,9 @@ End
 		    SysTerminal = "cmd "
 		  End If
 		  
-		  SysAvailableDesktops = Array("All","Cinnamon","Gnome","KDE","LXDE","Mate","Unity","XFCE")
-		  SysAvailablePackageManagers = Array("apt","apk","dnf","emerge","pacman","zypper")
-		  SysAvailableArchitectures = Array("x86","x64","arm")
+		  SysAvailableDesktops = Array("All","All-Linux","Cinnamon","Explorer","Gnome","KDE","LXDE","Mate","Unity","XFCE")
+		  SysAvailablePackageManagers = Array("All","apt","apk","dnf","emerge","pacman","winget","zypper")
+		  SysAvailableArchitectures = Array("All","x86 + x64","x86","x64","ARM")
 		  
 		  'MsgBox  SysDesktopEnvironment
 		  
@@ -2550,6 +2557,8 @@ End
 		  If StoreMode = 3 Then
 		    EditorOnly = True
 		    'MsgBox "Loading: " + CommandLineFile
+		    #Pragma BreakOnExceptions Off
+		    
 		    Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
 		    If Success Then 
 		      'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString

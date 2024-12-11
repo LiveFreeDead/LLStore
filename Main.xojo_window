@@ -524,6 +524,25 @@ End
 		    Data.Show
 		  End If
 		  
+		  'Do Editor
+		  If Asc(Key) = 199 Or Asc(Key) = 209 Then 'F10 (Linux and Windows) Editor
+		    'Load in Item fully
+		    Dim Success As Boolean
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      Success = LoadLLFile(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI"))) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
+		      If Success Then
+		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		        Editor.PopulateData
+		        Editor.Show
+		      End If
+		    Catch
+		    End Try
+		    #Pragma BreakOnExceptions On
+		  End If
+		  
+		  
 		  If StoreMode = 0 Then
 		    If Asc(Key) = 13 Or Asc(Key) = 3 Or Asc(Key) = 32 Then 'Return and Enter and Space
 		      If KeyBoard.AsyncControlKey Then
@@ -609,10 +628,13 @@ End
 		  Debug("-- Main Opening")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  
-		  TitleLabel.Text = "LL Store v"+ Str(App.MajorVersion)+"."+Str(App.MinorVersion)+"."+Str(App.NonReleaseVersion)
+		  TitleLabel.Text = "LLStore v"+ Str(App.MajorVersion)+"."+Str(App.MinorVersion) '+"."+Str(App.NonReleaseVersion)
 		  
-		  If TargetWindows Then TitleLabel.Text = TitleLabel.Text + " (Windows)"
-		  If TargetLinux Then TitleLabel.Text = TitleLabel.Text + " (Linux)"
+		  If TargetWindows Then 
+		    TitleLabel.Text = TitleLabel.Text + " (Win)" + " " + SysDesktopEnvironment + " " + SysPackageManager
+		    If IsAdmin Then TitleLabel.Text = TitleLabel.Text + " ~Admin"
+		  End If
+		  If TargetLinux Then TitleLabel.Text = TitleLabel.Text + " (Linux)" + " "  + SysDesktopEnvironment + " " + SysPackageManager
 		  
 		  'Do another Resize etc
 		  FirstShown.RunMode = Timer.RunModes.Single
@@ -621,6 +643,8 @@ End
 
 	#tag Event
 		Sub Resized()
+		  If Main.Width < 600 Then Main.Width = 600
+		  If Main.Height < 400 Then Main.Height = 400
 		  ResizeMainForm
 		  
 		  Items.Visible = True
@@ -633,7 +657,8 @@ End
 		Sub Resizing()
 		  Items.Visible = False
 		  Categories.Visible = False
-		  
+		  If Main.Width < 600 Then Main.Width = 600
+		  If Main.Height < 400 Then Main.Height = 400
 		  ResizeMainForm 'Might be too slow? Is a bit, Needs to test in Linux Glenn
 		End Sub
 	#tag EndEvent
@@ -948,6 +973,11 @@ End
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F9"
 		  
+		  'Edit Item
+		  base.Append New MenuItem("&Edit In LLEditor") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "F10"
+		  
 		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
 		  
 		  
@@ -1001,8 +1031,22 @@ End
 		    Loading.SaveSettings
 		    Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
 		    Loading.RefreshDBs
-		    
-		    
+		  Case "&Edit I"
+		    'Load in Item fully
+		    Dim Success As Boolean
+		    'MsgBox CurrentItemID.ToString
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      Success = LoadLLFile(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI"))) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
+		      If Success Then
+		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		        Editor.PopulateData
+		        Editor.Show
+		      End If
+		    Catch
+		    End Try
+		    #Pragma BreakOnExceptions On
 		  End Select
 		End Sub
 	#tag EndMethod
@@ -1048,6 +1092,8 @@ End
 		  Data.Items.SortingColumn = 0
 		  Data.Items.ColumnSortDirectionAt(0) = DesktopListBox.SortDirections.Ascending
 		  Data.Items.Sort ()
+		  
+		  Dim DeTest As String
 		  
 		  Dim I As Integer
 		  Dim ItemToAdd As String
@@ -1112,6 +1158,33 @@ End
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "1" And HidePaid = True Then Hidden = True 'Hide Paid
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "2" And HideFree = True Then Hidden = True 'Hide Free
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "3" And HideOpen = True Then Hidden = True 'Hide Open
+		    
+		    'SysDesktopEnvironment Checks
+		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		    If DeTest <> "" Then 'Only do Items with Values set
+		      If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Then
+		      Else
+		        Hidden = True ' Hide if the DE isn't found in supported list
+		      End If
+		    End If
+		    
+		    'SysPackageManager Checks
+		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
+		    If DeTest <> "" Then 'Only do Items with Values set
+		      If  DeTest.IndexOf(SysPackageManager) >=0 Then
+		      Else
+		        Hidden = True ' Hide if the PM isn't found in supported list
+		      End If
+		    End If
+		    
+		    ''Arch Checks 'Not available yet, I don't set SysArch Glenn 2027
+		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("ArchCompatible")) 
+		    'If DeTest <> "" Then 'Only do Items with Values set
+		    'If  DeTest.IndexOf(SysArch) >=0 Then
+		    'Else
+		    'Hidden = True ' Hide if the PM isn't found in supported list
+		    'End If
+		    'End If
 		    
 		    
 		    If Hidden = False Then

@@ -74,10 +74,11 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CompPath(PathIn As String) As String
-		  PathIn = PathIn.ReplaceAll(ItemLLItem.PathApp.ReplaceAll("\","/"),"%AppPath%") ' Convert Windows paths to Linux paths, makes the DB cross platform compatible
-		  
-		  PathIn = PathIn.ReplaceAll(ItemLLItem.PathINI.ReplaceAll("\","/"),"%INIPath%")
+		Function CompPath(PathIn As String, SkipAppPath As Boolean = False) As String
+		  If SkipAppPath =False Then
+		    PathIn = PathIn.ReplaceAll(ItemLLItem.PathApp.ReplaceAll("\","/"),"%AppPath%") ' Convert Windows paths to Linux paths, makes the DB cross platform compatible
+		    PathIn = PathIn.ReplaceAll(ItemLLItem.PathINI.ReplaceAll("\","/"),"%INIPath%")
+		  End If
 		  
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLGames", "%LLGames%")
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLApps", "%LLApps%")
@@ -3094,6 +3095,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		SettingsFile As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		SettingsLoaded As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

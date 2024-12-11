@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   6
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -1776,7 +1776,7 @@ Begin DesktopWindow Editor
          VisualState     =   0
          Width           =   108
       End
-      Begin DesktopTextArea TextArea1
+      Begin DesktopTextArea TextUserScript
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   True
@@ -1890,7 +1890,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   146
       End
-      Begin DesktopTextArea TextArea2
+      Begin DesktopTextArea TextSudoScript
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   True
@@ -2109,7 +2109,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   30
       End
-      Begin DesktopCanvas CanvasIcon
+      Begin DesktopCanvas CanvasFader
          AllowAutoDeactivate=   True
          AllowFocus      =   False
          AllowFocusRing  =   True
@@ -2135,7 +2135,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   256
       End
-      Begin DesktopCanvas CanvasIcon1
+      Begin DesktopCanvas CanvasScreenshot
          AllowAutoDeactivate=   True
          AllowFocus      =   False
          AllowFocusRing  =   True
@@ -2161,7 +2161,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   364
       End
-      Begin DesktopCanvas CanvasIcon2
+      Begin DesktopCanvas CanvasIcon
          AllowAutoDeactivate=   True
          AllowFocus      =   False
          AllowFocusRing  =   True
@@ -3274,7 +3274,7 @@ Begin DesktopWindow Editor
          TabIndex        =   21
          TabPanelIndex   =   1
          TabStop         =   True
-         Text            =   "OS:"
+         Text            =   "PM:"
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
@@ -3284,7 +3284,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   28
       End
-      Begin DesktopComboBox ComboOS
+      Begin DesktopComboBox ComboPM
          AllowAutoComplete=   False
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
@@ -3297,7 +3297,7 @@ Begin DesktopWindow Editor
          Hint            =   ""
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
-         InitialValue    =   "ComboOS"
+         InitialValue    =   "ComboPM"
          Italic          =   False
          Left            =   50
          LockBottom      =   False
@@ -3544,7 +3544,7 @@ Begin DesktopWindow Editor
          Hint            =   ""
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
-         InitialValue    =   "ComboArch"
+         InitialValue    =   "x86\nx64\nARM"
          Italic          =   False
          Left            =   50
          LockBottom      =   False
@@ -3769,7 +3769,7 @@ Begin DesktopWindow Editor
          TabIndex        =   33
          TabPanelIndex   =   1
          TabStop         =   True
-         Text            =   "Desktop Environment, OS, Hardware:-"
+         Text            =   "Desktop Environment, Package Manager, Hardware:-"
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
@@ -5261,6 +5261,13 @@ End
 
 	#tag Method, Flags = &h0
 		Sub PopulateData()
+		  Dim BT As String
+		  Dim F As FolderItem
+		  Dim I As Integer
+		  
+		  BT = ItemLLItem.BuildType
+		  
+		  'Main Window 1 - General
 		  TextTitle.Text = ItemLLItem.TitleName
 		  TextVersion.Text = ItemLLItem.Version
 		  TextURLs.Text = ItemLLItem.URL.ReplaceAll("|", Chr(13))
@@ -5276,12 +5283,129 @@ End
 		  CheckHideInLauncher.Value = ItemLLItem.HideInLauncher
 		  TextDescription.Text = ItemLLItem.Descriptions.ReplaceAll(Chr(30), Chr(13))
 		  
+		  
+		  'Load in Combo's
+		  'SysAvailableDesktops
+		  ComboDE.RemoveAllRows
+		  For I = 0 To SysAvailableDesktops.Count-1
+		    ComboDE.AddRow(SysAvailableDesktops(I))
+		  Next
+		  ComboDE.SelectedRowIndex = 0 'All Default
+		  
+		  'SysAvailablePackageManagers
+		  ComboPM.RemoveAllRows
+		  For I = 0 To SysAvailablePackageManagers.Count-1
+		    ComboPM.AddRow(SysAvailablePackageManagers(I))
+		  Next
+		  ComboPM.SelectedRowIndex = 0 'All Default
+		  
+		  'SysAvailableArchitectures
+		  ComboArch.RemoveAllRows
+		  For I = 0 To SysAvailableArchitectures.Count-1
+		    ComboArch.AddRow(SysAvailableArchitectures(I))
+		  Next
+		  ComboArch.SelectedRowIndex = 0 'All Default
+		  
+		  
+		  'Main Window 2 - Links
+		  ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
+		  If LnkCount >= 1 Then
+		    For I = 1 To LnkCount
+		      'If ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue 'Skip dual arch shortcuts, just keep 1st one, which is usually x64 anyway
+		      'If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#1}") >= 1 Then Continue ' Only skip replacing items if the items isn't the x64 one
+		      'If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue ' Only skip replacing items if the 2nd items isn't the x64 one
+		      '
+		      'ItemLnk(I).Title = ItemLnk(I).Title.ReplaceAll("{#2}", "") 'Remove Dual Arch leftovers
+		      'ItemLnk(I).Title = ItemLnk(I).Title.ReplaceAll("{#1}", "") 'Remove Dual Arch leftovers
+		      'DesktopFile = ItemLnk(I).Title.ReplaceAll(" ", ".") + ".desktop" 'Remove Spaces and add .desktop back to file name
+		      '
+		      'ItemLnk(I).Icon = ExpPath(ItemLnk(I).Icon)
+		      
+		      ComboShortcut.AddRow(ItemLnk(I).Title)
+		      'If I = 1 Then ComboShortcut.Text = ItemLnk(I).Title 'Change the Combo Text to the First items text
+		    Next
+		    ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
+		  End If
+		  
+		  'Main Window 3 - Assembly
+		  TextInstallToFolder.Text = CompPath(ItemLLItem.PathApp, True)
+		  TextAssembly.Text = ItemLLItem.Assembly.ReplaceAll(Chr(30), Chr(13)) ' Try 13 first as 10 was off before
+		  
+		  'Main Window 4 - Post-Processing
+		  If Exist(Slash(ItemTempPath)+"LLScript.sh") Then TextUserScript.Text = LoadDataFromFile(Slash(ItemTempPath)+"LLScript.sh")
+		  If Exist(Slash(ItemTempPath)+BT+".cmd") Then TextUserScript.Text = LoadDataFromFile(Slash(ItemTempPath)+BT+".cmd")
+		  
+		  If Exist(Slash(ItemTempPath)+"LLScript_Sudo.sh") Then TextSudoScript.Text = LoadDataFromFile(Slash(ItemTempPath)+"LLScript_Sudo.sh")
+		  If Exist(Slash(ItemTempPath)+BT+".reg") Then TextSudoScript.Text = LoadDataFromFile(Slash(ItemTempPath)+BT+".reg")
+		  
+		  'Main Window 5 - Graphics
+		  If Exist(Slash(ItemTempPath)+BT+".jpg") Then
+		    F = GetFolderItem(Slash(ItemTempPath)+BT+".jpg",FolderItem.PathTypeShell)
+		    CanvasScreenshot.Backdrop = Picture.Open (F)
+		  End If
+		  
+		  If Exist(Slash(ItemTempPath)+BT+".ico") Then
+		    F = GetFolderItem(Slash(ItemTempPath)+BT+".ico",FolderItem.PathTypeShell)
+		    CanvasIcon.Backdrop = Picture.Open (F)
+		  End If
+		  
+		  If Exist(Slash(ItemTempPath)+BT+".svg") Then
+		    F = GetFolderItem(Slash(ItemTempPath)+BT+".svg",FolderItem.PathTypeShell)
+		    CanvasIcon.Backdrop = Picture.Open (F)
+		  End If
+		  
+		  If Exist(Slash(ItemTempPath)+BT+".png") Then
+		    F = GetFolderItem(Slash(ItemTempPath)+BT+".png",FolderItem.PathTypeShell)
+		    CanvasFader.Backdrop = Picture.Open (F)
+		  End If
+		  
+		  TextMovieFile.Text = ItemLLItem.FileMovie
+		  
+		  'Main Window 6 - MetaData
+		  TextTags.Text = ItemLLItem.Tags
+		  TextPublisher.Text = ItemLLItem.Publisher
+		  TextLanguage.Text = ItemLLItem.Language
+		  TextRating.Text = ItemLLItem.Rating.ToString
+		  TextPlayers.Text = ItemLLItem.Players.ToString
+		  
+		  ComboLicense.Text = ItemLLItem.License.ToString 'Fix this to show right one
+		  
+		  TextReleaseVersion.Text = ItemLLItem.ReleaseVersion
+		  TextReleaseDate.Text = ItemLLItem.ReleaseDate
+		  TextBuilder.Text = ItemLLItem.Builder
+		  TextInstalledSize.Text = ItemLLItem.InstallSize.ToString
+		  
+		  'Main Window 7 - Build Tab
+		  TextIncludeFolder.Text = ItemTempPath 'Fix to use correct path depending on job
+		  
+		  TextBuildToFolder.Text = ItemTempPath 'Fix to use correct path depending on job
+		  
 		End Sub
 	#tag EndMethod
 
 
 #tag EndWindowCode
 
+#tag Events ComboShortcut
+	#tag Event
+		Sub SelectionChanged(item As DesktopMenuItem)
+		  TextComment.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Comment '+1 because it's 0 based
+		  TextExecute.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Exec
+		  TextRunInPath.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).RunPath
+		  TextIcon.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Icon
+		  TextFileTypes.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Associations
+		  TextDescriptionLink.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Description.ReplaceAll(Chr(30), Chr(13)) '13 instead of 10 for Text Areas
+		  CheckRunInTerminal.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Terminal
+		  CheckShowDesktop.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Desktop
+		  CheckShowPanel.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Panel
+		  CheckShowFavorites.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Favorite
+		  
+		  TextFlags.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Flags
+		  
+		  TextMenuCatalog.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Categories.ReplaceAll(" ", Chr(13)) 'Make Multi Line, not ; seperated
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag ViewBehavior
 	#tag ViewProperty
 		Name="Name"
