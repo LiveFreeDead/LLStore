@@ -334,7 +334,15 @@ End
 	#tag EndEvent
 
 	#tag Event
+		Sub Closing()
+		  Debug("-- Data Closed")
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Opening()
+		  Debug("-- Data Opening")
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  ClearData
 		End Sub
 	#tag EndEvent
@@ -434,56 +442,6 @@ End
 		  LocalDB.ColumnCount = CurrentColumn
 		  LocalDB.InitialValue = ColumnsTitle
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function FixCatalog(CatIn As String) As String
-		  CatIn = CatIn.ReplaceAll("Games"+Chr(92), "")
-		  CatIn = CatIn.ReplaceAll("Gamess", "Games")
-		  CatIn = CatIn.ReplaceAll("|", "; ")
-		  CatIn = CatIn.Trim
-		  If Right (CatIn,1) <>";" Then CatIn=CatIn+";"
-		  CatIn = CatIn.ReplaceAll("Games;", "Game;")
-		  If Left(CatIn, 6) = "Game; " Then CatIn = Right (CatIn, Len(CatIn) -6) 'Remove Game; from the start so looks nicer in the MetaData fields, Gets Added to end below too
-		  If Left(CatIn, 5) = "Game " Then CatIn = Right (CatIn, Len(CatIn) -5) 'Remove Game  from the start of some cats (Not sure what adds them, but take them out)
-		  CatIn = CatIn.ReplaceAll("  ", " ") 'Remove Double Spaces
-		  
-		  CatIn = CatIn.ReplaceAll("First-Person Shooter", "FirstPersonShooter")
-		  CatIn = CatIn.ReplaceAll("Third-Person Shooter", "ThirdPersonShooter")
-		  CatIn = CatIn.ReplaceAll("Hidden Object", "HiddenObject")
-		  CatIn = CatIn.ReplaceAll("Role Playing", "RolePlaying")
-		  CatIn = CatIn.ReplaceAll("RollPlaying", "RolePlaying")
-		  CatIn = CatIn.ReplaceAll("Racing-Driving", "Racing; Driving")
-		  CatIn = CatIn.ReplaceAll("Tower Defense", "TowerDefense")
-		  CatIn = CatIn.ReplaceAll("Farming & Crafting", "Farming; Crafting")
-		  
-		  Return CatIn
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function FixGameCats(CatIn As String) As String
-		  CatIn = CatIn.ReplaceAll("Games"+Chr(92), "")
-		  CatIn = CatIn.ReplaceAll("Gamess", "Games")
-		  CatIn = CatIn.ReplaceAll("|", "; ")
-		  CatIn = CatIn.Trim
-		  If Right (CatIn,1) <>";" Then CatIn=CatIn+";"
-		  CatIn = CatIn.ReplaceAll("Games;", "Game;")
-		  If Left(CatIn, 6) = "Game; " Then CatIn = Right (CatIn, Len(CatIn) -6) 'Remove Game; from the start so looks nicer in the MetaData fields, Gets Added to end below too
-		  If Left(CatIn, 5) = "Game " Then CatIn = Right (CatIn, Len(CatIn) -5) 'Remove Game  from the start of some cats (Not sure what adds them, but take them out)
-		  CatIn = CatIn.ReplaceAll("  ", " ") 'Remove Double Spaces
-		  
-		  CatIn = CatIn.ReplaceAll("First-Person Shooter", "FirstPersonShooter")
-		  CatIn = CatIn.ReplaceAll("Third-Person Shooter", "ThirdPersonShooter")
-		  CatIn = CatIn.ReplaceAll("Hidden Object", "HiddenObject")
-		  CatIn = CatIn.ReplaceAll("Role Playing", "RolePlaying")
-		  CatIn = CatIn.ReplaceAll("RollPlaying", "RolePlaying")
-		  CatIn = CatIn.ReplaceAll("Racing-Driving", "Racing; Driving")
-		  CatIn = CatIn.ReplaceAll("Tower Defense", "TowerDefense")
-		  CatIn = CatIn.ReplaceAll("Farming & Crafting", "Farming; Crafting")
-		  
-		  Return CatIn
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

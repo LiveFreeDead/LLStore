@@ -628,6 +628,20 @@ End
 		End Function
 	#tag EndEvent
 
+	#tag Event
+		Sub Closing()
+		  Debug("-- Settings Closed")
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub Opening()
+		  Debug("-- Settings Opening")
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
+		  
+		End Sub
+	#tag EndEvent
+
 
 #tag EndWindowCode
 

@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,10 +65,17 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
+      RunMode         =   0
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
+   Begin Timer VeryFirstRunTimer
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Period          =   1
       RunMode         =   0
       Scope           =   0
       TabPanelIndex   =   0
@@ -81,276 +87,26 @@ End
 	#tag Event
 		Function CancelClosing(appQuitting As Boolean) As Boolean
 		  If ForceQuit = False Then
-		    Me.Hide
-		    Return True
+		    Loading.Hide
+		    QuitApp
+		    Return False
 		  Else
-		    DebugOutput.Flush ' Actually Write to file after each thing
-		    DebugOutput.Close 'Close File when quiting
-		    If Debugging Then Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_Debug.txt") 'Copy Debug to Desktop
-		    Quit 'Just dump everything ,Loading is the last form we shut and does this step
 		    Return False
 		  End If
 		End Function
 	#tag EndEvent
 
 	#tag Event
+		Sub Closing()
+		  Debug("-- Loading Closed")
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Opening()
-		  ForceQuit = True 'Enable this when I can so you can close the loading screen to quit the app, else it opens without the loading form
+		  Debug("-- Loading Opening")
 		  
-		  
-		  'Get Consts
-		  If TargetLinux Then
-		    SysDesktopEnvironment = System.EnvironmentVariable("XDG_SESSION_DESKTOP").Lowercase
-		    SysPackageManager = ""
-		    SysTerminal = ""
-		  Else
-		    SysDesktopEnvironment = "explorer" 'Windows only uses Explorer
-		    SysPackageManager = ""
-		    SysTerminal = "cmd "
-		  End If
-		  
-		  SysAvailableDesktops = Array("All","Cinnamon","Gnome","KDE","LXDE","Mate","Unity","XFCE")
-		  SysAvailablePackageManagers = Array("apt","apk","dnf","emerge","pacman","zypper")
-		  SysAvailableArchitectures = Array("x86","x64","arm")
-		  
-		  'MsgBox  SysDesktopEnvironment
-		  
-		  Dim F As FolderItem
-		  Dim TI As TextInputStream
-		  Dim S As String
-		  
-		  Randomiser = New Random 'This Randomizes the timer, to make it truely random
-		  
-		  'Some of my Shell calls use this for speed and less code, it waits for the command to complete before code continues though, so will tie up the main thread.
-		  ShellFast = New Shell ' Just do this once to see if it speeds up loading using the one shell for 7z each time
-		  ShellFast.TimeOut = -1 'Give it All the time it needs
-		  
-		  'Sudo Shell Loop waits forever to run Sudo Tasks without needing to type password constantly
-		  SudoShellLoop = New Shell 'Keep the admin shell running /looping until you quit LLStore
-		  SudoShellLoop.TimeOut = -1 'Give it All the time it needs
-		  SudoShellLoop.ExecuteMode = Shell.ExecuteModes.Asynchronous ' Runs in background
-		  
-		  'Get App Paths
-		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
-		  AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
-		  AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE
-		  AppPath = Replace(AppPath,"Debugllstore\","") 'Use correct path when running from IDE in Windows
-		  
-		  If TargetWindows Then 'Need to add Windows ppGames and Apps drives here
-		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
-		    RepositoryPathLocal = Slash(HomePath) + "zLastOSRepository/"
-		    TmpPath =  Slash(HomePath) + "LLTemp/"
-		    
-		    'C: for Defaults, only changes if one found to replace with
-		    ppGames = "C:/ppGames/"
-		    ppApps = "C:/ppApps/"
-		    
-		    'Get Default Paths
-		    LLStoreDrive = Left (AppPath, 2)
-		    SysProgramFiles = ReplaceAll(GetLongPath(System.EnvironmentVariable("PROGRAMFILES")), " (x86)", "")
-		    SysDrive = Lowercase(System.EnvironmentVariable("SYSTEMDRIVE"))
-		    SysRoot = GetLongPath(System.EnvironmentVariable("SYSTEMROOT"))
-		    ToolPath = Slash(Slash(AppPath) +"Tools")
-		  Else
-		    HasLinuxSudo = True 'Default to true so it can call it
-		    
-		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
-		    RepositoryPathLocal = Slash(HomePath) + "zLastOSRepository/"
-		    TmpPath =  Slash(HomePath) + ".lltemp/"
-		    ppGames = Slash(HomePath)+".wine/drive_c/ppGames/"
-		    ppApps = Slash(HomePath)+".wine/drive_c/ppApps/"
-		    
-		    'Get Default Paths
-		    LLStoreDrive = "" 'Drive not used by linux
-		    SysProgramFiles = "C:/Program Files/"
-		    SysDrive = "C:"
-		    SysRoot = "C:/Windows/"
-		    ToolPath = Slash(Slash(AppPath) +"Tools")
-		    ShellFast.Execute(Slash(AppPath)+"Tools/DefaultTerminal.sh")
-		    SysTerminal = ShellFast.Result
-		  End If
-		  
-		  If TargetWindows Then
-		    StartPathAll = Slash(FixPath(SpecialFolder.SharedApplicationData.NativePath)) + "Microsoft/Windows/Start Menu/Programs/" 'All Users
-		    StartPathUser = Slash(FixPath(SpecialFolder.ApplicationData.NativePath)) + "Microsoft/Windows/Start Menu/Programs/" 'Current User
-		  End If
-		  
-		  'Get ppDrives
-		  If TargetWindows Then ' Get the real drives with ppApps/Games etc
-		    'Get ppApps and ppGames Default Install locations
-		    Try
-		      F = GetFolderItem(SysRoot + "/ppAppDrive.ini", FolderItem.PathTypeShell)
-		      If F <> Nil And F.Exists Then
-		        TI = TextInputStream.Open(F)
-		        S = Trim(Left(TI.ReadLine, 2))
-		        ppAppsDrive = S
-		        TI.Close
-		      Else
-		        'If LivePE Then ppAppsDrive = SysDrive 'Setting to thie within the LivePE will make all items shown (Ignores if Installed)
-		      End If
-		    Catch
-		    End Try
-		    
-		    Try
-		      F = GetFolderItem(SysRoot + "/ppGameDrive.ini", FolderItem.PathTypeShell)
-		      If F <> Nil And F.Exists Then
-		        TI = TextInputStream.Open(F)
-		        S = Trim(Left(TI.ReadLine, 2))
-		        ppGamesDrive = S
-		        TI.Close
-		      Else
-		        'If LivePE Then ppGamesDrive = SysDrive 'Setting to thie within the LivePE will make all items shown (Ignores if Installed)
-		      End If
-		    Catch
-		    End Try
-		    
-		    If ppAppsDrive = "" Then 'If not set in Above file then scan for existing ones if not in LivePE
-		      ppAppsDrive = SysDrive 'Just in case none exist
-		      ppAppsDrive = GetExistingppFolder("ppApps")
-		    End If
-		    If ppGamesDrive = "" Then 'If not set in Above file then scan for existing ones if not in LivePE
-		      ppGamesDrive = SysDrive 'Just in case none exist
-		      ppGamesDrive = GetExistingppFolder("ppGames")
-		    End If
-		    
-		    ppAppsFolder = ppAppsDrive + "/ppApps/"
-		    ppGamesFolder = ppGamesDrive + "/ppGames/"
-		  Else 'Linux defaults
-		    ppAppsDrive = Slash(HomePath)+".wine/drive_c/"
-		    ppGamesDrive = Slash(HomePath)+".wine/drive_c/"
-		    ppAppsFolder = Slash(HomePath)+".wine/drive_c/ppApps/"
-		    ppGamesFolder = Slash(HomePath)+".wine/drive_c/ppGames/"
-		  End If
-		  
-		  'Make All paths Linux, because they work in Linux and Windows (Except for Move, Copy and Deltree etc)
-		  AppPath = AppPath.ReplaceAll("\","/")
-		  ToolPath = ToolPath.ReplaceAll("\","/")
-		  HomePath = HomePath.ReplaceAll("\","/")
-		  RepositoryPathLocal = Slash(RepositoryPathLocal.ReplaceAll("\","/"))
-		  TmpPath = TmpPath.ReplaceAll("\","/")
-		  ppGames = ppGames.ReplaceAll("\","/")
-		  ppApps = ppApps.ReplaceAll("\","/")
-		  SysProgramFiles = SysProgramFiles.ReplaceAll("\","/")
-		  
-		  ppAppsDrive = ppAppsDrive.ReplaceAll("\","/")
-		  ppGamesDrive = ppGamesDrive.ReplaceAll("\","/")
-		  
-		  ppAppsFolder = ppAppsFolder.ReplaceAll("\","/")
-		  ppGamesFolder = ppGamesFolder.ReplaceAll("\","/")
-		  
-		  'Set the folders
-		  ppApps = ppAppsFolder
-		  ppGames = ppGamesFolder
-		  
-		  Linux7z = ToolPath + "7zzs"
-		  LinuxWget = ToolPath + "wget"
-		  Win7z = ToolPath + "7z.exe"
-		  WinWget = ToolPath + "wget.exe"
-		  
-		  
-		  'Clean Temp folders
-		  CleanTemp 'Clearing LLTemp folder entirly
-		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
-		  
-		  'Make Temp Folder
-		  MakeFolder (TmpPath)
-		  
-		  'Make Local paths and Debug File
-		  #Pragma BreakOnExceptions Off
-		  F = GetFolderItem(Slash(RepositoryPathLocal)+".lldb", FolderItem.PathTypeShell)
-		  If Not F.Exists Then
-		    Try 
-		      MakeFolder(F.NativePath)
-		    Catch
-		    End Try
-		  End If
-		  
-		  'Debug
-		  Try
-		    DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
-		    If Exist(Slash(TmpPath)+"DebugLog.txt") Then
-		      Deltree(Slash(TmpPath)+"DebugLog.txt")
-		      DebugOutput = TextOutputStream.open(DebugFile)
-		    Else
-		      DebugOutput = TextOutputStream.Create(DebugFile)
-		    end if
-		  Catch
-		    Debugging = False
-		  End Try
-		  
-		  If Debugging Then Debug("Starting Up")
-		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
-		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
-		  
-		  #Pragma BreakOnExceptions On
-		  
-		  'Set Default Settings, these get replaced by the loading of Settings, but we need defaults when there isn't one
-		  Settings.SetFlatpakAsUser.Value = True
-		  
-		  'Centre Form
-		  self.Left = (screen(0).AvailableWidth - self.Width) / 2
-		  self.top = (screen(0).AvailableHeight - self.Height) / 2
-		  
-		  'Check the Arguments here and don't show if installer mode or editor etc
-		  Dim Args As String
-		  Args = System.CommandLine
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore")-7)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
-		  
-		  'MsgBox Args
-		  Dim I As Integer
-		  Dim ArgsSP(-1) As String
-		  ArgsSP=System.CommandLine.ToArray(" ")
-		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore
-		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
-		  Next
-		  
-		  'Example of Try event captured
-		  'MsgBox Str(Args().Count)
-		  Try
-		    'MsgBox Args(0)
-		    'MsgBox Args(1)
-		    'MsgBox Args(2)
-		    'MsgBox Args(3)
-		    'MsgBox System.CommandLine
-		  Catch
-		  End Try
-		  
-		  Dim RL As String
-		  
-		  'Get theme
-		  #Pragma BreakOnExceptions Off
-		  Try
-		    If StoreMode = 0 Then
-		      ThemePath = AppPath+"Themes/Theme.ini"
-		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		      InputStream = TextInputStream.Open(F)
-		      RL = InputStream.ReadLine.Trim
-		      inputStream.Close
-		      ThemePath = AppPath+"Themes/"+RL+"/"
-		      LoadTheme (RL)
-		      Loading.Visible = True 'Show the loading form here
-		    ElseIf StoreMode = 1 Then
-		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
-		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		      InputStream = TextInputStream.Open(F)
-		      RL = InputStream.ReadLine.Trim
-		      inputStream.Close
-		      ThemePath = AppPath+"Themes/"+RL+"/"
-		      LoadTheme (RL)
-		    End If
-		  Catch
-		    'No Theme files found
-		  End Try
-		  #Pragma BreakOnExceptions On
-		  
-		  'Load Settings
-		  LoadSettings
-		  
-		  'Using a timer at the end of Form open allows it to display, many events hold off other processes until the complete
-		  FirstRunTime.RunMode = Timer.RunModes.Single
-		  
-		  
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
 	#tag EndEvent
 
@@ -448,11 +204,11 @@ End
 		    End If
 		    
 		    'These Flags allow it to Quit after the update without rescanning when another timer triggers
-		    ForceQuit = True
+		    'ForceQuit = True
 		    Quitting = True
-		    Main.Close
-		    Quit 'While testing and if Updated successfully (Bootstrap)
-		    
+		    'Main.Close
+		    QuitApp
+		    Return
 		  Else ' Continue starting up
 		    
 		  End If
@@ -1152,7 +908,7 @@ End
 		    Next
 		  End If
 		  
-		  ForceQuit = True
+		  'ForceQuit = True ' Not using this method anymore, it's too recursive
 		End Sub
 	#tag EndMethod
 
@@ -2043,65 +1799,72 @@ End
 #tag Events FirstRunTime
 	#tag Event
 		Sub Action()
-		  ForceQuit = True
-		  
 		  'This disables errors from breaking/debugging in the IDE, disable to debug
 		  '# Pragma BreakOnExceptions False
 		  
 		  'Check If Admin Mode
-		  If FirstRun = False Then 'Only check it the first run, else you already quit or decided to run without admin
-		    Quitting = False
-		    If TargetWindows Then
-		      If StoreMode = 0 Then 'If Install Mode then check has Admin
-		        If IsAdmin = False Then
-		          Dim LLStoreAppExe As FolderItem
-		          LLStoreAppExe = App.ExecutableFile
-		          If InStr(LLStoreAppExe.NativePath, "Debugllstore.exe") <= 0 Then 'Don't request Admin if debugging code
-		            
-		            Dim RetVal as Boolean
-		            RetVal = ShellExecuteEx(SEE_MASK_NOCLOSEPROCESS, _
-		            0, _ //Window handle
-		            StringToMB("runas"), _ //Operation to perform
-		            StringToMB(LLStoreAppExe.NativePath), _ //Application path and name
-		            StringToMB(System.CommandLine), _ //Additional parameters
-		            StringToMB(LLStoreAppExe.Parent.NativePath), _ //Working Directory
-		            SW_SHOWNORMAL, _
-		            0, _
-		            Nil, _
-		            Nil, _
-		            0, _
-		            0, _
-		            0, _
-		            0)
-		            
-		            Loading.Show
-		            App.DoEvents(1)
-		            
-		            If RetVal = False Then 'If denied UAC it will be false
-		              Dim Ret As Integer
-		              If StoreMode = 0 Then Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
-		              If Ret = 7 Then
+		  If RunningInIDE = False Then
+		    If FirstRun = False Then 'Only check it the first run, else you already quit or decided to run without admin
+		      Quitting = False
+		      If TargetWindows Then
+		        If StoreMode = 0 Then 'If Install Mode then check has Admin
+		          If IsAdmin = False Then
+		            Dim LLStoreAppExe As FolderItem
+		            LLStoreAppExe = App.ExecutableFile
+		            If InStr(LLStoreAppExe.NativePath, "Debugllstore.exe") <= 0 Then 'Don't request Admin if debugging code
+		              
+		              Dim RetVal as Boolean
+		              RetVal = ShellExecuteEx(SEE_MASK_NOCLOSEPROCESS, _
+		              0, _ //Window handle
+		              StringToMB("runas"), _ //Operation to perform
+		              StringToMB(LLStoreAppExe.NativePath), _ //Application path and name
+		              StringToMB(System.CommandLine), _ //Additional parameters
+		              StringToMB(LLStoreAppExe.Parent.NativePath), _ //Working Directory
+		              SW_SHOWNORMAL, _
+		              0, _
+		              Nil, _
+		              Nil, _
+		              0, _
+		              0, _
+		              0, _
+		              0)
+		              
+		              Loading.Show
+		              App.DoEvents(1)
+		              
+		              If RetVal = False Then 'If denied UAC it will be false
+		                Dim Ret As Integer
+		                If StoreMode = 0 Then Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
+		                If Ret = 7 Then
+		                  ForceQuit = True
+		                  Quitting = True
+		                  QuitApp
+		                  'Return
+		                End If
+		              Else
 		                ForceQuit = True
 		                Quitting = True
-		                Main.Close
+		                QuitApp
+		                'Return
 		              End If
-		            Else
-		              ForceQuit = True
-		              Quitting = True
-		              Main.Close
 		            End If
+		            
 		          End If
-		          
 		        End If
 		      End If
+		      
+		      If TargetWindows Then 'Make sure this only happens in Windows or makes random file called %WinDir%...
+		        If IsAdmin = True Then AdminEnabled = True
+		      End If
 		    End If
-		    
-		    If Quitting = True Then Quit ' Make sure nothing happens
+		  End If 'End of Check Admin
+		  
+		  If Quitting = True Then
+		    ForceQuit = True
+		    QuitApp
+		    Return ' If gets here then just return
 		  End If
 		  
-		  If TargetWindows Then 'Make sure this only happens in Windows or makes random file called %WinDir%...
-		    If IsAdmin = True Then AdminEnabled = True
-		  End If
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
@@ -2146,7 +1909,7 @@ End
 		    'Quit
 		    
 		    'Check For Updates
-		    If Settings.SetCheckForUpdates.Value = True Then
+		    If Settings.SetCheckForUpdates.Value = True And RunningInIDE = False Then
 		      Loading.Status.Text = "Check For Store Updates..."
 		      Loading.Refresh
 		      App.DoEvents(1)
@@ -2220,7 +1983,7 @@ End
 		    HideOldVersions
 		    
 		    'Check If Items Are Installed
-		    Loading.Status.Text = "Checking For Installed Iems..."
+		    Loading.Status.Text = "Checking For Installed Items..."
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    CheckInstalled
@@ -2506,6 +2269,305 @@ End
 		      ShowDownloadImages
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events VeryFirstRunTimer
+	#tag Event
+		Sub Action()
+		  App.AllowAutoQuit = True 'Makes it close if no windows are open
+		  
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
+		  
+		  VeryFirstRunTimer.RunMode = Timer.RunModes.Off ' Disable this timer again
+		  
+		  'Disabled this as it's dodgy, use QuitApp Now
+		  'ForceQuit = True 'Enable this when I can so you can close the loading screen to quit the app, else it opens without the loading form
+		  
+		  'Get Consts
+		  If TargetLinux Then
+		    SysDesktopEnvironment = System.EnvironmentVariable("XDG_SESSION_DESKTOP").Lowercase
+		    SysPackageManager = ""
+		    SysTerminal = ""
+		  Else
+		    SysDesktopEnvironment = "explorer" 'Windows only uses Explorer
+		    SysPackageManager = ""
+		    SysTerminal = "cmd "
+		  End If
+		  
+		  SysAvailableDesktops = Array("All","Cinnamon","Gnome","KDE","LXDE","Mate","Unity","XFCE")
+		  SysAvailablePackageManagers = Array("apt","apk","dnf","emerge","pacman","zypper")
+		  SysAvailableArchitectures = Array("x86","x64","arm")
+		  
+		  'MsgBox  SysDesktopEnvironment
+		  
+		  Dim F As FolderItem
+		  Dim TI As TextInputStream
+		  Dim S As String
+		  Dim Success As Boolean
+		  Dim OldAppPath As String
+		  
+		  Randomiser = New Random 'This Randomizes the timer, to make it truely random
+		  
+		  'Some of my Shell calls use this for speed and less code, it waits for the command to complete before code continues though, so will tie up the main thread.
+		  ShellFast = New Shell ' Just do this once to see if it speeds up loading using the one shell for 7z each time
+		  ShellFast.TimeOut = -1 'Give it All the time it needs
+		  
+		  'Sudo Shell Loop waits forever to run Sudo Tasks without needing to type password constantly
+		  SudoShellLoop = New Shell 'Keep the admin shell running /looping until you quit LLStore
+		  SudoShellLoop.TimeOut = -1 'Give it All the time it needs
+		  SudoShellLoop.ExecuteMode = Shell.ExecuteModes.Asynchronous ' Runs in background
+		  
+		  'Get App Paths
+		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
+		  AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
+		  OldAppPath = AppPath
+		  AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE
+		  AppPath = Replace(AppPath,"Debugllstore\","") 'Use correct path when running from IDE in Windows
+		  
+		  If AppPath <> OldAppPath Then RunningInIDE = True ' Found Debug executable, meaning in IDE
+		  
+		  If TargetWindows Then 'Need to add Windows ppGames and Apps drives here
+		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
+		    RepositoryPathLocal = Slash(HomePath) + "zLastOSRepository/"
+		    TmpPath =  Slash(HomePath) + "LLTemp/"
+		    
+		    'C: for Defaults, only changes if one found to replace with
+		    ppGames = "C:/ppGames/"
+		    ppApps = "C:/ppApps/"
+		    
+		    'Get Default Paths
+		    LLStoreDrive = Left (AppPath, 2)
+		    SysProgramFiles = ReplaceAll(GetLongPath(System.EnvironmentVariable("PROGRAMFILES")), " (x86)", "")
+		    SysDrive = Lowercase(System.EnvironmentVariable("SYSTEMDRIVE"))
+		    SysRoot = GetLongPath(System.EnvironmentVariable("SYSTEMROOT"))
+		    ToolPath = Slash(Slash(AppPath) +"Tools")
+		  Else
+		    HasLinuxSudo = True 'Default to true so it can call it
+		    
+		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
+		    RepositoryPathLocal = Slash(HomePath) + "zLastOSRepository/"
+		    TmpPath =  Slash(HomePath) + ".lltemp/"
+		    ppGames = Slash(HomePath)+".wine/drive_c/ppGames/"
+		    ppApps = Slash(HomePath)+".wine/drive_c/ppApps/"
+		    
+		    'Get Default Paths
+		    LLStoreDrive = "" 'Drive not used by linux
+		    SysProgramFiles = "C:/Program Files/"
+		    SysDrive = "C:"
+		    SysRoot = "C:/Windows/"
+		    ToolPath = Slash(Slash(AppPath) +"Tools")
+		    ShellFast.Execute(Slash(AppPath)+"Tools/DefaultTerminal.sh")
+		    SysTerminal = ShellFast.Result
+		  End If
+		  
+		  If TargetWindows Then
+		    StartPathAll = Slash(FixPath(SpecialFolder.SharedApplicationData.NativePath)) + "Microsoft/Windows/Start Menu/Programs/" 'All Users
+		    StartPathUser = Slash(FixPath(SpecialFolder.ApplicationData.NativePath)) + "Microsoft/Windows/Start Menu/Programs/" 'Current User
+		  End If
+		  
+		  'Get ppDrives
+		  If TargetWindows Then ' Get the real drives with ppApps/Games etc
+		    'Get ppApps and ppGames Default Install locations
+		    Try
+		      F = GetFolderItem(SysRoot + "/ppAppDrive.ini", FolderItem.PathTypeShell)
+		      If F <> Nil And F.Exists Then
+		        TI = TextInputStream.Open(F)
+		        S = Trim(Left(TI.ReadLine, 2))
+		        ppAppsDrive = S
+		        TI.Close
+		      Else
+		        'If LivePE Then ppAppsDrive = SysDrive 'Setting to thie within the LivePE will make all items shown (Ignores if Installed)
+		      End If
+		    Catch
+		    End Try
+		    
+		    Try
+		      F = GetFolderItem(SysRoot + "/ppGameDrive.ini", FolderItem.PathTypeShell)
+		      If F <> Nil And F.Exists Then
+		        TI = TextInputStream.Open(F)
+		        S = Trim(Left(TI.ReadLine, 2))
+		        ppGamesDrive = S
+		        TI.Close
+		      Else
+		        'If LivePE Then ppGamesDrive = SysDrive 'Setting to thie within the LivePE will make all items shown (Ignores if Installed)
+		      End If
+		    Catch
+		    End Try
+		    
+		    If ppAppsDrive = "" Then 'If not set in Above file then scan for existing ones if not in LivePE
+		      ppAppsDrive = SysDrive 'Just in case none exist
+		      ppAppsDrive = GetExistingppFolder("ppApps")
+		    End If
+		    If ppGamesDrive = "" Then 'If not set in Above file then scan for existing ones if not in LivePE
+		      ppGamesDrive = SysDrive 'Just in case none exist
+		      ppGamesDrive = GetExistingppFolder("ppGames")
+		    End If
+		    
+		    ppAppsFolder = ppAppsDrive + "/ppApps/"
+		    ppGamesFolder = ppGamesDrive + "/ppGames/"
+		  Else 'Linux defaults
+		    ppAppsDrive = Slash(HomePath)+".wine/drive_c/"
+		    ppGamesDrive = Slash(HomePath)+".wine/drive_c/"
+		    ppAppsFolder = Slash(HomePath)+".wine/drive_c/ppApps/"
+		    ppGamesFolder = Slash(HomePath)+".wine/drive_c/ppGames/"
+		  End If
+		  
+		  'Make All paths Linux, because they work in Linux and Windows (Except for Move, Copy and Deltree etc)
+		  AppPath = AppPath.ReplaceAll("\","/")
+		  ToolPath = ToolPath.ReplaceAll("\","/")
+		  HomePath = HomePath.ReplaceAll("\","/")
+		  RepositoryPathLocal = Slash(RepositoryPathLocal.ReplaceAll("\","/"))
+		  TmpPath = TmpPath.ReplaceAll("\","/")
+		  ppGames = ppGames.ReplaceAll("\","/")
+		  ppApps = ppApps.ReplaceAll("\","/")
+		  SysProgramFiles = SysProgramFiles.ReplaceAll("\","/")
+		  
+		  ppAppsDrive = ppAppsDrive.ReplaceAll("\","/")
+		  ppGamesDrive = ppGamesDrive.ReplaceAll("\","/")
+		  
+		  ppAppsFolder = ppAppsFolder.ReplaceAll("\","/")
+		  ppGamesFolder = ppGamesFolder.ReplaceAll("\","/")
+		  
+		  'Set the folders
+		  ppApps = ppAppsFolder
+		  ppGames = ppGamesFolder
+		  
+		  Linux7z = ToolPath + "7zzs"
+		  LinuxWget = ToolPath + "wget"
+		  Win7z = ToolPath + "7z.exe"
+		  WinWget = ToolPath + "wget.exe"
+		  
+		  
+		  'Clean Temp folders
+		  CleanTemp 'Clearing LLTemp folder entirly
+		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
+		  
+		  'Make Temp Folder
+		  MakeFolder (TmpPath)
+		  
+		  'Make Local paths and Debug File
+		  #Pragma BreakOnExceptions Off
+		  F = GetFolderItem(Slash(RepositoryPathLocal)+".lldb", FolderItem.PathTypeShell)
+		  If Not F.Exists Then
+		    Try 
+		      MakeFolder(F.NativePath)
+		    Catch
+		    End Try
+		  End If
+		  
+		  'Debug
+		  Try
+		    DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
+		    If Exist(Slash(TmpPath)+"DebugLog.txt") Then
+		      Deltree(Slash(TmpPath)+"DebugLog.txt")
+		      DebugOutput = TextOutputStream.open(DebugFile)
+		    Else
+		      DebugOutput = TextOutputStream.Create(DebugFile)
+		    end if
+		  Catch
+		    Debugging = False
+		  End Try
+		  
+		  If Debugging Then Debug("Starting Up")
+		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
+		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
+		  
+		  #Pragma BreakOnExceptions On
+		  
+		  'Set Default Settings, these get replaced by the loading of Settings, but we need defaults when there isn't one
+		  Settings.SetFlatpakAsUser.Value = True
+		  
+		  'Centre Form
+		  self.Left = (screen(0).AvailableWidth - self.Width) / 2
+		  self.top = (screen(0).AvailableHeight - self.Height) / 2
+		  
+		  'Check the Arguments here and don't show if installer mode or editor etc
+		  Dim Args As String
+		  Args = System.CommandLine
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore")-7)
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
+		  
+		  'MsgBox Args
+		  Dim I As Integer
+		  Dim ArgsSP(-1) As String
+		  ArgsSP=System.CommandLine.ToArray(" ")
+		  CommandLineFile = ""
+		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore
+		    If StoreMode = 3 Then
+		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
+		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
+		    End If
+		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
+		    If ArgsSP(I).Lowercase = "-edit" Then StoreMode = 3
+		  Next
+		  
+		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
+		  
+		  'Example of Try event captured
+		  'MsgBox Str(Args().Count)
+		  Try
+		    'MsgBox Args(0)
+		    'MsgBox Args(1)
+		    'MsgBox Args(2)
+		    'MsgBox Args(3)
+		    'MsgBox System.CommandLine
+		  Catch
+		  End Try
+		  
+		  Dim RL As String
+		  
+		  'Get theme
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    If StoreMode = 0 Then
+		      ThemePath = AppPath+"Themes/Theme.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		      Loading.Visible = True 'Show the loading form here
+		    ElseIf StoreMode = 1 Then
+		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		    End If
+		  Catch
+		    'No Theme files found
+		  End Try
+		  #Pragma BreakOnExceptions On
+		  
+		  'Load Settings
+		  LoadSettings
+		  
+		  'Editor Mode
+		  If StoreMode = 3 Then
+		    EditorOnly = True
+		    'MsgBox "Loading: " + CommandLineFile
+		    Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
+		    If Success Then 
+		      'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString
+		      'MsgBox ItemLLItem.TitleName
+		      Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		      Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		      Editor.PopulateData
+		      Editor.Show
+		    Else 'Failed to load item, just quit again
+		      QuitApp
+		      Return ' Just get out of here once set to quit
+		    End If
+		  End If
+		  
+		  'Using a timer at the end of Form open allows it to display, many events hold off other processes until the complete
+		  If StoreMode <=2 Then FirstRunTime.RunMode = Timer.RunModes.Single ' Only show the store in Installer or Launcher modes, else just quit?
+		  
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents

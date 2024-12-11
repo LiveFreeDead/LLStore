@@ -440,28 +440,21 @@ End
 
 #tag WindowCode
 	#tag Event
+		Function CancelClosing(appQuitting As Boolean) As Boolean
+		  If ForceQuit = False Then
+		    Main.Hide
+		    PreQuitApp
+		    QuitApp
+		    Return False
+		  Else
+		    Return False
+		  End If
+		End Function
+	#tag EndEvent
+
+	#tag Event
 		Sub Closing()
-		  Loading.SaveSettings
-		  
-		  ForceQuit = True
-		  'Clear Items List first, causes issues if tries to draw icons
-		  Items.RemoveAllRows
-		  App.DoEvents(1)
-		  
-		  'Close other forms
-		  Settings.Close
-		  Data.Close
-		  ScreenResolution.Close
-		  MiniInstaller.Close
-		  
-		  Main.Hide 'Hide form
-		  App.DoEvents(1) 'Make sure it hides
-		  
-		  'Clean Up Temp
-		  CleanTemp
-		  
-		  'Close Loading Last as it force Quits
-		  Loading.Close
+		  Debug("-- Main Closed")
 		End Sub
 	#tag EndEvent
 
@@ -613,6 +606,9 @@ End
 
 	#tag Event
 		Sub Opening()
+		  Debug("-- Main Opening")
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
+		  
 		  TitleLabel.Text = "LL Store v"+ Str(App.MajorVersion)+"."+Str(App.MinorVersion)+"."+Str(App.NonReleaseVersion)
 		  
 		  If TargetWindows Then TitleLabel.Text = TitleLabel.Text + " (Windows)"
@@ -922,6 +918,7 @@ End
 		  End If
 		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
+		  MC = MC + 1
 		  
 		  'Add to both
 		  base.Append New MenuItem("Re(Scan) for Items") '0
@@ -939,6 +936,7 @@ End
 		  
 		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
+		  MC = MC + 1
 		  
 		  'Last Item
 		  base.Append New MenuItem("&Settings") '0

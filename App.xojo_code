@@ -1,6 +1,27 @@
 #tag Class
 Protected Class App
 Inherits DesktopApplication
+	#tag Event
+		Function CancelClosing() As Boolean
+		  'MsgBox "Main App Closing?"
+		  'Return True
+		End Function
+	#tag EndEvent
+
+	#tag Event
+		Sub Closing()
+		  Debug("-- LLStore Closed")
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub Opening()
+		  Debug("-- LLStore Opening")
+		  Loading.VeryFirstRunTimer.RunMode = Timer.RunModes.Single ' Do it this way instead, might fix quit bug
+		End Sub
+	#tag EndEvent
+
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Name"

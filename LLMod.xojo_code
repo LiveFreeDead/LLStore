@@ -786,6 +786,56 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FixCatalog(CatIn As String) As String
+		  CatIn = CatIn.ReplaceAll("Games"+Chr(92), "")
+		  CatIn = CatIn.ReplaceAll("Gamess", "Games")
+		  CatIn = CatIn.ReplaceAll("|", "; ")
+		  CatIn = CatIn.Trim
+		  If Right (CatIn,1) <>";" Then CatIn=CatIn+";"
+		  CatIn = CatIn.ReplaceAll("Games;", "Game;")
+		  If Left(CatIn, 6) = "Game; " Then CatIn = Right (CatIn, Len(CatIn) -6) 'Remove Game; from the start so looks nicer in the MetaData fields, Gets Added to end below too
+		  If Left(CatIn, 5) = "Game " Then CatIn = Right (CatIn, Len(CatIn) -5) 'Remove Game  from the start of some cats (Not sure what adds them, but take them out)
+		  CatIn = CatIn.ReplaceAll("  ", " ") 'Remove Double Spaces
+		  
+		  CatIn = CatIn.ReplaceAll("First-Person Shooter", "FirstPersonShooter")
+		  CatIn = CatIn.ReplaceAll("Third-Person Shooter", "ThirdPersonShooter")
+		  CatIn = CatIn.ReplaceAll("Hidden Object", "HiddenObject")
+		  CatIn = CatIn.ReplaceAll("Role Playing", "RolePlaying")
+		  CatIn = CatIn.ReplaceAll("RollPlaying", "RolePlaying")
+		  CatIn = CatIn.ReplaceAll("Racing-Driving", "Racing; Driving")
+		  CatIn = CatIn.ReplaceAll("Tower Defense", "TowerDefense")
+		  CatIn = CatIn.ReplaceAll("Farming & Crafting", "Farming; Crafting")
+		  
+		  Return CatIn
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function FixGameCats(CatIn As String) As String
+		  CatIn = CatIn.ReplaceAll("Games"+Chr(92), "")
+		  CatIn = CatIn.ReplaceAll("Gamess", "Games")
+		  CatIn = CatIn.ReplaceAll("|", "; ")
+		  CatIn = CatIn.Trim
+		  If Right (CatIn,1) <>";" Then CatIn=CatIn+";"
+		  CatIn = CatIn.ReplaceAll("Games;", "Game;")
+		  If Left(CatIn, 6) = "Game; " Then CatIn = Right (CatIn, Len(CatIn) -6) 'Remove Game; from the start so looks nicer in the MetaData fields, Gets Added to end below too
+		  If Left(CatIn, 5) = "Game " Then CatIn = Right (CatIn, Len(CatIn) -5) 'Remove Game  from the start of some cats (Not sure what adds them, but take them out)
+		  CatIn = CatIn.ReplaceAll("  ", " ") 'Remove Double Spaces
+		  
+		  CatIn = CatIn.ReplaceAll("First-Person Shooter", "FirstPersonShooter")
+		  CatIn = CatIn.ReplaceAll("Third-Person Shooter", "ThirdPersonShooter")
+		  CatIn = CatIn.ReplaceAll("Hidden Object", "HiddenObject")
+		  CatIn = CatIn.ReplaceAll("Role Playing", "RolePlaying")
+		  CatIn = CatIn.ReplaceAll("RollPlaying", "RolePlaying")
+		  CatIn = CatIn.ReplaceAll("Racing-Driving", "Racing; Driving")
+		  CatIn = CatIn.ReplaceAll("Tower Defense", "TowerDefense")
+		  CatIn = CatIn.ReplaceAll("Farming & Crafting", "Farming; Crafting")
+		  
+		  Return CatIn
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FixPath(InnPath As String) As String
 		  InnPath = InnPath.ReplaceAll("\","/")
 		  Return InnPath
@@ -1259,6 +1309,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function LoadLLFile(ItemInn As String, InnTmp As String = "", InstallItem As Boolean = False) As Boolean
+		  'MsgBox "LoadLLFile: "+ ItemInn
+		  
 		  App.DoEvents(1)
 		  ItemLLItem = BlankItem 'Clear All Data
 		  InstallFromIni = ""
@@ -1368,7 +1420,13 @@ Protected Module LLMod
 		  If Compressed = False Then
 		    ActualIni = ItemInn ' Sets to this as Default, Compressed below will change it
 		    If ActualIni = "" Then Return False 'Failed to set the item
-		    F = GetFolderItem(ActualIni,FolderItem.PathTypeShell)
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      F = GetFolderItem(ActualIni,FolderItem.PathTypeShell)
+		    Catch
+		      Return False'Failed to set the item
+		    End Try
+		    #Pragma BreakOnExceptions On
 		    If Not F.Exists Then Return False'Failed to set the item
 		  Else
 		    'Grab the uncompressed temp folder to load from
@@ -1400,6 +1458,7 @@ Protected Module LLMod
 		    RL = inputStream.ReadAll.ConvertEncoding(Encodings.ASCII)
 		  Wend
 		  inputStream.Close
+		  
 		  RL = RL.ReplaceAll(Chr(13), Chr(10))
 		  Sp()=RL.Split(Chr(10))
 		  If Sp.Count <= 0 Then Return False ' Empty File or no header
@@ -1424,11 +1483,16 @@ Protected Module LLMod
 		      Else 'No Equals, probably a shortcut
 		        LineID = Lin.Trim
 		      End If
+		      
+		      'MsgBox LineID +" = " + LineData 'Glenn 2030
+		      
 		      If ReadMode = 0 Then  'Only if ReadMode = 0
 		        Select Case LineID
 		        Case "title"
 		          If LineData = "" Then Return False
+		          'MsgBox "Data is = "+ LineData
 		          ItemLLItem.TitleName = LineData
+		          'MsgBox "This one should be set 2: "+ItemLLItem.TitleName
 		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
 		        Case "version"
 		          ItemLLItem.Version = LineData
@@ -1449,7 +1513,7 @@ Protected Module LLMod
 		          ItemLLItem.URL = LineData '.ReplaceAll("|",Chr(13)) 'Leep condensed for now
 		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
 		        Case "category"
-		          ItemLLItem.Categories = Data.FixGameCats(LineData)
+		          ItemLLItem.Categories = FixGameCats(LineData)
 		          
 		          'Fix Categories
 		          If ItemLLItem.BuildType = "ppGame" Or ItemLLItem.BuildType = "LLGame" Then
@@ -1466,7 +1530,7 @@ Protected Module LLMod
 		        Case "shortcutnameskeep"
 		          ItemLLItem.ShortCutNamesKeep = LineData
 		        Case "catalog"
-		          ItemLLItem.Catalog = Data.FixCatalog(LineData)
+		          ItemLLItem.Catalog = FixCatalog(LineData)
 		          'Fix Catalog
 		          If ItemLLItem.BuildType = "ppGame" Or ItemLLItem.BuildType = "LLGame" Then
 		            If Left(ItemLLItem.Catalog, 5) <>"Game;" And ItemLLItem.Catalog.IndexOf(" Game;") <= 0 Then  ItemLLItem.Catalog=ItemLLItem.Catalog+" Game;"
@@ -1611,7 +1675,7 @@ Protected Module LLMod
 		          ItemLnk(LnkEditing).Icon = Trim(LineData)
 		          If ItemLnk(LnkEditing).Icon = "" Then ItemLnk(LnkEditing).Icon = Slash(ItemLLItem.PathApp) + ItemLLItem.BuildType + ".png"
 		        Case "categories"
-		          ItemLnk(LnkEditing).Categories = Data.FixGameCats(LineData)
+		          ItemLnk(LnkEditing).Categories = FixGameCats(LineData)
 		          'Fix Categories, Can do here because the type is set above
 		          If ItemLLItem.BuildType = "ppGame" Or ItemLLItem.BuildType = "LLGame" Then
 		            If Left(ItemLnk(LnkEditing).Categories, 5) <>"Game;" And ItemLnk(LnkEditing).Categories.IndexOf(" Game;") <= 0 Then  ItemLnk(LnkEditing).Categories=ItemLnk(LnkEditing).Categories+" Game;"
@@ -1642,6 +1706,8 @@ Protected Module LLMod
 		    
 		    ItemLLItem.LnkCount = LnkCount
 		  End If
+		  
+		  'MsgBox "This one should be set: "+ItemLLItem.TitleName
 		  
 		  Dim MediaPath As String
 		  MediaPath = Slash(ExpPath(ItemLLItem.PathINI)) 
@@ -2228,6 +2294,74 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub PreQuitApp()
+		  'MsgBox "Pre Quitting"
+		  
+		  Loading.SaveSettings
+		  
+		  DebugOutput.Flush ' Actually Write to file after each thing
+		  DebugOutput.Close 'Close File when quiting
+		  If Debugging Then Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_Debug.txt") 'Copy Debug to Desktop
+		  
+		  'Clean Up Temp
+		  CleanTemp
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub QuitApp()
+		  ForceQuit = True
+		  Quit ' This Works on Compiled Versions, test if Windows is OK too, dont know why it was being so problematic.
+		  'was 24 r4 causing issues
+		  
+		  ''Should never get here
+		  
+		  ForceQuit = True
+		  'MsgBox "Quitting"
+		  
+		  'Close other forms
+		  'If EditorOnly = True Then
+		  
+		  
+		  'Old Method
+		  'Editor.Close
+		  'Data.Close
+		  'ScreenResolution.Close
+		  'MiniInstaller.Close
+		  'Settings.Close
+		  'Main.Close
+		  ''Do this last as it's the main form
+		  'Loading.Close
+		  
+		  'MsgBox "Should quit now"
+		  'Quit
+		  
+		  
+		  //manually close all windows
+		  while window(0) <> nil
+		    'dim s as string = window(0).Title
+		    window(0).close
+		  wend
+		  
+		  quit
+		  
+		  'Exception err
+		  'select case err
+		  'case isa EndException
+		  'MsgBox "EndException"
+		  'end select
+		  
+		  
+		  ''Dim I As Integer
+		  
+		  'For i As Integer = WindowCount - 1 DownTo 0
+		  'Var w As Window = Window(i)
+		  'If w <> Nil then w.close
+		  'Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub RunAssembly()
 		  Dim Shelly As New Shell
 		  Dim StillActive As Boolean = True
@@ -2695,6 +2829,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		CommandLineFile As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		CurrentFader As Picture
 	#tag EndProperty
 
@@ -2740,6 +2878,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		DefaultStartButtonHover As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		EditorOnly As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -2920,6 +3062,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		Running As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		RunningInIDE As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -3861,6 +4007,30 @@ Protected Module LLMod
 			Visible=false
 			Group="Behavior"
 			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="EditorOnly"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CommandLineFile"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="RunningInIDE"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

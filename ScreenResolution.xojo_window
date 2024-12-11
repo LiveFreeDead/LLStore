@@ -221,6 +221,12 @@ End
 	#tag EndEvent
 
 	#tag Event
+		Sub Closing()
+		  Debug("-- ScreenResolution Closed")
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Function KeyDown(key As String) As Boolean
 		  'MsgBox "In: "+Str(Key.Asc)
 		  If Key.Asc = 13 Then 'Enter
@@ -242,6 +248,8 @@ End
 
 	#tag Event
 		Sub Opening()
+		  Debug("-- ScreenResolution Opening")
+		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  ToggleCB (5) ' Select 1920x1080 by default
 		End Sub
 	#tag EndEvent
