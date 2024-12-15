@@ -83,7 +83,7 @@ Protected Module LLMod
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLGames", "%LLGames%")
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLApps", "%LLApps%")
 		  
-		  PathIn = PathIn.ReplaceAll( NoSlash(ppGames),"%ppGames%")
+		  PathIn = PathIn.ReplaceAll(NoSlash(ppGames),"%ppGames%")
 		  PathIn = PathIn.ReplaceAll(NoSlash(ppApps), "%ppApps%")
 		  
 		  If TargetWindows Then
@@ -4036,6 +4036,14 @@ Protected Module LLMod
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SettingsLoaded"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

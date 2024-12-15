@@ -2420,6 +2420,8 @@ End
 		    ppGamesFolder = Slash(HomePath)+".wine/drive_c/ppGames/"
 		  End If
 		  
+		   
+		  
 		  'Make All paths Linux, because they work in Linux and Windows (Except for Move, Copy and Deltree etc)
 		  AppPath = AppPath.ReplaceAll("\","/")
 		  ToolPath = ToolPath.ReplaceAll("\","/")
@@ -2479,6 +2481,7 @@ End
 		  If Debugging Then Debug("Starting Up")
 		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
 		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
+		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
 		  
 		  #Pragma BreakOnExceptions On
 		  

@@ -1,5 +1,5 @@
 Type=Desktop
-RBProjectVersion=2024.031
+RBProjectVersion=2024.04
 MinIDEVersion=20210300
 OrigIDEVersion=20240400
 Class=App;App.xojo_code;&h00000000766197FF;&h0000000000000000;false
@@ -18,7 +18,7 @@ Module=LLMod;LLMod.xojo_code;&h0000000066BF87FF;&h0000000000000000;false
 MajorVersion=1
 MinorVersion=1011
 SubVersion=0
-NonRelease=292
+NonRelease=298
 Release=0
 InfoVersion=Linux Installer, Store and Launcher
 LongVersion=LastOS
