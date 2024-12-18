@@ -1159,23 +1159,25 @@ End
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "2" And HideFree = True Then Hidden = True 'Hide Free
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "3" And HideOpen = True Then Hidden = True 'Hide Open
 		    
-		    'SysDesktopEnvironment Checks
-		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
-		    If DeTest <> "" Then 'Only do Items with Values set
-		      If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Then
-		      Else
-		        Hidden = True ' Hide if the DE isn't found in supported list
-		      End If
-		    End If
+		    ''SysDesktopEnvironment Checks
+		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		    'If DeTest <> "" Then 'Only do Items with Values set
+		    'If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Then
+		    'Else
+		    'Hidden = True ' Hide if the DE isn't found in supported list
+		    'End If
+		    'End If
+		    '
+		    ''SysPackageManager Checks
+		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
+		    'If DeTest <> "" Then 'Only do Items with Values set
+		    'If  DeTest.IndexOf(SysPackageManager) >=0 Then
+		    'Else
+		    'Hidden = True ' Hide if the PM isn't found in supported list
+		    'End If
+		    'End If
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F" Then Hidden = True 'Hide if not Compatible DE or PM used
 		    
-		    'SysPackageManager Checks
-		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
-		    If DeTest <> "" Then 'Only do Items with Values set
-		      If  DeTest.IndexOf(SysPackageManager) >=0 Then
-		      Else
-		        Hidden = True ' Hide if the PM isn't found in supported list
-		      End If
-		    End If
 		    
 		    ''Arch Checks 'Not available yet, I don't set SysArch Glenn 2027
 		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("ArchCompatible")) 

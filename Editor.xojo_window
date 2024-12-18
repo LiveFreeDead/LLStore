@@ -752,7 +752,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   30
       End
-      Begin DesktopButton ButtonBrowseBuildToFolder1
+      Begin DesktopButton ButtonBuild
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -3311,13 +3311,13 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   226
+         Top             =   228
          Transparent     =   False
          Underline       =   False
          Visible         =   True
          Width           =   200
       End
-      Begin DesktopButton ButtonAddTag1
+      Begin DesktopButton ButtonAddPM
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -3349,7 +3349,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   41
       End
-      Begin DesktopTextField TextOS
+      Begin DesktopTextField TextPM
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   False
@@ -3380,7 +3380,7 @@ Begin DesktopWindow Editor
          TabIndex        =   27
          TabPanelIndex   =   1
          TabStop         =   True
-         Text            =   "TextOS"
+         Text            =   "TextPM"
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
@@ -3418,13 +3418,13 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   196
+         Top             =   199
          Transparent     =   False
          Underline       =   False
          Visible         =   True
          Width           =   200
       End
-      Begin DesktopButton ButtonAddTag2
+      Begin DesktopButton ButtonAddDE
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -3491,7 +3491,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   196
+         Top             =   197
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -3714,7 +3714,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   62
       End
-      Begin DesktopButton ButtonBrowseIncludeFolder1
+      Begin DesktopButton ButtonBrowseInstallToFolder
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -4009,7 +4009,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   614
       End
-      Begin DesktopButton ButtonBrowseInstaller1
+      Begin DesktopButton ButtonAddInstaller
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -4878,7 +4878,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   393
       End
-      Begin DesktopTextArea TextArea3
+      Begin DesktopTextArea TextAppExtensions
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   True
@@ -4926,7 +4926,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopTextArea TextArea4
+      Begin DesktopTextArea TextInstallFonts
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   True
@@ -4974,7 +4974,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   197
       End
-      Begin DesktopTextArea TextArea5
+      Begin DesktopTextArea TextRegisterDLLOCX
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
          AllowSpellChecking=   True
@@ -5154,7 +5154,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   69
       End
-      Begin DesktopButton ButtonBrowseBuildToFolder2
+      Begin DesktopButton ButtonSaveLLFile
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -5268,6 +5268,13 @@ End
 		  BT = ItemLLItem.BuildType
 		  
 		  'Main Window 1 - General
+		  ComboBuildType.RemoveAllRows
+		  ComboBuildType.AddRow ("LLApp")
+		  ComboBuildType.AddRow ("ssApp")
+		  ComboBuildType.AddRow ("ppApp")
+		  ComboBuildType.AddRow ("LLGame")
+		  ComboBuildType.AddRow ("ppGame")
+		  
 		  TextTitle.Text = ItemLLItem.TitleName
 		  TextVersion.Text = ItemLLItem.Version
 		  TextURLs.Text = ItemLLItem.URL.ReplaceAll("|", Chr(13))
@@ -5277,12 +5284,14 @@ End
 		  ComboCategory.Text = ItemLLItem.Categories
 		  CheckNoInstall.Value = ItemLLItem.NoInstall
 		  TextDE.Text = ItemLLItem.DECompatible
-		  TextOS.Text = ItemLLItem.OSCompatible
+		  TextPM.Text = ItemLLItem.PMCompatible
 		  ComboArch.Text = ItemLLItem.ArchCompatible
 		  CheckInternetRequired.Value = ItemLLItem.InternetRequired
 		  CheckHideInLauncher.Value = ItemLLItem.HideInLauncher
 		  TextDescription.Text = ItemLLItem.Descriptions.ReplaceAll(Chr(30), Chr(13))
 		  
+		  If TextPriority.Text = "" Or TextPriority.Text = "0" Then TextPriority.Text = "5" 'Default
+		  ComboBuildType.SelectedRowIndex = 0 'Default to LLApp
 		  
 		  'Load in Combo's
 		  'SysAvailableDesktops
@@ -5309,27 +5318,41 @@ End
 		  
 		  'Main Window 2 - Links
 		  ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
+		  
+		  TextDefaultMenuPath.Text = ""
+		  TextKeepShortcuts.Text = ""
+		  CheckKeepFolder.Value = False
+		  CheckKeepAll.Value = False
+		  ComboShortcut.Text = ""
+		  TextComment.Text = ""
+		  TextExecute.Text = ""
+		  TextRunInPath.Text = ""
+		  TextIcon.Text = ""
+		  TextFileTypes.Text = ""
+		  TextDescriptionLink.Text = ""
+		  TextFlags.Text = ""
+		  ComboMenuCatalog.Text = ""
+		  TextMenuCatalog.Text = ""
+		  CheckRunInTerminal.Value = False
+		  CheckShowDesktop.Value = False
+		  CheckShowPanel.Value = False
+		  CheckSendTo.Value = False
+		  CheckShowFavorites.Value = False
+		  
 		  If LnkCount >= 1 Then
 		    For I = 1 To LnkCount
-		      'If ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue 'Skip dual arch shortcuts, just keep 1st one, which is usually x64 anyway
-		      'If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#1}") >= 1 Then Continue ' Only skip replacing items if the items isn't the x64 one
-		      'If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue ' Only skip replacing items if the 2nd items isn't the x64 one
-		      '
-		      'ItemLnk(I).Title = ItemLnk(I).Title.ReplaceAll("{#2}", "") 'Remove Dual Arch leftovers
-		      'ItemLnk(I).Title = ItemLnk(I).Title.ReplaceAll("{#1}", "") 'Remove Dual Arch leftovers
-		      'DesktopFile = ItemLnk(I).Title.ReplaceAll(" ", ".") + ".desktop" 'Remove Spaces and add .desktop back to file name
-		      '
-		      'ItemLnk(I).Icon = ExpPath(ItemLnk(I).Icon)
-		      
 		      ComboShortcut.AddRow(ItemLnk(I).Title)
-		      'If I = 1 Then ComboShortcut.Text = ItemLnk(I).Title 'Change the Combo Text to the First items text
 		    Next
 		    ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
 		  End If
 		  
+		  
 		  'Main Window 3 - Assembly
 		  TextInstallToFolder.Text = CompPath(ItemLLItem.PathApp, True)
 		  TextAssembly.Text = ItemLLItem.Assembly.ReplaceAll(Chr(30), Chr(13)) ' Try 13 first as 10 was off before
+		  
+		  TextInstaller.Text = ""
+		  TextUsage.Text = ""
 		  
 		  'Main Window 4 - Post-Processing
 		  If Exist(Slash(ItemTempPath)+"LLScript.sh") Then TextUserScript.Text = LoadDataFromFile(Slash(ItemTempPath)+"LLScript.sh")
@@ -5362,6 +5385,7 @@ End
 		  TextMovieFile.Text = ItemLLItem.FileMovie
 		  
 		  'Main Window 6 - MetaData
+		  ComboTags.Text = "" 'Need to populate these here
 		  TextTags.Text = ItemLLItem.Tags
 		  TextPublisher.Text = ItemLLItem.Publisher
 		  TextLanguage.Text = ItemLLItem.Language
@@ -5377,15 +5401,223 @@ End
 		  
 		  'Main Window 7 - Build Tab
 		  TextIncludeFolder.Text = ItemTempPath 'Fix to use correct path depending on job
-		  
 		  TextBuildToFolder.Text = ItemTempPath 'Fix to use correct path depending on job
+		  CheckCompress.Value = ItemLLItem.Compressed 'If already compressed then check it again so you know
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SaveLLFileComplete() As Boolean
+		  Dim INIFile As String
+		  
+		  Dim BTF As String = Slash(TextBuildToFolder.Text)
+		  Dim BT As String = ItemLLItem.BuildType
+		  
+		  If Exist (BTF) Then 'Only build if a good output path
+		    If SaveLLFile (BTF) = True Then
+		      'Copy the new Pictures here (They get re-added to the compressed item along with the LLFile)
+		      
+		      
+		      'Grab the name of the INI file
+		      Select Case BT
+		      Case "ppGame"
+		        INIFile = BT+".ppg"
+		      Case "ssApp"
+		        INIFile = BT+".app"
+		      Case  "ppApp"
+		        INIFile = BT+".app"
+		      Case "LLApp"
+		        INIFile = BT+".lla"
+		      Case "LLGame"
+		        INIFile = BT+".llg"
+		      End Select
+		      
+		      
+		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item (Try adding 7z support as well as doing tar's like normal)
+		        Select Case BT 'I may have to chnage this to use 7z for all of them as tar isn't available in windows properly, will see, Glenn 2030
+		        Case "LLApp", "LLGame" 'Tar's
+		          If TargetWindows Then
+		          Else 'Linux or mac
+		            'Remove Existing Files from inside the .tar
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34)) 'FileINI is the name of the .tar
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".svg" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".mp4" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript.sh" + Chr(34))
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript_Sudo.sh" + Chr(34)) 
+		            'Add files back to the .tar, if they exist
+		            ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34) )
+		            
+		            If Exist(BTF+BT+".jpg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg"  + Chr(34) )
+		            If Exist(BTF+BT+".png" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png"  + Chr(34) )
+		            If Exist(BTF+BT+".ico" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico"  + Chr(34) )
+		            If Exist(BTF+BT+".svg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".svg"  + Chr(34) )
+		            If Exist(BTF+BT+".mp4" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".mp4"  + Chr(34) )
+		            If Exist(BTF+"LLScript.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript.sh"  + Chr(34) )
+		            If Exist(BTF+"LLScript_Sudo.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript_Sudo.sh"  + Chr(34) )
+		          End If
+		        Case Else '7zip not tar
+		        End Select
+		      End If
+		      Status.Text =  "Saved Successfully: " + ItemLLItem.FileINI
+		      Return True 'Success
+		    Else
+		      Status.Text =  "Failed to Save: " + ItemLLItem.FileINI
+		    End If
+		  Else
+		    Status.Text =  "Failed, No Build To Output Path Set"
+		    MsgBox "Failed, No Build To Output Path Set"
+		  End If
+		  Return False
+		  
+		  'If Not Access(LLMod.LLFileINI, gb.Write) Then
+		  'Message("Built To Path is read Only")                 
+		  'Return
+		  'End If
+		  '
+		  'If LLMod.LLBuildType = "LLApp" Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".lla" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".lla" & Chr(34) Wait      
+		  'Else 'Game
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".llg" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".llg" & Chr(34) Wait
+		  'End If
+		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".png") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".png" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".png" & Chr(34) Wait
+		  'End If
+		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".png") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".jpg" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".jpg" & Chr(34) Wait
+		  'End If
+		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".jpg") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".ico" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".ico" & Chr(34) Wait
+		  'End If
+		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".svg") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".svg" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".svg" & Chr(34) Wait
+		  'End If
+		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".mp4") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".mp4" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".mp4" & Chr(34) Wait
+		  'End If
+		  '
+		  'If Exist(LLMod.LLBuildPath & "LLScript.sh") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript.sh" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript.sh" & Chr(34) Wait
+		  'End If
+		  '
+		  'If Exist(LLMod.LLBuildPath & "LLScript_Sudo.sh") Then
+		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript_Sudo.sh" & Chr(34) Wait
+		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript_Sudo.sh" & Chr(34) Wait
+		  'End If      
+		  
+		End Function
 	#tag EndMethod
 
 
 #tag EndWindowCode
 
+#tag Events ButtonBrowseIncludeFolder
+	#tag Event
+		Sub Pressed()
+		  Dim G As FolderItem
+		  
+		  If TextIncludeFolder.Text <>"" Then
+		    If Exist(TextIncludeFolder.Text) Then
+		      G = GetFolderItem(TextIncludeFolder.Text,FolderItem.PathTypeShell)
+		    Else
+		      G = SpecialFolder.Desktop
+		    End If
+		  End If
+		  
+		  Var dlg As New SelectFolderDialog
+		  dlg.ActionButtonCaption = "Select"
+		  dlg.Title = "Select a Path for your LLFile Item to include in the build"
+		  dlg.PromptText = "Make sure it's a valid path"
+		  dlg.InitialFolder = G
+		  
+		  Var f As FolderItem
+		  f = dlg.ShowModal
+		  If f <> Nil Then
+		    ' Use the folderitem here
+		    TextIncludeFolder.Text = Slash(F.NativePath)
+		  Else
+		    ' User cancelled, do nothing
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBrowseBuildToFolder
+	#tag Event
+		Sub Pressed()
+		  Dim G As FolderItem
+		  
+		  If TextBuildToFolder.Text <>"" Then
+		    If Exist(TextBuildToFolder.Text) Then
+		      G = GetFolderItem(TextBuildToFolder.Text,FolderItem.PathTypeShell)
+		    Else
+		      G = SpecialFolder.Desktop
+		    End If
+		  End If
+		  
+		  Var dlg As New SelectFolderDialog
+		  dlg.ActionButtonCaption = "Select"
+		  dlg.Title = "Select the Output Path for your LLFile Item to be built to"
+		  dlg.PromptText = "Make sure it's a valid path"
+		  dlg.InitialFolder = G
+		  
+		  Var f As FolderItem
+		  f = dlg.ShowModal
+		  If f <> Nil Then
+		    ' Use the folderitem here
+		    TextBuildToFolder.Text = Slash(F.NativePath)
+		  Else
+		    ' User cancelled, do nothing
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBuild
+	#tag Event
+		Sub Pressed()
+		  Dim Success As Boolean
+		  'Below Remark isn't needed, the Saving of the LLFile detects it's all good and wont return True if it fails the tests
+		  'If Exist (TextBuildToFolder.Text) Then 'Only build if a good output path
+		  
+		  Success = SaveLLFileComplete 'This also updates Compressed Item resources
+		  
+		  If Success = True Then 'Check if saved correctly and build only if required (May need for 7z if can't just update them like the tar files
+		    If ItemLLItem.Compressed = True Then 'Just update it again
+		      'Do Nothing, it's done with the "SaveLLFileComplete" Routine to save repeating code
+		    Else ' If the items wasn't compressed, check to see if we need to compress it (Build)
+		      'Build here and clean up
+		      
+		      
+		      'Compress if picked to.
+		      
+		    End If
+		    Status.Text = "Built Successfully"
+		    MsgBox "Built Successfully"
+		  Else
+		    Status.Text = "Failed to Build LLFile"
+		    MsgBox "Failed to Build LLFile"
+		  End If
+		  
+		  
+		  'Below not needed anymore
+		  'Else
+		  'MsgBox "No Build To Output Path Set, Failed"
+		  'End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events ComboShortcut
 	#tag Event
 		Sub SelectionChanged(item As DesktopMenuItem)
@@ -5403,6 +5635,15 @@ End
 		  TextFlags.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Flags
 		  
 		  TextMenuCatalog.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Categories.ReplaceAll(" ", Chr(13)) 'Make Multi Line, not ; seperated
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonSaveLLFile
+	#tag Event
+		Sub Pressed()
+		  Dim Success As Boolean
+		  Success = SaveLLFileComplete
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents

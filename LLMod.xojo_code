@@ -5,6 +5,8 @@ Protected Module LLMod
 		  Dim err As Integer
 		  Dim Success As Boolean
 		  
+		  MyPath = NoSlash(MyPath) 'Remove trailing Slash
+		  
 		  #If TargetMachO
 		    Const chdirLib = "System.framework"
 		    Soft Declare Function chdir Lib chdirLib (path As CString) As Integer
@@ -27,6 +29,7 @@ Protected Module LLMod
 		    If Not err = 0 Then
 		      Success = False
 		      System.DebugLog("ERROR " + Str(err))
+		      'MsgBox Str(err)
 		    End
 		    
 		  #ElseIf TargetWin32
@@ -83,8 +86,8 @@ Protected Module LLMod
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLGames", "%LLGames%")
 		  PathIn = PathIn.ReplaceAll(Slash(HomePath)+"LLApps", "%LLApps%")
 		  
-		  PathIn = PathIn.ReplaceAll(NoSlash(ppGames),"%ppGames%")
-		  PathIn = PathIn.ReplaceAll(NoSlash(ppApps), "%ppApps%")
+		  PathIn = PathIn.ReplaceAll(NoSlash(ppGames.ReplaceAll("\","/")),"%ppGames%") 'This should fix the path not working right for ppGames and Apps
+		  PathIn = PathIn.ReplaceAll(NoSlash(ppApps.ReplaceAll("\","/")), "%ppApps%")
 		  
 		  If TargetWindows Then
 		    PathIn = PathIn.ReplaceAll(Left(ppGames,2),"%ppGamesDrive%")
@@ -225,7 +228,8 @@ Protected Module LLMod
 		        ShellFast.Execute ("rm -f /tmp/LLSudoDone") ' Remove it so will only quit once recreated
 		        ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudo")
 		        
-		        Test = ChDirSet(ToolPath) 'Make sure in the right folder to run script etc
+		        'Don't do below line, if the Sudo Script needs a file, it'll have to use the full path, else it's changes out of the Installers Path to run Sudo script.
+		        'Test = ChDirSet(ToolPath) 'Make sure in the right folder to run script etc
 		        
 		        If SysTerminal.Trim = "gnome-terminal" Then
 		          SudoShellLoop.Execute(SysTerminal.Trim+" --wait -e "+"'sudo "+Chr(34)+ToolPath+"LLStore_Sudo.sh"+Chr(34)+"'") 'A fix for the Folder Item not working as expected is to make it trimmed, it's having problems with Extra Spaces etc?
@@ -700,6 +704,18 @@ Protected Module LLMod
 		  Sp()=RL.Split(Chr(10))
 		  If Sp.Count <= 0 Then Return OrigScript ' Empty File or no header
 		  For I = 0 To Sp().Count -1
+		    If InstallToPath <> "" Then 'Only add CD if it's a valid path given ' We use InstallToPath even on NoInstalls as I set that path to be InstallFromPath.
+		      If I = 1 Then
+		        If Sp(I) <> "" Then
+		          ScriptContent = ScriptContent + Chr(10) 'Adds space Line
+		          ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		        Else
+		          ScriptContent = ScriptContent + Chr(10) 'Adds space Line
+		          ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          Continue 'No Need to add a 2nd space line below
+		        End If
+		      End If
+		    End If
 		    ScriptContent = ScriptContent + ExpPathScript(Sp(I), True) + Chr(10)
 		  Next I
 		  
@@ -1045,18 +1061,29 @@ Protected Module LLMod
 		  Shelly.ExecuteMode = Shell.ExecuteModes.Asynchronous
 		  Shelly.TimeOut = -1
 		  
-		  'Make sure Sudo is available during ANY install (even if not required)
-		  EnableSudoScript
-		  
 		  'Clear Temp Path incase it fails to load
 		  ItemTempPath = ""
 		  
 		  'Load in the LLFile
 		  Success = LoadLLFile(FileIn, "", True) '"" Means it will generate a new Temp folder and return it as TempInstall Globally and the True means Install Item, will extract whole archive, not just LLFile resources
+		  If Debugging Then Debug("Install Loading in File: "+FileIn + " ItemTempPath: " + ItemTempPath +" Good: "+Success.ToString)
+		  
 		  
 		  'SaveDataToFile("Loading "+FileIn+" "+Str(Success)+Chr(10)+TempInstall+Chr(10)+ItemTempPath, SpecialFolder.Desktop.NativePath+"/Debug1.txt")
 		  
 		  If Success = False Then Return False ' Couldn't Load Item
+		  
+		  'Make sure Sudo is available during ANY install (if not required for instaling one item then can skip it)
+		  If InstallOnly Then
+		    Select Case ItemLLItem.BuildType 
+		    Case "ssApp", "ppApp", "ppGame"
+		    Case Else 'Linux Item, may need script so always run it
+		      EnableSudoScript
+		    End Select
+		  Else 'MiniInstaller method should always run the script in Linux
+		    EnableSudoScript
+		  End If
+		  
 		  
 		  If TempInstall = "" Then 'Uncompressed item, no temp folder used
 		    InstallFromPath = GetFullParent(FileIn) 'Removes .lla .app etc file ' just keep path
@@ -1069,6 +1096,7 @@ Protected Module LLMod
 		    InstallToPath = Slash(ExpPath(ItemLLItem.PathApp))
 		    
 		    'Change to App/Games INI Path to run Assemblys from
+		    'MsgBox "Current Path: " + InstallFromPath
 		    If ChDirSet(InstallFromPath) = True Then ' Was successful
 		    End If
 		    
@@ -1202,6 +1230,7 @@ Protected Module LLMod
 		    
 		    'Change to App/Games INI Path to run Assemblys from
 		    If ChDirSet(InstallFromPath) = True Then ' Was successful
+		      'MsgBox "InstallTo Path: " + InstallToPath + " InstallFrom Path: " + InstallFromPath
 		    End If
 		    
 		    'Run Assemblys
@@ -1266,6 +1295,25 @@ Protected Module LLMod
 		    Return False
 		  End If
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsFolder(TestPath As String) As Boolean
+		  Dim F As FolderItem
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    F = GetFolderItem(TestPath, FolderItem.PathTypeShell)
+		    If F <> Nil Then
+		      If F.Exists Then
+		        If F.IsFolder Then Return True
+		      End If
+		    End If
+		  Catch
+		  End Try
+		  #Pragma BreakOnExceptions On
+		  
+		  Return False
 		End Function
 	#tag EndMethod
 
@@ -1378,8 +1426,10 @@ Protected Module LLMod
 		    Else
 		      If InstallItem = False Then
 		        Success = Extract(ItemInn, TmpItem, " LLApp.lla LLGame.llg LLScript.sh LLScript_Sudo.sh LLFile.sh LLApp.jpg LLApp.png LLApp.ico LLApp.svg LLGame.jpg LLGame.png LLGame.ico LLGame.svg LLApp1.jpg LLGame1.jpg LLApp2.jpg LLGame2.jpg LLApp3.jpg LLGame3.jpg LLApp4.jpg LLGame4.jpg LLApp5.jpg LLGame5.jpg LLApp6.jpg LLGame6.jpg")
+		        If Debugging Then Debug ("Extracting Partial tar: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      Else ' Extract Everything
 		        Success = Extract(ItemInn, TmpItem, "")
+		        If Debugging Then Debug ("Extracting tar: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      End If
 		    End If
 		    TempInstall = TmpItem
@@ -1392,8 +1442,10 @@ Protected Module LLMod
 		    Else
 		      If InstallItem = False Then
 		        Success = Extract(ItemInn, TmpItem, " ssApp.app ppApp.app ssApp.jpg ppApp.jpg ssApp.png ppApp.png ssApp.ico ppApp.ico ppApp1.jpg ppApp2.jpg ppApp3.jpg ppApp4.jpg ppApp5.jpg ppApp6.jpg ssApp1.jpg ssApp2.jpg ssApp3.jpg ssApp4.jpg ssApp5.jpg ssApp6.jpg") ', True) '<- True means Fast, not using Execute, just Shell (trying without to see if it locks up the GUI in Xojo First).
+		        If Debugging Then Debug ("Extracting Partial apz: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      Else ' Extract Everything
 		        Success = Extract(ItemInn, TmpItem, "")
+		        If Debugging Then Debug ("Extracting apz: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      End If
 		    End If
 		    TempInstall = TmpItem
@@ -1407,8 +1459,10 @@ Protected Module LLMod
 		    Else
 		      If InstallItem = False Then
 		        Success = Extract(ItemInn, TmpItem, " ppGame.ppg ppGame.jpg ppGame.png ppGame.ico ppGame1.jpg ppGame2.jpg ppGame3.jpg ppGame4.jpg ppGame5.jpg ppGame6.jpg") ', True) '<- True means Fast, not using Execute, just Shell (trying without to see if it locks up the GUI in Xojo First).
+		        If Debugging Then Debug ("Extracting Partial pgz: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      Else ' Extract Everything
 		        Success = Extract(ItemInn, TmpItem, "")
+		        If Debugging Then Debug ("Extracting pgz: "+ ItemInn+" TempInstallPath: "+ TmpItem + " Success: "+ Success.ToString)
 		      End If
 		    End If
 		    TempInstall = TmpItem
@@ -2344,7 +2398,7 @@ Protected Module LLMod
 		    window(0).close
 		  wend
 		  
-		  quit
+		  Quit
 		  
 		  'Exception err
 		  'select case err
@@ -2558,6 +2612,7 @@ Protected Module LLMod
 		  Dim F As FolderItem
 		  
 		  'Change to App/Games Install To path to run scripts from (NoInstall sets to InstallFrom)
+		  'MsgBox "Path: "+InstallToPath
 		  If ChDirSet(InstallToPath) = True Then ' Was successful
 		  End If
 		  
@@ -2602,6 +2657,13 @@ Protected Module LLMod
 		  
 		  '*** Make sure to add CD to the top of the script so it does it from the correct folder (I have since swapped back to doing a single script at a time so I can keep progress better, so not needed).
 		  'If the file exist then it copies to Temp and runs, else it skips over it
+		  
+		  'Trying below to see if that is enough - No seems to need to be put into the script so that the calling script shifts to the right path as it opens a new bash, easy fixed :)
+		  'Change to App/Games Install To path to run scripts from (NoInstall sets to InstallFrom)
+		  'MsgBox "Path: "+InstallToPath
+		  'If ChDirSet(InstallToPath) = True Then ' Was successful
+		  'End If
+		  
 		  If Not TargetWindows Then
 		    If Exist(InstallToPath+"LLScript_Sudo.sh") Then
 		      if SudoShellLoop.IsRunning = True Then ' Check still running
@@ -2678,6 +2740,135 @@ Protected Module LLMod
 		  
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SaveLLFile(SaveToPath As String) As Boolean
+		  If ItemLLItem.TitleName = "" Or ItemLLItem.BuildType = "" Then
+		    MsgBox "Title or BuildType not set, Failed!"
+		    Return False
+		  End If
+		  
+		  If Not Exist(SaveToPath) Then
+		    MsgBox "Path to Save to Not Found: " + SaveToPath
+		  End If
+		  
+		  Dim I As Integer
+		  Dim DataOut As String
+		  Dim LLFileOut, OutFile As String
+		  Dim BType As String
+		  
+		  Select Case ItemLLItem.BuildType
+		  Case "ppGame"
+		    DataOut = "[SetupS]" + Chr(10)
+		    BType = "SS"
+		    OutFile = ItemLLItem.BuildType+".ppg"
+		  Case "ssApp"
+		    DataOut = "[SetupS]" + Chr(10)
+		    BType = "SS"
+		    OutFile = ItemLLItem.BuildType+".app"
+		  Case  "ppApp"
+		    DataOut = "[SetupS]" + Chr(10)
+		    BType = "SS"
+		    OutFile = ItemLLItem.BuildType+".app"
+		  Case "LLApp"
+		    DataOut = "[LLFile]" + Chr(10)
+		    BType = "LL"
+		    OutFile = ItemLLItem.BuildType+".lla"
+		  Case "LLGame"
+		    DataOut = "[LLFile]" + Chr(10)
+		    BType = "LL"
+		    OutFile = ItemLLItem.BuildType+".llg"
+		  End Select
+		  
+		  'Prepare LLFile output
+		  LLFileOut = FixPath(Slash(SaveToPath)+OutFile)
+		  
+		  'All Files General
+		  DataOut = DataOut + "Title="+ ItemLLItem.TitleName+Chr(10)
+		  If ItemLLItem.Version <> "" Then DataOut = DataOut + "Version="+ ItemLLItem.Version+Chr(10)
+		  If ItemLLItem.Descriptions <> "" Then DataOut = DataOut + "Description=" + ItemLLItem.Descriptions.ReplaceAll(Chr(13),Chr(30))+Chr(10)
+		  If ItemLLItem.URL <> "" Then DataOut = DataOut + "URL=" + ItemLLItem.URL.ReplaceAll(Chr(13),"|")+Chr(10)
+		  If ItemLLItem.Categories <> "" Then DataOut = DataOut + "Category=" + ItemLLItem.Categories+Chr(10)
+		  DataOut = DataOut + "BuildType=" + ItemLLItem.BuildType+Chr(10)
+		  If ItemLLItem.PathApp <> "" Then DataOut = DataOut + "AppPath=" + CompPath(ItemLLItem.PathApp, True)+Chr(10)
+		  If ItemLLItem.StartMenuSourcePath <> "" Then DataOut = DataOut + "StartMenuSourcePath=" + ItemLLItem.StartMenuSourcePath+Chr(10)
+		  If ItemLLItem.Catalog <> "" Then DataOut = DataOut + "Catalog="+ ItemLLItem.Catalog+Chr(10)
+		  If ItemLLItem.StartMenuLegacyPrimary <> "" Then DataOut = DataOut + "StartMenuLegacyPrimary=" + ItemLLItem.StartMenuLegacyPrimary+Chr(10)
+		  If ItemLLItem.ShortCutNamesKeep <> "" Then DataOut = DataOut + "ShortCutNamesKeep=" + ItemLLItem.ShortCutNamesKeep+Chr(10)
+		  If ItemLLItem.Priority.ToString <> "" Then
+		    DataOut = DataOut + "Priority=" + ItemLLItem.Priority.ToString+Chr(10)
+		  Else
+		    DataOut = DataOut + "Priority=5"+Chr(10)
+		  End If
+		  If ItemLLItem.DECompatible <> "" Then
+		    DataOut = DataOut + "DECompatible=" + ItemLLItem.DECompatible+Chr(10)
+		  Else
+		    DataOut = DataOut + "DECompatible=All"+Chr(10)
+		  End If
+		  If ItemLLItem.PMCompatible <> "" Then
+		    DataOut = DataOut + "PMCompatible=" + ItemLLItem.PMCompatible+Chr(10)
+		  Else
+		    DataOut = DataOut + "PMCompatible=All"+Chr(10)
+		  End If
+		  If ItemLLItem.Assembly <> "" Then DataOut = DataOut + "Assembly=" + ItemLLItem.Assembly.ReplaceAll(Chr(13),Chr(30))+Chr(10)
+		  If ItemLLItem.Flags <> "" Then DataOut = DataOut + "Flags=" + ItemLLItem.Flags+Chr(10)
+		  If ItemLLItem.Arch <> "" Then DataOut = DataOut + "Architecture=" + ItemLLItem.Arch+Chr(10) 'This will need to convert x86, x64, arm to numbered, 1 = x86, 2 = x64, will need to check the rest to make it match
+		  
+		  'Meta Here
+		  DataOut = DataOut + "[Meta]" + Chr(10)
+		  If ItemLLItem.InstallSize.ToString <> "" Then DataOut = DataOut + "InstalledSize=" + ItemLLItem.InstallSize.ToString+Chr(10)
+		  If ItemLLItem.Tags <> "" Then DataOut = DataOut + "Tags=" + ItemLLItem.Tags+Chr(10)
+		  If ItemLLItem.Publisher <> "" Then DataOut = DataOut + "Publisher=" + ItemLLItem.Publisher+Chr(10)
+		  If ItemLLItem.Builder <> "" Then DataOut = DataOut + "Releaser=" + ItemLLItem.Builder+Chr(10)
+		  If ItemLLItem.ReleaseDate <> "" Then DataOut = DataOut + "ReleaseDate=" + ItemLLItem.ReleaseDate+Chr(10)
+		  If ItemLLItem.License.ToString <> "" Then DataOut = DataOut + "License=" + ItemLLItem.License.ToString+Chr(10)
+		  If ItemLLItem.ReleaseVersion <> "" Then DataOut = DataOut + "ReleaseVersion=" + ItemLLItem.ReleaseVersion+Chr(10)
+		  
+		  
+		  'Shortcuts Here
+		  If BType = "SS" Then
+		    If LnkCount >= 1 Then
+		      For I = 1 To LnkCount
+		        If ItemLnk(I).Title = "" Then Continue 'Dud item, continue looping to next item
+		        DataOut = DataOut + "["+ItemLnk(I).Title+".lnk]"+Chr(10)
+		        If ItemLnk(I).Exec <> "" Then DataOut = DataOut + "Target="+ItemLnk(I).Exec+Chr(10)
+		        If ItemLnk(I).Associations <> "" Then DataOut = DataOut + "Extensions="+ItemLnk(I).Associations+Chr(10)
+		        If ItemLnk(I).Flags <> "" Then DataOut = DataOut + "Flags="+ItemLnk(I).Flags+Chr(10)
+		        If ItemLnk(I).Comment <> "" Then DataOut = DataOut + "Comment="+ItemLnk(I).Comment+Chr(10)
+		        If ItemLnk(I).Description <> "" Then DataOut = DataOut + "Description="+ItemLnk(I).Description+Chr(10)
+		      Next
+		    End If
+		    
+		  Else ' Linux Shortcut
+		    If LnkCount >= 1 Then
+		      For I = 1 To LnkCount
+		        If ItemLnk(I).Title = "" Then Continue 'Dud item, continue looping to next item
+		        DataOut = DataOut + "["+ItemLnk(I).Title+".desktop]"+Chr(10)
+		        If ItemLnk(I).Exec <> "" Then DataOut = DataOut + "Exec="+ItemLnk(I).Exec+Chr(10)
+		        If ItemLnk(I).Comment <> "" Then DataOut = DataOut + "Comment="+ItemLnk(I).Comment+Chr(10)
+		        If ItemLnk(I).RunPath <> "" Then DataOut = DataOut + "Path="+ItemLnk(I).RunPath+Chr(10)
+		        If ItemLnk(I).Categories <> "" Then DataOut = DataOut + "Categories="+ItemLnk(I).Categories+Chr(10)
+		        If ItemLnk(I).Associations <> "" Then DataOut = DataOut + "Extensions="+ItemLnk(I).Associations+Chr(10)
+		        If ItemLnk(I).Flags <> "" Then DataOut = DataOut + "Flags="+ItemLnk(I).Flags+Chr(10)
+		        If ItemLnk(I).Description <> "" Then DataOut = DataOut + "Description="+ItemLnk(I).Description+Chr(10)
+		        DataOut = DataOut + "Terminal="+ItemLnk(I).Terminal.ToString+Chr(10)
+		      Next
+		    End If
+		  End If
+		  
+		  
+		  If DataOut <> "" Then
+		    'Msgbox "Save To: "+LLFileOut
+		    'Msgbox DataOut
+		    SaveDataToFile(DataOut, LLFileOut) 'This should work, I may need to check here or somewhere (Editor) if I need to update a pre compressed item using the temp paths
+		    Return True ' Success
+		  Else
+		    Return False 'Failed
+		  End If
+		  
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -2951,6 +3142,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		Installing As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		InstallOnly As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -4041,6 +4236,14 @@ Protected Module LLMod
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="SettingsLoaded"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="InstallOnly"
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"

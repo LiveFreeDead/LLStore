@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -110,6 +113,39 @@ End
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h0
+		Sub CheckCompatible()
+		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
+		  
+		  Dim I As Integer
+		  Dim DeTest As String
+		  'Dim F As FolderItem
+		  
+		  'Check if App Path exists
+		  For I = 0 To Data.Items.RowCount - 1
+		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		    If DeTest <> "" Then 'Only do Items with Values set
+		      If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
+		      If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
+		        DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
+		        If DeTest <> "" Then 'Only do Items with Values set
+		          If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
+		            'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
+		            Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T"
+		          Else 'Not Compatible
+		            Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
+		          End If
+		        End If
+		      Else 'Not Compatible
+		        Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
+		      End If
+		    End If
+		  Next
+		  
+		  
+		End Sub
+	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub CheckForLLStoreUpdates()
@@ -1995,6 +2031,12 @@ End
 		    App.DoEvents(1)
 		    CheckInstalled
 		    
+		    'Check If Items Are Installed
+		    Loading.Status.Text = "Checking For Compatible Items..."
+		    Loading.Refresh
+		    App.DoEvents(1)
+		    CheckCompatible
+		    
 		    'Get Shortcut Redirects
 		    Loading.Status.Text = "Checking Shortcut Redirects..."
 		    Loading.Refresh
@@ -2308,7 +2350,7 @@ End
 		  
 		  'MsgBox  SysDesktopEnvironment
 		  
-		  Dim F As FolderItem
+		  Dim F, G As FolderItem
 		  Dim TI As TextInputStream
 		  Dim S As String
 		  Dim Success As Boolean
@@ -2327,12 +2369,35 @@ End
 		  
 		  'Get App Paths
 		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
-		  AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
-		  OldAppPath = AppPath
-		  AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE
-		  AppPath = Replace(AppPath,"Debugllstore\","") 'Use correct path when running from IDE in Windows
+		  If TargetWindows Then
+		    G = GetFolderItem("C:\Windows\LLStore\LLStore.exe",FolderItem.PathTypeShell) 'Pretend path for now, might move it to be system wide tool in System32
+		  Else
+		    G = GetFolderItem("/bin/llfile",FolderItem.PathTypeShell) 'Hardcoded path, will exist on LastOS's
+		  End If
 		  
-		  If AppPath <> OldAppPath Then RunningInIDE = True ' Found Debug executable, meaning in IDE
+		  If G.Exists Then 'Use LLFile path
+		    AppPath = G.Parent.NativePath
+		  Else 'This one works fine for the rest that aren't symlinks and Windows always works.
+		    F = App.ExecutableFile.Parent
+		    Do
+		      If Exist(Slash(F.ShellPath) + "Tools") Then
+		        Exit Do
+		      End If
+		      F = F.Parent
+		      If F = Nil Then
+		        MsgBox "Can't find exe path"
+		        Quit
+		        Exit
+		      End If
+		    Loop
+		    AppPath  = F.NativePath
+		  End If
+		  'AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
+		  OldAppPath = AppPath
+		  'AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE
+		  'AppPath = Replace(AppPath,"Debugllstore\","") 'Use correct path when running from IDE in Windows
+		  
+		  'If AppPath <> OldAppPath Then RunningInIDE = True ' Found Debug executable, meaning in IDE
 		  
 		  If TargetWindows Then 'Need to add Windows ppGames and Apps drives here
 		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
@@ -2420,8 +2485,6 @@ End
 		    ppGamesFolder = Slash(HomePath)+".wine/drive_c/ppGames/"
 		  End If
 		  
-		   
-		  
 		  'Make All paths Linux, because they work in Linux and Windows (Except for Move, Copy and Deltree etc)
 		  AppPath = AppPath.ReplaceAll("\","/")
 		  ToolPath = ToolPath.ReplaceAll("\","/")
@@ -2452,8 +2515,12 @@ End
 		  CleanTemp 'Clearing LLTemp folder entirly
 		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
 		  
-		  'Make Temp Folder
+		  'Make Temp Folders
 		  MakeFolder (TmpPath)
+		  
+		  'Make sure paths exist (But only once per execution)
+		  TmpPathItems = Slash(TmpPath)+"items/" 'Use Linux Paths for both OS's
+		  MakeFolder(TmpPathItems)
 		  
 		  'Make Local paths and Debug File
 		  #Pragma BreakOnExceptions Off
@@ -2480,6 +2547,7 @@ End
 		  
 		  If Debugging Then Debug("Starting Up")
 		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
+		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
 		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
 		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
 		  
@@ -2495,6 +2563,12 @@ End
 		  'Check the Arguments here and don't show if installer mode or editor etc
 		  Dim Args As String
 		  Args = System.CommandLine
+		  
+		  If Debugging Then Debug("Arguments: "+Args)
+		  
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llfile")-6) 'Will be 0 if it can't find it, meaning it'll keep tthe whole Argments and File name
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llapp")-5)
+		  
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore")-7)
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
 		  
@@ -2504,12 +2578,16 @@ End
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
 		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore
-		    If StoreMode = 3 Then
+		    If StoreMode = 2 Or StoreMode = 3 Then
 		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
 		    End If
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
+		    If ArgsSP(I).Lowercase = "-l" Then StoreMode = 1
+		    If ArgsSP(I).Lowercase = "-install" Then StoreMode = 2
+		    If ArgsSP(I).Lowercase = "-i" Then StoreMode = 2
 		    If ArgsSP(I).Lowercase = "-edit" Then StoreMode = 3
+		    If ArgsSP(I).Lowercase = "-e" Then StoreMode = 3
 		  Next
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
@@ -2556,24 +2634,80 @@ End
 		  'Load Settings
 		  LoadSettings
 		  
+		  'Get Actual CommandLineFile File if only a Folder is given
+		  If CommandLineFile <> "" Then
+		    'Need to convert ./ to $PWD etc
+		    
+		    
+		    If IsFolder(CommandLineFile) Then
+		      CommandLineFile = FixPath(Slash(CommandLineFile))
+		      'Check for app files here, if only given the path to an item
+		      If Exist (CommandLineFile+"LLApp.lla") Then CommandLineFile = CommandLineFile + "LLApp.lla"
+		      If Exist (CommandLineFile+"LLGame.llg") Then CommandLineFile = CommandLineFile + "LLGame.llg"
+		      If Exist (CommandLineFile+"ssApp.app") Then CommandLineFile = CommandLineFile + "ssApp.app"
+		      If Exist (CommandLineFile+"ppApp.app") Then CommandLineFile = CommandLineFile + "ppApp.app"
+		      If Exist (CommandLineFile+"ppGame.ppg") Then CommandLineFile = CommandLineFile + "ppGame.ppg"
+		    End If
+		  End If
+		  
+		  'If CommandLineFile <> "" Then MsgBox CommandLineFile
+		  
+		  'Install Mode
+		  If StoreMode = 2 Then
+		    InstallOnly = True
+		    #Pragma BreakOnExceptions Off
+		    'MsgBox "Check to Install: "+ CommandLineFile
+		    If CommandLineFile <> "" Then
+		      If Exist (CommandLineFile) Then 'Install it
+		        'MsgBox "Installing: "+ CommandLineFile
+		        Success = InstallLLFile (CommandLineFile)
+		        If Success Then 'Worked
+		          If Debugging Then Debug("Installed: "+ CommandLineFile)
+		        Else 'Failed
+		          If Debugging Then Debug("Error Failed Installing: "+ CommandLineFile)
+		        End If
+		      End If
+		    End If
+		    
+		    If Not TargetWindows Then 'Only make Sudo in Linux
+		      If SudoEnabled = True Then
+		        SudoEnabled = False
+		        ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
+		      End If
+		    End If
+		    PreQuitApp ' Save Debug etc
+		    QuitApp 'Done installing, exit app, no need to continue
+		    Return ' Just get out of here once set to show editor
+		  End If
+		  
 		  'Editor Mode
 		  If StoreMode = 3 Then
 		    EditorOnly = True
 		    'MsgBox "Loading: " + CommandLineFile
 		    #Pragma BreakOnExceptions Off
-		    
-		    Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
-		    If Success Then 
-		      'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString
-		      'MsgBox ItemLLItem.TitleName
+		    If CommandLineFile = "" Then
 		      Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
 		      Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
 		      Editor.PopulateData
 		      Editor.Show
-		    Else 'Failed to load item, just quit again
-		      QuitApp
-		      Return ' Just get out of here once set to quit
+		    Else
+		      Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
+		      If Success Then 
+		        'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString
+		        'MsgBox ItemLLItem.TitleName
+		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		        Editor.PopulateData
+		        Editor.Show
+		      Else 'Failed to load item, Show Editor
+		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		        Editor.PopulateData
+		        Editor.Show
+		      End If
 		    End If
+		    #Pragma BreakOnExceptions On
+		    Return ' Just get out of here once set to show editor
 		  End If
 		  
 		  'Using a timer at the end of Form open allows it to display, many events hold off other processes until the complete
