@@ -5253,7 +5253,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- Editor Opening")
+		  If Debugging Then Debug("--- Starting Editor Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
 	#tag EndEvent
@@ -5409,6 +5409,8 @@ End
 
 	#tag Method, Flags = &h0
 		Function SaveLLFileComplete() As Boolean
+		  If Debugging Then Debug("--- Starting SaveLLFileComplete ---")
+		  
 		  Dim INIFile As String
 		  
 		  Dim BTF As String = Slash(TextBuildToFolder.Text)

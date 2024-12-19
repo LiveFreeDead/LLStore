@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -116,6 +113,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckCompatible()
+		  If Debugging Then Debug("--- Starting Check Compatible ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  Dim I As Integer
@@ -149,6 +147,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckForLLStoreUpdates()
+		  If Debugging Then Debug("--- Starting Check For LLStore Updates ---")
 		  ForceQuit = False ' Need to do this if using downloader as that aborts if it's set
 		  
 		  Dim CurrentVersion As Double
@@ -254,6 +253,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckInstalled()
+		  If Debugging Then Debug("--- Starting Check Installed Items ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  DIm I As Integer
@@ -287,7 +287,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub ExtractAll()
-		  If Debugging Then Debug("---------- Extract All ----------")
+		  If Debugging Then Debug("--- Starting Extract All ---")
 		  
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call where it goes slow?, this also slows down loading a little
 		  
@@ -411,7 +411,7 @@ End
 		    Deltree(ScriptOutFile)
 		    Deltree(ScriptOutMkDirFile)
 		  End If
-		  If Debugging Then Debug("---------- End Extract All ----------")
+		  If Debugging Then Debug("--- End Extract All ---")
 		  
 		End Sub
 	#tag EndMethod
@@ -481,6 +481,73 @@ End
 		  Data.Categories.ColumnSortDirectionAt(0) = DesktopListBox.SortDirections.Ascending
 		  Data.Categories.Sort ()
 		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub GetAdminMode()
+		  'Check If Admin Mode
+		  If RunningInIDE = False Then
+		    If FirstRun = False Then 'Only check it the first run, else you already quit or decided to run without admin
+		      Quitting = False
+		      If TargetWindows Then
+		        If StoreMode = 0 Then 'If Install Mode then check has Admin
+		          If IsAdmin = False Then
+		            Dim LLStoreAppExe As FolderItem
+		            LLStoreAppExe = App.ExecutableFile
+		            If InStr(LLStoreAppExe.NativePath, "Debugllstore.exe") <= 0 Then 'Don't request Admin if debugging code
+		              
+		              Dim RetVal as Boolean
+		              RetVal = ShellExecuteEx(SEE_MASK_NOCLOSEPROCESS, _
+		              0, _ //Window handle
+		              StringToMB("runas"), _ //Operation to perform
+		              StringToMB(LLStoreAppExe.NativePath), _ //Application path and name
+		              StringToMB(System.CommandLine), _ //Additional parameters
+		              StringToMB(LLStoreAppExe.Parent.NativePath), _ //Working Directory
+		              SW_SHOWNORMAL, _
+		              0, _
+		              Nil, _
+		              Nil, _
+		              0, _
+		              0, _
+		              0, _
+		              0)
+		              
+		              Loading.Show
+		              App.DoEvents(1)
+		              
+		              If RetVal = False Then 'If denied UAC it will be false
+		                Dim Ret As Integer
+		                If StoreMode = 0 Then Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
+		                If Ret = 7 Then
+		                  ForceQuit = True
+		                  Quitting = True
+		                  QuitApp
+		                  'Return
+		                End If
+		              Else
+		                ForceQuit = True
+		                Quitting = True
+		                QuitApp
+		                'Return
+		              End If
+		            End If
+		            
+		          End If
+		        End If
+		      End If
+		      
+		      If TargetWindows Then 'Make sure this only happens in Windows or makes random file called %WinDir%...
+		        If IsAdmin = True Then AdminEnabled = True
+		      End If
+		    End If
+		  End If 'End of Check Admin
+		  
+		  If Quitting = True Then
+		    ForceQuit = True
+		    QuitApp
+		    Return ' If gets here then just return
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -863,6 +930,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub GetItemsPaths(Inn As String, ScanRoot As Boolean = False)
+		  If Debugging Then Debug("--- Starting Get Item Path ---")
 		  Dim F As FolderItem
 		  Dim DirToCheck As String
 		  Dim I As Integer
@@ -1160,6 +1228,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub HideOldVersions()
+		  If Debugging Then Debug("--- Starting Hide Old Versions ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  DIm I, J As Integer
@@ -1326,6 +1395,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub LoadSettings()
+		  If Debugging Then Debug("--- Starting Load Settings ---")
 		  Dim RL As String
 		  Dim F As FolderItem
 		  
@@ -1427,6 +1497,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub LoadTheme(ThemeName As String)
+		  If Debugging Then Debug("--- Starting Load Theme ---")
+		  
 		  'Load Wallpaper for main theme
 		  Dim F As FolderItem
 		  Dim ImgPath As String
@@ -1637,6 +1709,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub SaveAllDBs()
+		  If Debugging Then Debug("--- Starting Save All DBs ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  Dim H, G, F As FolderItem
@@ -1749,6 +1822,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub SaveSettings()
+		  If Debugging Then Debug("--- Starting Save Settings ---")
 		  If SettingsLoaded = False Then Return
 		  
 		  Dim RL As String
@@ -1844,69 +1918,7 @@ End
 		  'This disables errors from breaking/debugging in the IDE, disable to debug
 		  '# Pragma BreakOnExceptions False
 		  
-		  'Check If Admin Mode
-		  If RunningInIDE = False Then
-		    If FirstRun = False Then 'Only check it the first run, else you already quit or decided to run without admin
-		      Quitting = False
-		      If TargetWindows Then
-		        If StoreMode = 0 Then 'If Install Mode then check has Admin
-		          If IsAdmin = False Then
-		            Dim LLStoreAppExe As FolderItem
-		            LLStoreAppExe = App.ExecutableFile
-		            If InStr(LLStoreAppExe.NativePath, "Debugllstore.exe") <= 0 Then 'Don't request Admin if debugging code
-		              
-		              Dim RetVal as Boolean
-		              RetVal = ShellExecuteEx(SEE_MASK_NOCLOSEPROCESS, _
-		              0, _ //Window handle
-		              StringToMB("runas"), _ //Operation to perform
-		              StringToMB(LLStoreAppExe.NativePath), _ //Application path and name
-		              StringToMB(System.CommandLine), _ //Additional parameters
-		              StringToMB(LLStoreAppExe.Parent.NativePath), _ //Working Directory
-		              SW_SHOWNORMAL, _
-		              0, _
-		              Nil, _
-		              Nil, _
-		              0, _
-		              0, _
-		              0, _
-		              0)
-		              
-		              Loading.Show
-		              App.DoEvents(1)
-		              
-		              If RetVal = False Then 'If denied UAC it will be false
-		                Dim Ret As Integer
-		                If StoreMode = 0 Then Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
-		                If Ret = 7 Then
-		                  ForceQuit = True
-		                  Quitting = True
-		                  QuitApp
-		                  'Return
-		                End If
-		              Else
-		                ForceQuit = True
-		                Quitting = True
-		                QuitApp
-		                'Return
-		              End If
-		            End If
-		            
-		          End If
-		        End If
-		      End If
-		      
-		      If TargetWindows Then 'Make sure this only happens in Windows or makes random file called %WinDir%...
-		        If IsAdmin = True Then AdminEnabled = True
-		      End If
-		    End If
-		  End If 'End of Check Admin
-		  
-		  If Quitting = True Then
-		    ForceQuit = True
-		    QuitApp
-		    Return ' If gets here then just return
-		  End If
-		  
+		  If Debugging Then Debug("--- Starting LLStore FirstRunTimer ---")
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
@@ -2164,6 +2176,8 @@ End
 #tag Events DownloadTimer
 	#tag Event
 		Sub Action()
+		  If Debugging Then Debug("--- Starting Download Timer ---")
+		  
 		  Dim Test As String
 		  Dim I As Integer
 		  Dim LocalName As String
@@ -2208,7 +2222,7 @@ End
 		    'Check Remote file exist, else it'll fail
 		    Test = RunCommandResults("curl --head --silent " + Chr(34) + GetURL + Chr(34))
 		    
-		    If Debugging Then Debug(">> Download :"+ GetURL +" to " + QueueLocal(QueueUpTo) + " = "+ Test)
+		    If Debugging Then Debug(">> Download :"+ GetURL +" to " + QueueLocal(QueueUpTo) + " = "+ Left(Test,12))
 		    
 		    If Trim(Test) = "" Then 'No Internet or very dodgy item, just abort all internet and try the next item that gets sent here
 		      SaveDataToFile ("Failed Header Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
@@ -2545,7 +2559,7 @@ End
 		    Debugging = False
 		  End Try
 		  
-		  If Debugging Then Debug("Starting Up")
+		  If Debugging Then Debug("--- Starting LLStore VeryFirstRunTimer ---")
 		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
 		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
 		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
@@ -2651,6 +2665,11 @@ End
 		  End If
 		  
 		  'If CommandLineFile <> "" Then MsgBox CommandLineFile
+		  
+		  'Move from FirstRunTimer to here
+		  GetAdminMode
+		  
+		  
 		  
 		  'Install Mode
 		  If StoreMode = 2 Then

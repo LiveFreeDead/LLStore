@@ -625,7 +625,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- Main Opening")
+		  If Debugging Then Debug("--- Starting Main Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  
 		  TitleLabel.Text = "LLStore v"+ Str(App.MajorVersion)+"."+Str(App.MinorVersion) '+"."+Str(App.NonReleaseVersion)
@@ -1362,6 +1362,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub RunGame(GameIDIn As Integer, PickScreenRes As Boolean = False)
+		  If Debugging Then Debug("--- Starting Run Game ---")
+		  
 		  'MsgBox "Starting: " + Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("TitleName"))
 		  
 		  If GameIDIn = -1 Then Return 'No Item given

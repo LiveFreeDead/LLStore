@@ -636,7 +636,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- Settings Opening")
+		  If Debugging Then Debug("--- Starting Settings Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  
 		End Sub

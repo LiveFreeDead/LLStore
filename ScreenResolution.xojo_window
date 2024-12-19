@@ -248,7 +248,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- ScreenResolution Opening")
+		  If Debugging Then Debug("--- Starting ScreenResolution Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  ToggleCB (5) ' Select 1920x1080 by default
 		End Sub

@@ -169,7 +169,6 @@ Begin DesktopWindow MiniInstaller
       Width           =   80
    End
    Begin Thread InstallItems
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Priority        =   5
@@ -179,7 +178,6 @@ Begin DesktopWindow MiniInstaller
       Type            =   0
    End
    Begin Timer UpdateUI
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -210,7 +208,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- MiniInstaller Opening")
+		  If Debugging Then Debug("--- Starting MiniInstaller Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
 	#tag EndEvent

@@ -341,7 +341,7 @@ End
 
 	#tag Event
 		Sub Opening()
-		  Debug("-- Data Opening")
+		  If Debugging Then Debug("--- Starting Data Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		  ClearData
 		End Sub
@@ -350,6 +350,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub ClearData()
+		  If Debugging Then Debug("--- Starting Clear Data ---")
 		  Dim  I, CurrentColumn As Integer
 		  Dim ColumnsTitle As String
 		  Dim RL As String
@@ -416,6 +417,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub ClearLocalDBData()
+		  If Debugging Then Debug("--- Starting Clear LocalDB Data ---")
+		  
 		  Dim  I, CurrentColumn As Integer
 		  Dim ColumnsTitle As String
 		  Dim SP() As String

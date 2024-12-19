@@ -45,6 +45,8 @@ Protected Module LLMod
 		    End If
 		  #EndIf
 		  
+		  If Debugging Then Debug("ChDirSet: "+myPath)
+		  
 		  Return Success
 		  
 		End Function
@@ -52,6 +54,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub CleanTemp()
+		  If Debugging Then Debug("--- Starting Clean Temp ---")
+		  
 		  If TmpPath <> "" Then
 		    If Exist(TmpPath) Then
 		      
@@ -78,6 +82,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function CompPath(PathIn As String, SkipAppPath As Boolean = False) As String
+		  If Debugging Then Debug("CompPath: " + PathIn)
+		  
 		  If SkipAppPath =False Then
 		    PathIn = PathIn.ReplaceAll(ItemLLItem.PathApp.ReplaceAll("\","/"),"%AppPath%") ' Convert Windows paths to Linux paths, makes the DB cross platform compatible
 		    PathIn = PathIn.ReplaceAll(ItemLLItem.PathINI.ReplaceAll("\","/"),"%INIPath%")
@@ -109,6 +115,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub Copy(FileIn As String, FileOut As String)
+		  If Debugging Then Debug("Copy "+ FileIn +" To " + FileOut)
 		  'I may update this routune to new methods, but works for now using Xojo method - Glenn 2027
 		  
 		  Dim F, G As FolderItem
@@ -133,6 +140,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String)
+		  If Debugging Then Debug("--- Starting Create Shortcuts ---")
+		  
 		  Dim scWorkingDir As FolderItem
 		  
 		  'Dim scTarget As FolderItem
@@ -194,6 +203,8 @@ Protected Module LLMod
 		  
 		  S = S.Trim
 		  
+		  If Debugging Then Debug("Deltree: " + S)
+		  
 		  'Delete Folders
 		  If TargetWindows Then
 		    Sh.Execute ("rmdir /q /s " + Chr(34)+S+Chr(34)) 'Don't use RunCommand or it becomes recursive as it uses this routine to clean up
@@ -219,6 +230,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub EnableSudoScript()
+		  If Debugging Then Debug("--- Starting Enable Sudo Script ---")
+		  
 		  Dim F As FolderItem
 		  Dim Test As Boolean
 		  
@@ -244,8 +257,12 @@ Protected Module LLMod
 		        
 		        if SudoShellLoop.IsRunning = True Then
 		          SudoEnabled = True
+		          
+		          If Debugging Then Debug("Sudo Enabled: " +SudoEnabled.ToString)
 		        Else
 		          SudoEnabled = False
+		          
+		          If Debugging Then Debug("Sudo Enabled: " +SudoEnabled.ToString)
 		        End If
 		      End If
 		    End If
@@ -266,10 +283,13 @@ Protected Module LLMod
 		    F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
 		    If F <> Nil Then
 		      'MsgBox "FOUND!"
+		      'If Debugging Then Debug("Exist: "+FileIn +" = True")  'Too many calls to log it really
 		      If F.Exists Then Return True
 		    End If
+		    'If Debugging Then Debug("Exist: "+FileIn +" = False") 'Too many calls to log it really
 		    Return False
 		  Catch
+		    'If Debugging Then Debug("Exist: "+FileIn +" = False") 'Too many calls to log it really
 		    Return False
 		  End Try
 		  
@@ -279,6 +299,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function ExpPath(PathIn As String, WinPaths As Boolean = False) As String
+		  'If Debugging Then Debug("ExpPath = " +PathIn) 'Too Many calls to bother logging
+		  
 		  Dim UserName As String
 		  
 		  PathIn = PathIn.ReplaceAll("\", "/")
@@ -377,6 +399,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function ExpPathReg(PathIn As String, WinPaths As Boolean = False) As String
+		  If Debugging Then Debug("ExpReg = " +PathIn)
+		  
 		  Dim UserName As String
 		  
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
@@ -540,6 +564,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function ExpPathScript(PathIn As String, WinPaths As Boolean = False) As String
+		  If Debugging Then Debug("ExpPathScript = " +PathIn)
 		  Dim UserName As String
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
 		  
@@ -648,7 +673,7 @@ Protected Module LLMod
 		  F = GetFolderItem(OrigScript, FolderItem.PathTypeShell)
 		  
 		  'ScriptFile = Slash(FixPath(F.Parent.NativePath)+"Expanded_Registry.reg") 'Use InstallFrom Drive, not Temp
-		  ScriptFile = Slash(FixPath(TmpPath)+"Expanded_Script.cmd")
+		  ScriptFile = Slash(FixPath(TmpPath))+"Expanded_Script.cmd"
 		  
 		  'Load in whole file at once (Fastest Method)
 		  inputStream = TextInputStream.Open(F)
@@ -683,10 +708,10 @@ Protected Module LLMod
 		  F = GetFolderItem(OrigScript, FolderItem.PathTypeShell)
 		  
 		  If Right(OrigScript,3) = ".sh" Then
-		    ScriptFile = Slash(FixPath(TmpPath)+"Expanded_Script.sh")
+		    ScriptFile = Slash(FixPath(TmpPath))+"Expanded_Script.sh"
 		  Else
 		    'ScriptFile = Slash(FixPath(F.Parent.NativePath)+"Expanded_Script.cmd") 'Use InstallFrom folder, not Temp
-		    ScriptFile = Slash(FixPath(TmpPath)+"Expanded_Script.cmd")
+		    ScriptFile = Slash(FixPath(TmpPath))+"Expanded_Script.cmd"
 		  End If
 		  
 		  If MakeSudo Then 'Make it ready to run from Sudo directly
@@ -729,6 +754,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function Extract(Archive As String, OutPath As String, ExcludesIncludes As String, Fast As Boolean = False) As Boolean
+		  If Debugging Then Debug("--- Starting Extract ---")
 		  Dim Commands As String
 		  Dim F As FolderItem
 		  Dim AssemblyFile, AssemblyContent As String
@@ -757,13 +783,14 @@ Protected Module LLMod
 		      Do
 		        App.DoEvents(7)  ' used to be 50, trying 7 to see if more responsive. - It is
 		      Loop Until Sh.IsRunning = False
+		      If Debugging Then Debug(Sh.Result)
 		    Else
 		      If Right(Archive,3) = ".gz" Then
 		        Sh.Execute ("tar -xf " + Chr(34) + Archive + Chr(34) + " -C " + Chr(34) + OutPath + Chr(34) + ExcludesIncludes)
 		        Do
 		          App.DoEvents(7)  ' used to be 50, trying 7 to see if more responsive. - It is
 		        Loop Until Sh.IsRunning = False
-		        
+		        If Debugging Then Debug(Sh.Result)
 		      Else 'Just treat it as a standard non Linux zip, 7z etc works fine for this as it doesn't need to handle symlinks (7z can't extract tar.gz files)
 		        Commands = Zip + " -mtc -aoa x "+Chr(34)+Archive+Chr(34)+ " -o"+Chr(34) + OutPath+Chr(34)+ExcludesIncludes
 		        If TargetWindows Then
@@ -773,6 +800,7 @@ Protected Module LLMod
 		          Do
 		            App.DoEvents(7)  ' used to be 50, trying 7 to see if more responsive. - It is
 		          Loop Until Sh.IsRunning = False
+		          If Debugging Then Debug(Sh.Result)
 		        End If
 		      End If
 		    End If
@@ -1045,7 +1073,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function InstallLLFile(FileIn As String) As Boolean
-		  
+		  If Debugging Then Debug("--- Starting Install LLFile ---")
 		  If TargetWindows Then
 		    FileIn = FileIn.ReplaceAll("/","\") 'Make it more windowsy so it works better when installing from windows
 		  End If
@@ -1071,7 +1099,10 @@ Protected Module LLMod
 		  
 		  'SaveDataToFile("Loading "+FileIn+" "+Str(Success)+Chr(10)+TempInstall+Chr(10)+ItemTempPath, SpecialFolder.Desktop.NativePath+"/Debug1.txt")
 		  
-		  If Success = False Then Return False ' Couldn't Load Item
+		  If Success = False Then
+		    If Debugging Then Debug("* Error: Failed - Aborting Install")
+		    Return False ' Couldn't Load Item
+		  End If
 		  
 		  'Make sure Sudo is available during ANY install (if not required for instaling one item then can skip it)
 		  If InstallOnly Then
@@ -1091,9 +1122,13 @@ Protected Module LLMod
 		    InstallFromPath = ItemTempPath 'Use the Temp Path from extracting the Item for everything it needs
 		  End If
 		  
+		  If Debugging Then Debug("Installing From Path: "+ InstallFromPath)
+		  
 		  If ItemLLItem.NoInstall = False Then 'Has a Destination Path
 		    
 		    InstallToPath = Slash(ExpPath(ItemLLItem.PathApp))
+		    
+		    If Debugging Then Debug("Installing To Path: "+ InstallToPath)
 		    
 		    'Change to App/Games INI Path to run Assemblys from
 		    'MsgBox "Current Path: " + InstallFromPath
@@ -1185,7 +1220,9 @@ Protected Module LLMod
 		        
 		        if Not TargetWindows Then 'Only Linux needs this, Win doesn't
 		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(InstallToPath) + "*.cmd"+Chr(34)) 'Change Read/Write/Execute to defaults
+		          If Debugging Then Debug("Shell Fast Execute: "+"chmod 775 "+Chr(34)+Slash(InstallToPath) + "*.cmd"+Chr(34)+Chr(10)+"Results: " + ShellFast.Result )
 		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(InstallToPath) + "*.sh"+Chr(34)) 'Change Read/Write/Execute to defaults
+		          If Debugging Then Debug("Shell Fast Execute: "+"chmod 775 "+Chr(34)+Slash(InstallToPath) + "*.sh"+Chr(34)+Chr(10)+"Results: " + ShellFast.Result )
 		        End If
 		      End If
 		    End If
@@ -1227,6 +1264,7 @@ Protected Module LLMod
 		    
 		    'InstallToPath = InstallFromPath when a NoInstall item
 		    InstallToPath = InstallFromPath
+		    If Debugging Then Debug("Installing From/ No Output To Path: "+ InstallFromPath)
 		    
 		    'Change to App/Games INI Path to run Assemblys from
 		    If ChDirSet(InstallFromPath) = True Then ' Was successful
@@ -1833,6 +1871,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MakeAllExec(PathIn As String)
+		  If Debugging Then Debug("Make All Exec: "+ PathIn)
+		  
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1 'Give it All the time it needs
 		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
@@ -1848,6 +1888,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MakeFolder(Txt as String)
+		  If Debugging Then Debug("Make Folder: "+Txt)
 		  Dim F As FolderItem
 		  Dim Path As String
 		  Dim Sh As New Shell
@@ -1885,6 +1926,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MakeLinks()
+		  If Debugging Then Debug("--- Starting Make Links ---")
+		  
 		  Dim I, J, K, L As Integer
 		  Dim Target As String
 		  Dim DesktopFile, DesktopContent, DesktopOutPath As String
@@ -2127,7 +2170,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub Move(Source As String, Dest As String)
-		  
+		  If Debugging Then Debug("Move: "+Source + " To "+Dest)
 		  If Source = "" Or Source.Length <= 4 Then Return 'Don't remove short paths, it's dangerous to do them as mistakes happen
 		  If Dest = "" Or Dest.Length <= 4 Then Return 'Don't remove short paths, it's dangerous to do them as mistakes happen
 		  
@@ -2198,6 +2241,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MoveLinks()
+		  If Debugging Then Debug("--- Starting Move Links ---")
 		  Dim DaBugs As String
 		  
 		  Dim Debugger As String
@@ -2350,6 +2394,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub PreQuitApp()
+		  If Debugging Then Debug("--- Starting Pre Quit LLStore ---")
 		  'MsgBox "Pre Quitting"
 		  
 		  Loading.SaveSettings
@@ -2365,6 +2410,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub QuitApp()
+		  If Debugging Then Debug("--- Quitting LLStore ---")
 		  ForceQuit = True
 		  Quit ' This Works on Compiled Versions, test if Windows is OK too, dont know why it was being so problematic.
 		  'was 24 r4 causing issues
@@ -2418,6 +2464,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunAssembly()
+		  If Debugging Then Debug("--- Starting Run Assembly ---")
+		  
 		  Dim Shelly As New Shell
 		  Dim StillActive As Boolean = True
 		  
@@ -2465,6 +2513,7 @@ Protected Module LLMod
 		    While Shelly.IsRunning 
 		      App.DoEvents(7)
 		    Wend
+		    If Debugging Then Debug("Assembly Return: "+ Shelly.Result)
 		    
 		    'Delete the temp script I run
 		    #Pragma BreakOnExceptions Off
@@ -2479,6 +2528,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunCommand(CmdIn As String, FoldIn As String = "")
+		  If Debugging Then Debug("--- Starting Run Command ---")
+		  
 		  Dim Sh As New Shell
 		  Dim Success As Boolean
 		  
@@ -2515,6 +2566,7 @@ Protected Module LLMod
 		      While Sh.IsRunning
 		        App.DoEvents(1)
 		      Wend
+		      If Debugging Then Debug(Sh.Result)
 		      
 		    End If
 		  End If
@@ -2523,6 +2575,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function RunCommandResults(CmdIn As String, FoldIn As String = "") As String
+		  If Debugging Then Debug("--- Starting Run Command Results ---")
 		  Dim Sh As New Shell
 		  Dim Success As Boolean
 		  
@@ -2547,6 +2600,7 @@ Protected Module LLMod
 		        While Sh.IsRunning
 		          App.DoEvents(1)
 		        Wend
+		        If Debugging Then Debug(Sh.Result)
 		        
 		        'Delete Temp Script
 		        F.Remove
@@ -2561,6 +2615,7 @@ Protected Module LLMod
 		      While Sh.IsRunning
 		        App.DoEvents(1)
 		      Wend
+		      If Debugging Then Debug(Sh.Result)
 		    End If
 		    
 		    'For Both
@@ -2573,6 +2628,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunRegistry()
+		  If Debugging Then Debug("--- Starting Run Registry ---")
+		  
 		  Dim FileToUse As String
 		  Dim ScriptFile As String
 		  
@@ -2604,6 +2661,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunScripts()
+		  If Debugging Then Debug("--- Starting Run Scripts ---")
+		  
 		  Dim ScriptFile As String
 		  
 		  Dim Shelly As New Shell
@@ -2626,6 +2685,7 @@ Protected Module LLMod
 		      While Shelly.IsRunning
 		        App.DoEvents(7)
 		      Wend
+		      If Debugging Then Debug("Script Return (.sh): "+ Shelly.Result)
 		    End If
 		    
 		  End If
@@ -2642,12 +2702,15 @@ Protected Module LLMod
 		    While Shelly.IsRunning
 		      App.DoEvents(7)
 		    Wend
+		    If Debugging Then Debug("Script Return (.cmd): "+ Shelly.Result)
 		  End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub RunSudoScripts()
+		  If Debugging Then Debug("--- Starting Run Sudo Scripts ---")
+		  
 		  Dim Sh As New Shell
 		  
 		  Sh.ExecuteMode = Shell.ExecuteModes.Synchronous
@@ -2717,6 +2780,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub SaveDataToFile(Data As String, FileIn As String)
+		  If Debugging Then Debug("Save Data To File: "+ FileIn)
+		  
 		  Dim F As FolderItem
 		  Dim T As TextOutputStream
 		  
@@ -2744,6 +2809,9 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function SaveLLFile(SaveToPath As String) As Boolean
+		  If Debugging Then Debug("--- Save LLFile ---")
+		  If Debugging Then Debug("Save To: "+ SaveToPath)
+		  
 		  If ItemLLItem.TitleName = "" Or ItemLLItem.BuildType = "" Then
 		    MsgBox "Title or BuildType not set, Failed!"
 		    Return False
@@ -2912,6 +2980,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub XCopy(InPath As String, OutPath As String)
+		  If Debugging Then Debug("XCopy: "+ InPath +" To " + OutPath)
 		  RunCommand("xcopy.exe /E /C /I /H /Q /R /J /O /Y " +Chr(34) + InPath +Chr(34) +" "+Chr(34)+ OutPath +Chr(34)) ' Don't use linix paths here, xcopy may be fussy
 		  
 		End Sub
@@ -2919,6 +2988,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub XCopyFile(InPath As String, OutPath As String)
+		  If Debugging Then Debug("XCopy: "+ InPath +" To " + OutPath)
+		  
 		  RunCommand("xcopy.exe /C /I /H /Q /R /J /O /Y " +Chr(34) + InPath +Chr(34) +" "+Chr(34)+OutPath+Chr(34))
 		End Sub
 	#tag EndMethod
