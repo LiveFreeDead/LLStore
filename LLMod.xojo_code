@@ -3030,6 +3030,7 @@ Protected Module LLMod
 		  
 		  Dim I As Integer
 		  Dim DataOut As String
+		  Dim FlagsOut As String
 		  Dim LLFileOut, OutFile As String
 		  Dim BType As String
 		  
@@ -3100,7 +3101,6 @@ Protected Module LLMod
 		  If ItemLLItem.License.ToString <> "" Then DataOut = DataOut + "License=" + ItemLLItem.License.ToString+Chr(10)
 		  If ItemLLItem.ReleaseVersion <> "" Then DataOut = DataOut + "ReleaseVersion=" + ItemLLItem.ReleaseVersion+Chr(10)
 		  
-		  
 		  'Shortcuts Here
 		  If BType = "SS" Then
 		    If LnkCount >= 1 Then
@@ -3129,6 +3129,15 @@ Protected Module LLMod
 		        If ItemLnk(I).Flags <> "" Then DataOut = DataOut + "Flags="+ItemLnk(I).Flags+Chr(10)
 		        If ItemLnk(I).Description <> "" Then DataOut = DataOut + "Description="+ItemLnk(I).Description+Chr(10)
 		        DataOut = DataOut + "Terminal="+ItemLnk(I).Terminal.ToString+Chr(10)
+		        
+		        'Do ShowOn
+		        FlagsOut = ""
+		        If ItemLnk(I).Desktop = True Then  FlagsOut = FlagsOut + "desktop "
+		        If ItemLnk(I).Panel = True Then  FlagsOut = FlagsOut + "panel "
+		        If ItemLnk(I).Favorite = True Then  FlagsOut = FlagsOut + "favorite "
+		        FlagsOut = FlagsOut.Trim
+		        If FlagsOut <> "" Then DataOut = DataOut + "ShowOn="+FlagsOut+Chr(10)
+		        
 		      Next
 		    End If
 		  End If

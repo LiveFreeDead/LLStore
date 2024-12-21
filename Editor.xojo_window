@@ -5417,11 +5417,47 @@ End
 		  If Debugging Then Debug("--- Starting SaveLLFileComplete ---")
 		  
 		  Dim INIFile As String
+		  Dim I As Integer
 		  
 		  Dim BTF As String = Slash(TextBuildToFolder.Text)
 		  Dim BT As String = ItemLLItem.BuildType
 		  
+		  Dim FlagsOut As String
+		  
 		  If Exist (BTF) Then 'Only build if a good output path
+		    
+		    'Build Item Flags
+		    FlagsOut = ""
+		    If ItemLLItem.Hidden = True Then FlagsOut = FlagsOut + "hidden "
+		    If ItemLLItem.HiddenAlways = True Then FlagsOut = FlagsOut + "alwayshide "
+		    If ItemLLItem.ShowSetupOnly = True Then  FlagsOut = FlagsOut + "showsetuponly "
+		    If ItemLLItem.InternetRequired = True Then  FlagsOut = FlagsOut + "internetrequired "
+		    If ItemLLItem.NoInstall = True Then  FlagsOut = FlagsOut + "noinstall "
+		    ItemLLItem.Flags = FlagsOut.Trim
+		    
+		    'Build Link Flags
+		    If LnkCount >= 1 Then
+		      For I = 1 To LnkCount
+		        If ItemLnk(I).Title.Trim <> "" Then
+		          'Skipping Flags for now
+		          'FlagsOut = ""
+		          ''If ItemLnk(I).Desktop = True Then FlagsOut = FlagsOut + "hidden "
+		          'ItemLnk(I).Flags = FlagsOut.Trim
+		          
+		          'Case "terminal"
+		          'If LineData = "True" Then ItemLnk(LnkEditing).Terminal= True Else ItemLnk(LnkEditing).Terminal= False
+		          '
+		          'Case "showon"
+		          'If OrigLine.IndexOf("desktop") >= 1 Then ItemLnk(LnkEditing).Desktop = True Else ItemLnk(LnkEditing).Desktop = False
+		          'If OrigLine.IndexOf("panel") >= 1  Then ItemLnk(LnkEditing).Panel = True Else ItemLnk(LnkEditing).Panel = False
+		          'If OrigLine.IndexOf("favorite") >= 1 Then ItemLnk(LnkEditing).Favorite = True Else ItemLnk(LnkEditing).Favorite = False
+		          
+		          
+		        End If
+		      Next
+		    End If
+		    
+		    
 		    If SaveLLFile (BTF) = True Then
 		      'Copy the new Pictures here (They get re-added to the compressed item along with the LLFile)
 		      
