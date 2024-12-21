@@ -3123,6 +3123,7 @@ Protected Module LLMod
 		        If ItemLnk(I).Exec <> "" Then DataOut = DataOut + "Exec="+ItemLnk(I).Exec+Chr(10)
 		        If ItemLnk(I).Comment <> "" Then DataOut = DataOut + "Comment="+ItemLnk(I).Comment+Chr(10)
 		        If ItemLnk(I).RunPath <> "" Then DataOut = DataOut + "Path="+ItemLnk(I).RunPath+Chr(10)
+		        If ItemLnk(I).Icon <> "" Then DataOut = DataOut + "Icon="+ItemLnk(I).Icon+Chr(10)
 		        If ItemLnk(I).Categories <> "" Then DataOut = DataOut + "Categories="+ItemLnk(I).Categories+Chr(10)
 		        If ItemLnk(I).Associations <> "" Then DataOut = DataOut + "Extensions="+ItemLnk(I).Associations+Chr(10)
 		        If ItemLnk(I).Flags <> "" Then DataOut = DataOut + "Flags="+ItemLnk(I).Flags+Chr(10)

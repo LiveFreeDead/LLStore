@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   0
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -5317,13 +5317,12 @@ End
 		  
 		  
 		  'Main Window 2 - Links
-		  ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
-		  
 		  TextDefaultMenuPath.Text = ""
 		  TextKeepShortcuts.Text = ""
 		  CheckKeepFolder.Value = False
 		  CheckKeepAll.Value = False
 		  ComboShortcut.Text = ""
+		  TextNewShortcut.Text = ""
 		  TextComment.Text = ""
 		  TextExecute.Text = ""
 		  TextRunInPath.Text = ""
@@ -5339,9 +5338,15 @@ End
 		  CheckSendTo.Value = False
 		  CheckShowFavorites.Value = False
 		  
+		  ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
 		  If LnkCount >= 1 Then
 		    For I = 1 To LnkCount
-		      ComboShortcut.AddRow(ItemLnk(I).Title)
+		      If ItemLnk(I).Title <> "" Then 'Blank Items get ignored
+		        ComboShortcut.AddRow(ItemLnk(I).Title)
+		        EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		        ComboShortcut.RowTagAt(EditingCBLnk) = I
+		        EditingLnk = I
+		      End If
 		    Next
 		    ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
 		  End If
@@ -5522,6 +5527,15 @@ End
 	#tag EndMethod
 
 
+	#tag Property, Flags = &h0
+		EditingCBLnk As Integer = -1
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		EditingLnk As Integer = -1
+	#tag EndProperty
+
+
 #tag EndWindowCode
 
 #tag Events ButtonBrowseIncludeFolder
@@ -5620,23 +5634,293 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events TextNewShortcut
+	#tag Event
+		Sub KeyUp(key As String)
+		  Dim NewShortName As String
+		  Select Case Asc(key)
+		  Case 13 ' Enter Pressed
+		    'Add new shortcut
+		    NewShortName = TextNewShortcut.Text
+		    If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
+		      LnkCount = LnkCount + 1 'Add one
+		      ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
+		      ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
+		      EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		      ComboShortcut.SelectedRowIndex = EditingCBLnk 'Jumps to newly added item
+		      ComboShortcut.RowTagAt(EditingCBLnk) = LnkCount
+		      EditingLnk = LnkCount
+		    End If
+		    
+		    'Clear Text Field and hide it again
+		    TextNewShortcut.Text = ""
+		    TextNewShortcut.Visible = False
+		    
+		    
+		    TextComment.Text = ""
+		    TextExecute.Text = ""
+		    'TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
+		    TextIcon.Text = ""
+		    TextFileTypes.Text = ""
+		    TextDescriptionLink.Text = ""
+		    TextFlags.Text = ""
+		    'TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
+		    CheckRunInTerminal.Value = False
+		    CheckSendTo.Value = False
+		    CheckShowDesktop.Value  = False
+		    CheckShowFavorites.Value  = False
+		    CheckSendTo.Value = False
+		    CheckShowPanel.Value  = False
+		    
+		  End Select
+		  
+		  
+		  
+		  ''Main Window 2 - Links
+		  'ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
+		  '
+		  'TextDefaultMenuPath.Text = ""
+		  'TextKeepShortcuts.Text = ""
+		  'CheckKeepFolder.Value = False
+		  'CheckKeepAll.Value = False
+		  'ComboShortcut.Text = ""
+		  'TextComment.Text = ""
+		  'TextExecute.Text = ""
+		  'TextRunInPath.Text = ""
+		  'TextIcon.Text = ""
+		  'TextFileTypes.Text = ""
+		  'TextDescriptionLink.Text = ""
+		  'TextFlags.Text = ""
+		  'ComboMenuCatalog.Text = ""
+		  'TextMenuCatalog.Text = ""
+		  'CheckRunInTerminal.Value = False
+		  'CheckShowDesktop.Value = False
+		  'CheckShowPanel.Value = False
+		  'CheckSendTo.Value = False
+		  'CheckShowFavorites.Value = False
+		  '
+		  'If LnkCount >= 1 Then
+		  'For I = 1 To LnkCount
+		  'ComboShortcut.AddRow(ItemLnk(I).Title)
+		  'Next
+		  'ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
+		  'End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonAddShortcut
+	#tag Event
+		Sub Pressed()
+		  TextNewShortcut.Visible = True
+		  TextNewShortcut.SetFocus
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonRemoveShortcut
+	#tag Event
+		Sub Pressed()
+		  Dim I As Integer
+		  If EditingLnk = -1 Then Return 'Nothing Selected, just get out of here
+		  
+		  ItemLnk(EditingLnk).Title = "" 'Settings to blank pretty much deletes it
+		  ComboShortcut.RemoveAllRows 'Clear the Existing Shortcuts
+		  If LnkCount >= 1 Then
+		    For I = 1 To LnkCount
+		      If ItemLnk(I).Title <> "" Then 'Blank Items get ignored
+		        ComboShortcut.AddRow(ItemLnk(I).Title)
+		        EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		        ComboShortcut.RowTagAt(EditingCBLnk) = I
+		        EditingLnk = I
+		      End If
+		    Next
+		    ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
+		  End If
+		  
+		  
+		  ''If ItemLnk(I).Title = "" Then Continue 'Dud item, continue looping to next item
+		  '
+		  ''If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
+		  ''LnkCount = LnkCount + 1 'Add one
+		  ''ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
+		  ''ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
+		  ''ComboShortcut.SelectedRowIndex = ComboShortcut.LastAddedRowIndex 'Jumps to newly added item
+		  ''End If
+		  '
+		  ''ComboShortcut.SelectedRowText = "" 'Clear the items it's currently on
+		  '
+		  'TextComment.Text = ""
+		  'TextExecute.Text = ""
+		  ''TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
+		  'TextIcon.Text = ""
+		  'TextFileTypes.Text = ""
+		  'TextDescriptionLink.Text = ""
+		  'TextFlags.Text = ""
+		  ''TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
+		  'CheckRunInTerminal.Value = False
+		  'CheckSendTo.Value = False
+		  'CheckShowDesktop.Value = False
+		  'CheckShowFavorites.Value = False
+		  'CheckSendTo.Value = False
+		  'CheckShowPanel.Value = False
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events ComboShortcut
 	#tag Event
 		Sub SelectionChanged(item As DesktopMenuItem)
-		  TextComment.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Comment '+1 because it's 0 based
-		  TextExecute.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Exec
-		  TextRunInPath.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).RunPath
-		  TextIcon.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Icon
-		  TextFileTypes.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Associations
-		  TextDescriptionLink.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Description.ReplaceAll(Chr(30), Chr(13)) '13 instead of 10 for Text Areas
-		  CheckRunInTerminal.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Terminal
-		  CheckShowDesktop.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Desktop
-		  CheckShowPanel.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Panel
-		  CheckShowFavorites.Value = ItemLnk(ComboShortcut.SelectedRowIndex+1).Favorite
+		  EditingCBLnk = ComboShortcut.SelectedRowIndex
+		  EditingLnk = ComboShortcut.RowTagAt(EditingCBLnk)
 		  
-		  TextFlags.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Flags
+		  TextComment.Text = ItemLnk(EditingLnk).Comment '+1 because it's 0 based
+		  TextExecute.Text = ItemLnk(EditingLnk).Exec
+		  TextRunInPath.Text = ItemLnk(EditingLnk).RunPath
+		  TextIcon.Text = ItemLnk(EditingLnk).Icon
+		  TextFileTypes.Text = ItemLnk(EditingLnk).Associations
+		  TextDescriptionLink.Text = ItemLnk(EditingLnk).Description.ReplaceAll(Chr(30), Chr(13)) '13 instead of 10 for Text Areas
+		  CheckRunInTerminal.Value = ItemLnk(EditingLnk).Terminal
+		  CheckShowDesktop.Value = ItemLnk(EditingLnk).Desktop
+		  CheckShowPanel.Value = ItemLnk(EditingLnk).Panel
+		  CheckShowFavorites.Value = ItemLnk(EditingLnk).Favorite
 		  
-		  TextMenuCatalog.Text = ItemLnk(ComboShortcut.SelectedRowIndex+1).Categories.ReplaceAll(" ", Chr(13)) 'Make Multi Line, not ; seperated
+		  TextFlags.Text = ItemLnk(EditingLnk).Flags
+		  
+		  TextMenuCatalog.Text = ItemLnk(EditingLnk).Categories.ReplaceAll(" ", Chr(13)) 'Make Multi Line, not ; seperated
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextComment
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Comment = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextExecute
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Exec = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextRunInPath
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount And EditingLnk >= 0  Then ' Just a precaution
+		      ItemLnk(EditingLnk).RunPath = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextIcon
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount And EditingLnk >= 0  Then ' Just a precaution
+		      ItemLnk(EditingLnk).Icon = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextFileTypes
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Associations = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextDescriptionLink
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Description = Me.Text.Trim
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextMenuCatalog
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Categories = Me.Text.Trim.ReplaceAll(Chr(10)," ")' Drop the  EOL and keep it spaced like used in the LLFile
+		      ItemLnk(EditingLnk).Categories = ItemLnk(EditingLnk).Categories.ReplaceAll(Chr(13)," ")
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckRunInTerminal
+	#tag Event
+		Sub ValueChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Terminal = Me.Value
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckShowDesktop
+	#tag Event
+		Sub ValueChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And LnkCount >= 0Then ' Just a precaution
+		      ItemLnk(EditingLnk).Desktop = Me.Value
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckShowPanel
+	#tag Event
+		Sub ValueChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Panel = Me.Value
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckShowFavorites
+	#tag Event
+		Sub ValueChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
+		      ItemLnk(EditingLnk).Favorite = Me.Value
+		    End If
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckSendTo
+#tag EndEvents
+#tag Events TextFlags
+	#tag Event
+		Sub TextChanged()
+		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		    If EditingLnk <= LnkCount And EditingLnk >= 0  Then ' Just a precaution
+		      ItemLnk(EditingLnk).Flags = Me.Text.Trim
+		    End If
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
