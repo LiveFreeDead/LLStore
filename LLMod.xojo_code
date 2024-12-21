@@ -650,6 +650,20 @@ Protected Module LLMod
 		  'Do This Last so can conver subpaths above first
 		  PathIn = PathIn.ReplaceAll("$HOME", NoSlash(HomePath))
 		  
+		  
+		  'Add MSI installer to lines that have a .msi in them
+		  If Left(PathIn.Lowercase,3) = "rem" Then 'skip rem lines, incase it's not suposed to run.
+		  Else
+		    If PathIn.IndexOf(".msi") >=1 Then
+		      If Left(PathIn,7) <> "msiexec" Then
+		        'If Left(PathIn,1)<>Chr(34) Then 'Need to check for end of .msi and remove /qb if it's an issue
+		        PathIn = "msiexec /quiet /norestart /i "+PathIn
+		      Else
+		      End If
+		    End If
+		  End If
+		  
+		  
 		  Return PathIn
 		  
 		  'Glenn Add Below so that it handles Scripts Parsing
@@ -733,10 +747,18 @@ Protected Module LLMod
 		      If I = 1 Then
 		        If Sp(I) <> "" Then
 		          ScriptContent = ScriptContent + Chr(10) 'Adds space Line
-		          ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          If ItemLLItem.BuildType = "ssApp"Then
+		            ScriptContent = ScriptContent + "cd "+Chr(34)+InstallFromPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          Else
+		            ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          End If
 		        Else
 		          ScriptContent = ScriptContent + Chr(10) 'Adds space Line
-		          ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          If ItemLLItem.BuildType = "ssApp"Then
+		            ScriptContent = ScriptContent + "cd "+Chr(34)+InstallFromPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          Else
+		            ScriptContent = ScriptContent + "cd "+Chr(34)+InstallToPath+Chr(34)+Chr(10) 'Add cd to top of scripts so it runs from the right locations
+		          End If
 		          Continue 'No Need to add a 2nd space line below
 		        End If
 		      End If
@@ -1228,7 +1250,12 @@ Protected Module LLMod
 		    End If
 		    
 		    'Change to App/Games Path to run scripts from
-		    If ChDirSet(InstallToPath) = True Then ' Was successful
+		    If ItemLLItem.BuildType = "ssApp" Then 
+		      If ChDirSet(InstallFromPath) = True Then ' Was successful - ssApp path set
+		      End If
+		    Else
+		      If ChDirSet(InstallToPath) = True Then ' Was successful - ppApp/Game path set
+		      End If
 		    End If
 		    
 		    'Run Scripts ' Still need to expand path here Glenn 2027
@@ -1245,17 +1272,6 @@ Protected Module LLMod
 		    
 		    'Make Links
 		    MakeLinks
-		    
-		    
-		    'Do Associations? Glenn 2027
-		    'From LOSStore -
-		    ''Add ability to Associate Filetypes
-		    'If LnkFileTypes[I] <> "" Then
-		    'MakeFileType(LnkDisplayName[I], LnkFileTypes[I], LnkComment[I], "wine " & LLMod.ExpPath(LnkExec[I]), LLMod.ExpPath(LnkRunInPath[I]), LnkIcon[I])
-		    'End If
-		    'Next
-		    
-		    
 		    
 		    'Do Delete Temp Path here? if TempInstall has a path (Make sure it's in .lltemp
 		    
@@ -1286,8 +1302,6 @@ Protected Module LLMod
 		    
 		    'Make Links
 		    MakeLinks
-		    
-		    'Do Associations?
 		    
 		    
 		  End If
@@ -1323,6 +1337,7 @@ Protected Module LLMod
 		  If TargetWindows Then
 		    
 		    Dim TMPShell As New Shell
+		    'TMPShell.TimeOut = -1
 		    TMPShell.Execute "echo Hi > "+Chr(34)+"%windir%\system32\AdminMode_LLStore.ini"+Chr(34) '+" >nul"
 		    
 		    If TMPShell.ErrorCode = 1 Then Return False 'No it's not Admin
@@ -1887,11 +1902,123 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub MakeFileType(APP As String, EXT As String, COMMENT As String, EXECU As String, PathIn As String, LOGO As String)
+		  If Debugging Then Debug("--- Starting Make Associations ---")
+		  Dim OrigAppName As String
+		  Dim FileOut As String
+		  Dim FileContent As String
+		  Dim Typs() As  String
+		  Dim J As Integer
+		  Dim CurrentIconTheme As String
+		  Dim Shelly As New Shell
+		  Dim Res As String
+		  Dim TypeName As String
+		  
+		  If TargetWindows Then
+		    Typs = Split(EXT, " ")
+		    If Typs.Count >= 1 Then
+		      For J = 0 To Typs.Count - 1
+		        ''FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*." + Typs(J) + Chr(34) + "/>" + Chr(10)
+		        'Shelly.Execute ("assoc "+"." + Typs(J)+"="+Chr(34)+EXECU+Chr(34)) 'Test this works in Windows, Glenn 2027
+		        
+		        EXECU = EXECU.ReplaceAll("/","\") 'I think Assoc requires windows paths and not linux slashes
+		        TypeName = Replace(APP, "(", "") 'Remove Brackets
+		        TypeName = Replace(TypeName.Trim, ")", "") 'Remove Brackets
+		        TypeName = Replace(TypeName, " ", ".") 'Remove Spaces
+		        Res = RunCommandResults("assoc "+"." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+Chr(10)+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" %1 %*")
+		        'If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+EXECU+Chr(34)+ Chr(10)+ Shelly.Result)
+		        If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+"|"+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" %1 %*"+ Chr(10)+ Res)
+		      Next
+		    End If
+		    
+		    
+		    'assoc .txt="C:\Program Files\Windows\System32\notepad.exe"
+		  Else 'Linux
+		    OrigAppName = APP
+		    APP = Replace(APP, " (Linux)", "") 'Remove Bracketed Linux
+		    APP = Replace(APP, "(", "") 'Remove Brackets
+		    APP = Replace(APP.Lowercase.Trim, ")", "") 'Remove Brackets
+		    APP = Replace(APP, " ", ".") 'Remove Spaces
+		    
+		    
+		    If Not Exist(TmpPath) Then Shelly.Execute ("mkdir -p " + Chr(34) + TmpPath + Chr(34))
+		    'MIME Type
+		    'Print "MIME Output"
+		    
+		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
+		    CurrentIconTheme = Shelly.Result
+		    CurrentIconTheme = Replace(CurrentIconTheme, "'", "")  
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 --theme " + CurrentIconTheme + " " + LOGO + " application-x-" + APP)
+		    
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 " + LOGO + " application-x-" + APP)
+		    
+		    FileOut = Slash(TmpPath) + APP + "-mime.xml"
+		    FileContent = "<?xml version=" + Chr(34) + "1.0" + Chr(34) + " encoding=" + Chr(34) + "UTF-8" + Chr(34) + "?>" + Chr(10)
+		    FileContent = FileContent + "<mime-info xmlns=" + Chr(34) + "http://www.freedesktop.org/standards/shared-mime-info" + Chr(34) + ">" + Chr(10)
+		    FileContent = FileContent + "    <mime-type type=" + Chr(34) + "application/x-" + APP + Chr(34) + ">" + Chr(10)
+		    FileContent = FileContent + "        <comment>" + COMMENT + "</comment>" + Chr(10)
+		    FileContent = FileContent + "        <icon name=" + Chr(34) + "application-x-" + APP + Chr(34) + "/>" + Chr(10)
+		    Typs = Split(EXT, " ")
+		    If Typs.Count >= 1 Then
+		      For J = 0 To Typs.Count - 1
+		        FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*." + Typs(J) + Chr(34) + "/>" + Chr(10)
+		      Next
+		    Else
+		      FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*.nonegiven" + Chr(34) + "/>" + Chr(10)
+		    End If
+		    'FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*." + EXT + Chr(34) + "/>" + Chr(10)  
+		    FileContent = FileContent + "    </mime-type>" + Chr(10)
+		    FileContent = FileContent + "</mime-info>" + Chr(10)
+		    SaveDataToFile(FileContent, FileOut)
+		    Shelly.Execute ("xdg-mime install " + FileOut)
+		    Shelly.Execute (" rm " + FileOut)
+		    Shelly.Execute ("update-mime-database $HOME/.local/share/mime")
+		    
+		    
+		    If EXECU.Left(5) = "wine " Then
+		      'Glenn 2030
+		      'I use the 2nd one below to make it more system compatible, but may change to installing the python requirements and script to make it perfect on every OS?
+		      ''EXECU = "python3 "+Slash(ToolPath)+"wine-launcher.py " + Chr(34) + Right(EXECU, Len(EXECU) - 5) + Chr(34) + " %f" 'Works Perfect But requirtes external and Pythos on the OS, will test more
+		      EXECU = "wine " + Chr(34) + Right(EXECU, Len(EXECU) - 5) + Chr(34) 'Works ok
+		    Else 'Linux one
+		      EXECU = EXECU + " %U"
+		    End If
+		    
+		    If Right(PathIn, 1) = "/" Then PathIn = Left(PathIn, Len(PathIn) - 1) 'Remove Slash
+		    
+		    'Print "Desktop Output"
+		    'Desktop Association
+		    FileOut = Slash(TmpPath) + APP + "_filetype.desktop"
+		    FileContent = "[Desktop Entry]" + Chr(10)
+		    FileContent = FileContent + "Name=" + OrigAppName + Chr(10)
+		    FileContent = FileContent + "Exec=" + EXECU + Chr(10)
+		    FileContent = FileContent + "Path=" + PathIn + Chr(10)
+		    FileContent = FileContent + "MimeType=application/x-" + APP + Chr(10)
+		    FileContent = FileContent + "Icon=application-x-" + APP + Chr(10)
+		    FileContent = FileContent + "Terminal=false" + Chr(10)
+		    FileContent = FileContent + "NoDisplay=true" + Chr(10)
+		    FileContent = FileContent + "Type=Application" + Chr(10)
+		    FileContent = FileContent + "Categories=" + Chr(10)
+		    FileContent = FileContent + "Comment=" + COMMENT + Chr(10)
+		    SaveDataToFile(FileContent, FileOut)
+		    Shelly.Execute ("desktop-file-install --dir=$HOME/.local/share/applications " + FileOut)
+		    Shelly.Execute (" rm " + FileOut)
+		    Shelly.Execute ("update-desktop-database $HOME/.local/share/applications")
+		    Shelly.Execute ("xdg-mime default " + APP + ".desktop application/x-" + APP)
+		    Shelly.Execute ("update-icon-caches $HOME/.local/share/icons/*")
+		    'Print "MIME Done"
+		    
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub MakeFolder(Txt as String)
-		  If Debugging Then Debug("Make Folder: "+Txt)
+		  If Debugging Then Debug("Make Folder Path In: "+Txt)
 		  Dim F As FolderItem
 		  Dim Path As String
 		  Dim Sh As New Shell
+		  Dim Res As String
 		  Sh.TimeOut = -1 'Give it All the time it needs
 		  Dim S As string
 		  Path = FixPath(Txt)
@@ -1907,9 +2034,11 @@ Protected Module LLMod
 		    end if
 		    
 		    If TargetWindows Then 'Only windows has the stupid shell bug, so only it needs an external script called instead
-		      Sh.Execute(S)
-		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
-		      Sh.Execute ("icacls"+ Path+ " /grant "+ "Users:F")
+		      'Sh.Execute(S)
+		      'If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
+		      'Sh.Execute ("icacls"+ Path+ " /grant "+ "Users:F")
+		      Res = RunCommandResults (S + Chr(10) + "icacls "+Chr(34)+ Path+Chr(34)+ " /grant "+ "Users:F") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
+		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Res)
 		    Else
 		      'RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done, Can't do this here as it doesn't have a tmpPath folder to make the Script to make TmpPath
 		      Sh.Execute(S)
@@ -1937,6 +2066,7 @@ Protected Module LLMod
 		  Dim LinkOutPath As String
 		  Dim DaBugs As String
 		  Dim StartPath As String
+		  Dim ExecName As String
 		  
 		  'Sort Catalog to Shortcuts - Windows ItemsOnly
 		  'Get the StartMenu Stuff for ssApps and then for ppApps/Games
@@ -2019,10 +2149,11 @@ Protected Module LLMod
 		        DesktopContent = DesktopContent + "Type=Application" + Chr(10)
 		        DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
 		        DesktopContent = DesktopContent + "Name=" + ItemLnk(I).Title + Chr(10)
+		        ExecName = ExpPath(ItemLnk(I).Exec)
 		        If ItemLLItem.BuildType = "LLApp" Or ItemLLItem.BuildType = "LLGame" Then
-		          DesktopContent = DesktopContent + "Exec=" + ExpPath(ItemLnk(I).Exec) + Chr(10)
+		          DesktopContent = DesktopContent + "Exec=" + ExecName + Chr(10)
 		        Else
-		          DesktopContent = DesktopContent + "Exec=" + "wine " + ExpPath(ItemLnk(I).Exec) + Chr(10) 'Quotes are checked for above, so only added once
+		          DesktopContent = DesktopContent + "Exec=" + "wine " + ExecName + Chr(10) 'Quotes are checked for above, so only added once
 		        End If
 		        
 		        If ItemLLItem.BuildType = "ssApp" Then
@@ -2047,7 +2178,12 @@ Protected Module LLMod
 		        DesktopContent = DesktopContent + "Categories=" + ItemLnk(I).Categories + Chr(10)
 		        DesktopContent = DesktopContent + "Terminal=" + Str(ItemLnk(I).Terminal) + Chr(10)
 		        
-		        DesktopOutPath = Slash(HomePath)+"/.local/share/applications/"
+		        'Linux Associations Glenn 2030
+		        If ItemLnk(I).Associations.Trim <> "" Then
+		          MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, ExecName, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
+		        End If
+		        
+		        DesktopOutPath = Slash(HomePath)+".local/share/applications/"
 		        SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		        ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		        
@@ -2147,9 +2283,33 @@ Protected Module LLMod
 		          Next J
 		        End If
 		        
-		        'Create Link file Example
-		        'LinkName, Exec, WorkingDir, LinkDestinationPath
-		        'CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.Desktop.NativePath)))
+		        ''Create Link file Example
+		        ''LinkName, Exec, WorkingDir, LinkDestinationPath
+		        ''CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.Desktop.NativePath)))
+		        
+		        
+		        'Do Associations? Glenn 2027 'Linux is done above in it's section as it only requires adding it to the .desktop file
+		        ''Do Associations - It's in InstallLLFile for now
+		        
+		        'Windows (Not Wine) Associations Glenn 2030
+		        If ItemLnk(I).Associations.Trim <> "" Then
+		          MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, Target, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
+		        End If
+		        
+		        
+		        'If ItemLnk(I).Associations.Trim <> "" Then
+		        ''assoc .txt="C:\Program Files\Windows\System32\notepad.exe"
+		        'End If
+		        
+		        
+		        'From LOSStore -
+		        ''Add ability to Associate Filetypes
+		        'If LnkFileTypes[I] <> "" Then
+		        'MakeFileType(LnkDisplayName[I], LnkFileTypes[I], LnkComment[I], "wine " & LLMod.ExpPath(LnkExec[I]), LLMod.ExpPath(LnkRunInPath[I]), LnkIcon[I])
+		        'End If
+		        'Next
+		        
+		        
 		        
 		        'Make Desktop Shortcut also if picked
 		        If ItemLnk(I).Desktop = True Then
@@ -2488,6 +2648,16 @@ Protected Module LLMod
 		      If Sp(I).IndexOf(0, "#Is_x86#") >= 0 Then Continue 'Skip x86 lines, we will only do x64 for now
 		      Sp(I) = Sp(I).ReplaceAll("#Is_x64#","") 'Clean unrequired text
 		      If Sp(I) <> "" Then
+		        
+		        'Add MSI installer to lines that have a .msi in them - May Need to remove for Windows Target
+		        If Sp(I).IndexOf(".msi") >=1 Then
+		          If Left(Sp(I),7) <> "msiexec" Then
+		            'If Left(Sp(I),1)<>Chr(34) Then 'Need to check for end of .msi and remove /qb if it's an issue
+		            Sp(I)= "msiexec /quiet /norestart /i "+Sp(I)
+		          Else
+		          End If
+		        End If
+		        
 		        AssemblyContent = AssemblyContent + Sp(I)+ Chr(10)
 		      End If
 		    Next
@@ -2495,6 +2665,16 @@ Protected Module LLMod
 		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#Is_x86#","") 'Clean unrequired text
 		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#Is_x64#","") 'Clean unrequired text
 		    If ItemLLItem.Assembly <> "" Then
+		      
+		      'Add MSI installer to lines that have a .msi in them - May Need to remove for Windows Target
+		      If ItemLLItem.Assembly.IndexOf(".msi") >=1 Then
+		        If Left(ItemLLItem.Assembly,7) <> "msiexec" Then
+		          'If Left(Sp(I),1)<>Chr(34) Then 'Need to check for end of .msi and remove /qb if it's an issue
+		          ItemLLItem.Assembly = "msiexec /quiet /norestart /i "+ItemLLItem.Assembly
+		        Else
+		        End If
+		      End If
+		      
 		      AssemblyContent = AssemblyContent + ItemLLItem.Assembly + Chr(10)
 		    End If
 		  End If
@@ -2634,6 +2814,8 @@ Protected Module LLMod
 		  Dim ScriptFile As String
 		  
 		  Dim Shelly As New Shell
+		  Shelly.ExecuteMode = Shell.ExecuteModes.Asynchronous
+		  Shelly.TimeOut = -1
 		  
 		  Dim F As FolderItem
 		  
@@ -2666,13 +2848,20 @@ Protected Module LLMod
 		  Dim ScriptFile As String
 		  
 		  Dim Shelly As New Shell
+		  Shelly.ExecuteMode = Shell.ExecuteModes.Asynchronous
+		  Shelly.TimeOut = -1
+		  
 		  Dim StillActive As Boolean = True
 		  
 		  Dim F As FolderItem
 		  
 		  'Change to App/Games Install To path to run scripts from (NoInstall sets to InstallFrom)
-		  'MsgBox "Path: "+InstallToPath
-		  If ChDirSet(InstallToPath) = True Then ' Was successful
+		  If ItemLLItem.BuildType = "ssApp" Then 
+		    If ChDirSet(InstallFromPath) = True Then ' Was successful - ssApp path set
+		    End If
+		  Else
+		    If ChDirSet(InstallToPath) = True Then ' Was successful - ppApp/Game path set
+		    End If
 		  End If
 		  
 		  If TargetLinux Then
@@ -2689,20 +2878,38 @@ Protected Module LLMod
 		    End If
 		    
 		  End If
-		  F = GetFolderItem(InstallToPath + ItemLLItem.BuildType+".cmd")
-		  If Exist(InstallToPath + ItemLLItem.BuildType+".cmd") Then 
-		    ScriptFile = ExpScript (InstallToPath + ItemLLItem.BuildType+".cmd")
-		    
-		    F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
-		    If TargetWindows Then
-		      Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
-		    Else
-		      Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34)) ' Use && Here because if path fails, then script will anyway
+		  If  ItemLLItem.BuildType = "ssApp" Then 'Run the Scripts from the InstallFromPath
+		    F = GetFolderItem(InstallFromPath + ItemLLItem.BuildType+".cmd")
+		    If Exist(InstallFromPath + ItemLLItem.BuildType+".cmd") Then 
+		      ScriptFile = ExpScript (InstallFromPath + ItemLLItem.BuildType+".cmd")
+		      
+		      F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
+		      If TargetWindows Then
+		        Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
+		      Else
+		        Shelly.Execute("cd " + Chr(34) + InstallFromPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34)) ' Use && Here because if path fails, then script will anyway
+		      End If
+		      While Shelly.IsRunning
+		        App.DoEvents(7)
+		      Wend
+		      If Debugging Then Debug("Script Return (ssApp.cmd): "+ Shelly.Result)
+		    Else ' ppApp or ppGame, runs script from the InstallTo Folder
+		      F = GetFolderItem(InstallToPath + ItemLLItem.BuildType+".cmd")
+		      If Exist(InstallToPath + ItemLLItem.BuildType+".cmd") Then 
+		        ScriptFile = ExpScript (InstallToPath + ItemLLItem.BuildType+".cmd")
+		        
+		        F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
+		        If TargetWindows Then
+		          Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
+		        Else
+		          Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34)) ' Use && Here because if path fails, then script will anyway
+		        End If
+		        While Shelly.IsRunning
+		          App.DoEvents(7)
+		        Wend
+		        If Debugging Then Debug("Script Return ("+ItemLLItem.BuildType+".cmd): "+ Shelly.Result)
+		      End If
 		    End If
-		    While Shelly.IsRunning
-		      App.DoEvents(7)
-		    Wend
-		    If Debugging Then Debug("Script Return (.cmd): "+ Shelly.Result)
 		  End If
 		End Sub
 	#tag EndMethod

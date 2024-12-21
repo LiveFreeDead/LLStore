@@ -1036,6 +1036,7 @@ End
 		  Dim F, G As FolderItem
 		  Dim DirToCheck As String
 		  Dim D, E As Integer
+		  Dim TestLocations As String
 		  
 		  ScannedRootFoldersCount = 0
 		  
@@ -1170,15 +1171,18 @@ End
 		    'Get Manual Locations
 		    If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
 		      If Debugging Then Debug("---------- Get Manual Locations: ----------")
-		      Sp() = Settings.SetManualLocations.Text.Split(Chr(13))
+		      TestLocations = Settings.SetManualLocations.Text
+		      TestLocations = TestLocations.ReplaceAll(Chr(10), Chr(13))
+		      Sp() = TestLocations.Split(Chr(13))
+		      'If Debugging Then Debug("ManualLocs")
 		      If Sp.Count >= 1 Then
 		        For I = 0 To Sp.Count - 1
 		          DirToCheck = Sp(I).Trim
 		          If TargetWindows Then DirToCheck = DirToCheck.ReplaceAll("%USBDrive%", Left(AppPath,2)) 'Convert Current USB drive to variable so when you load it back in it points to right location
 		          GetItemsPaths(DirToCheck, True)
 		        Next
-		        If Debugging Then Debug("---------- End  Manual Locations ----------")
 		      End If
+		      If Debugging Then Debug("---------- End  Manual Locations ----------")
 		      
 		      'If StoreMode = 0 Then
 		      'IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
@@ -2369,7 +2373,7 @@ End
 		  
 		  Dim F, G As FolderItem
 		  Dim TI As TextInputStream
-		  Dim S As String
+		  Dim S, Path As String
 		  Dim Success As Boolean
 		  Dim OldAppPath As String
 		  
@@ -2532,12 +2536,28 @@ End
 		  CleanTemp 'Clearing LLTemp folder entirly
 		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
 		  
-		  'Make Temp Folders
-		  MakeFolder (TmpPath)
+		  'Make Temp Folders (Can NOT use the one to make the temp path it uses to run as a script instead of using a shell. so manual here and below ones (they happen first and should fix the issue using it elsewhere)
+		  if TargetWindows then
+		    Path = Path.ReplaceAll("/","\")
+		    S = "mkdir " + chr(34) + TmpPath + chr(34)
+		    ShellFast.Execute (S)
+		  Else
+		    MakeFolder (TmpPath)
+		  End If
+		  
 		  
 		  'Make sure paths exist (But only once per execution)
 		  TmpPathItems = Slash(TmpPath)+"items/" 'Use Linux Paths for both OS's
-		  MakeFolder(TmpPathItems)
+		  if TargetWindows then
+		    Path = Path.ReplaceAll("/","\")
+		    S = "mkdir " + chr(34) + TmpPathItems + chr(34)
+		    ShellFast.Execute (S)
+		  Else
+		    MakeFolder(TmpPathItems)
+		  End If
+		  
+		  
+		  
 		  
 		  'Make Local paths and Debug File
 		  #Pragma BreakOnExceptions Off
