@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,11 +73,18 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
       RunMode         =   0
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
+   Begin Timer QuitCheckTimer
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Period          =   1000
+      RunMode         =   2
       Scope           =   0
       TabPanelIndex   =   0
    End
@@ -2793,6 +2798,20 @@ End
 		  If StoreMode <=2 Then FirstRunTime.RunMode = Timer.RunModes.Single ' Only show the store in Installer or Launcher modes, else just quit?
 		  
 		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events QuitCheckTimer
+	#tag Event
+		Sub Action()
+		  If ForceQuit = True Then
+		    If EditorOnly Then 
+		      'MsgBox "Quit"
+		      'Quit
+		      PreQuitApp
+		      QuitApp
+		    End If
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

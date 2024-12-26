@@ -5231,10 +5231,10 @@ End
 		  'Test if changes and ask to save here?
 		  
 		  If EditorOnly = True Then
-		    'ForceQuit = True
-		    EditorOnly = False
+		    ForceQuit = True
+		    'EditorOnly = False 'No
 		    Editor.Hide
-		    QuitApp
+		    'QuitApp
 		    Return False ' Just let it quit
 		  End If
 		  

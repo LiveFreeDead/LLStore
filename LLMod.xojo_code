@@ -2575,6 +2575,8 @@ Protected Module LLMod
 		  Quit ' This Works on Compiled Versions, test if Windows is OK too, dont know why it was being so problematic.
 		  'was 24 r4 causing issues
 		  
+		  'I added the Quit timer to the Loading Form, it now seems to quit when it's called, I only make the Editor set it to ForceQuit and hide iteself and let the QuitApp routine do the rest.
+		  
 		  ''Should never get here
 		  
 		  ForceQuit = True
@@ -4536,6 +4538,14 @@ Protected Module LLMod
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="InstallOnly"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AutoBuild"
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"
