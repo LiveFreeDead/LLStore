@@ -2376,6 +2376,8 @@ End
 		  Dim S, Path As String
 		  Dim Success As Boolean
 		  Dim OldAppPath As String
+		  Dim Build As Boolean = False
+		  Dim Compress As Boolean = False
 		  
 		  Randomiser = New Random 'This Randomizes the timer, to make it truely random
 		  
@@ -2625,6 +2627,27 @@ End
 		    If ArgsSP(I).Lowercase = "-i" Then StoreMode = 2
 		    If ArgsSP(I).Lowercase = "-edit" Then StoreMode = 3
 		    If ArgsSP(I).Lowercase = "-e" Then StoreMode = 3
+		    
+		    If ArgsSP(I).Lowercase = "-build" Then
+		      StoreMode = 3
+		      Build = True
+		    End If
+		    If ArgsSP(I).Lowercase = "-b" Then
+		      StoreMode = 3
+		      Build = True
+		    End If
+		    
+		    If ArgsSP(I).Lowercase = "-compress" Then
+		      StoreMode = 3
+		      Build = True
+		      Compress = True
+		    End If
+		    If ArgsSP(I).Lowercase = "-c" Then
+		      StoreMode = 3
+		      Build = True
+		      Compress = True
+		    End If
+		    
 		  Next
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
@@ -2740,10 +2763,21 @@ End
 		      If Success Then 
 		        'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString
 		        'MsgBox ItemLLItem.TitleName
-		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
-		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
-		        Editor.PopulateData
-		        Editor.Show
+		        If Build = False Then
+		          Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
+		          Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
+		          Editor.PopulateData
+		          Editor.Show
+		        Else ' Just Build It
+		          AutoBuild = True 'Set it to Auto Build and not show a message when complete
+		          Editor.PopulateData
+		          If Compress = True Then Editor.CheckCompress.Value = True 'Set to Compress if it's in the Arguments
+		          Editor.ButtonBuild.Press() 'Press the Build Button with No Compress, if it's not already compressed
+		          
+		          PreQuitApp ' Save Debug etc
+		          QuitApp 'Done installing, exit app, no need to continue
+		          
+		        End If
 		      Else 'Failed to load item, Show Editor
 		        Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
 		        Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)

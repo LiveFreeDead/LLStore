@@ -3225,6 +3225,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		AutoBuild As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		AvailableWidth As Integer = 0
 	#tag EndProperty
 

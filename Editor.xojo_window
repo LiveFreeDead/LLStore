@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   0
+      Value           =   6
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -5265,6 +5265,9 @@ End
 		  Dim F As FolderItem
 		  Dim I As Integer
 		  
+		  'Defaults
+		  ComboBuildType.SelectedRowIndex = 0 'Default to LLApp
+		  
 		  BT = ItemLLItem.BuildType
 		  
 		  'Main Window 1 - General
@@ -5291,7 +5294,6 @@ End
 		  TextDescription.Text = ItemLLItem.Descriptions.ReplaceAll(Chr(30), Chr(13))
 		  
 		  If TextPriority.Text = "" Or TextPriority.Text = "0" Then TextPriority.Text = "5" 'Default
-		  ComboBuildType.SelectedRowIndex = 0 'Default to LLApp
 		  
 		  'Load in Combo's
 		  'SysAvailableDesktops
@@ -5640,6 +5642,21 @@ End
 	#tag Event
 		Sub Pressed()
 		  Dim Success As Boolean
+		  Dim BT As String = ItemLLItem.BuildType
+		  Dim OutFile, InFile, RootPath, InFolder, OutFolder As String
+		  Dim CompressedFileOut As String
+		  Dim Commands As String
+		  Dim IsLLFile As String
+		  Dim F As FolderItem
+		  Dim I As Integer
+		  Dim FC As Integer
+		  Dim VersIncl As String
+		  'Dim Dels() As String
+		  
+		  Dim Sh As New Shell
+		  Sh.TimeOut = -1
+		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
+		  
 		  'Below Remark isn't needed, the Saving of the LLFile detects it's all good and wont return True if it fails the tests
 		  'If Exist (TextBuildToFolder.Text) Then 'Only build if a good output path
 		  
@@ -5650,23 +5667,123 @@ End
 		      'Do Nothing, it's done with the "SaveLLFileComplete" Routine to save repeating code
 		    Else ' If the items wasn't compressed, check to see if we need to compress it (Build)
 		      'Build here and clean up
+		      Select Case BT
+		      Case"LLApp", "LLGame"
+		        If Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Or Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Then
+		          'Do Nothing
+		        Else 'Only compress if not already compressed file found
+		          OutFolder = Slash(TextBuildToFolder.Text)
+		          OutFile = OutFolder+BT+".tar.gz"
+		          InFolder = Slash(TextIncludeFolder.Text)
+		          InFile = InFolder+BT+".tar.gz"
+		          RootPath = Slash(Left(NoSlash(OutFolder), InStrRev(NoSlash(OutFolder), "/") - 1)) 'LLFiles use forward Slash
+		          
+		          'MsgBox "OutFile: " + OutFile +" Include File To Test: " + InFile+" Root Path: "+ RootPath +" InFolder: "+ InFolder
+		          If InFolder = OutFolder Then
+		            
+		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
+		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		                If  ItemLLItem.NoInstall  = False Then 
+		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                  Sh.Execute (Commands)
+		                  While Sh.IsRunning
+		                    App.DoEvents(1)
+		                  Wend
+		                End If
+		                
+		              Else 'Just copy it
+		                If InFile <> OutFile Then 'Don't Copy Self
+		                  If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                  Copy (InFile, OutFile)
+		                End If
+		              End If
+		            Else 'Do Nothing so far as it's already existing
+		            End If
+		          Else 'In Folder is different to build folder so work from in folder instead
+		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		              If  ItemLLItem.NoInstall = False Then 
+		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                Sh.Execute (Commands)
+		                While Sh.IsRunning
+		                  App.DoEvents(1)
+		                Wend
+		              End If
+		            Else 'Copy Existing Only
+		              If InFile <> OutFile Then 'Don't Copy Self
+		                If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                Copy (InFile, OutFile)
+		              End If
+		            End If
+		          End If
+		          
+		          'Check if build path is the same as Source Path and delete original uncompressed files if so
+		          
+		          'STOP * If the user makes a script only build then this will remove important files, need a checkbox for them
+		          
+		          If ItemLLItem.NoInstall = True Then
+		            'No install, do nothing
+		          Else ' Is installer, clean up?
+		            If InFolder = OutFolder Then      
+		              If Exist(OutFile) Then 'Now if compressed file is in tact, remove all other files except BuildType.* Then
+		                F = GetFolderItem(OutFolder, FolderItem.PathTypeShell)
+		                If F <> Nil Then
+		                  FC = F.Count
+		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
+		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
+		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
+		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
+		                    Else 'Not a LLFile type or a script
+		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
+		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
+		                          If Right(F.Item(I).Name, 4) <> ".png" Then
+		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
+		                              If Right(F.Item(I).Name, 4) <> ".ico" Then
+		                                Deltree (F.Item(I).NativePath)
+		                              End If
+		                            End If
+		                          End If
+		                        End If
+		                      End If
+		                    End If
+		                  Next
+		                End If
+		              End If
+		            End If
+		            
+		          End If
+		          
+		        End If
+		        
+		        'Now Compress to a single tar if checked;
+		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it
+		          'Make a single tar Title_Version_BuildType.tar
+		          VersIncl = ""
+		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
+		          Commands = "cd "+Chr(34)+OutFolder+Chr(34)+" && tar -cf " +Chr(34)+CompressedFileOut+Chr(34)+" *"
+		          Sh.Execute (Commands)
+		          While Sh.IsRunning
+		            App.DoEvents(1)
+		          Wend
+		          
+		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
+		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
+		          End If
+		        End If
+		        
+		        
+		      End Select
 		      
-		      
-		      'Compress if picked to.
 		      
 		    End If
 		    Status.Text = "Built Successfully"
-		    MsgBox "Built Successfully"
+		    If Debugging Then Debug ("Built Successfully")
+		    If Not AutoBuild Then MsgBox "Built Successfully"
 		  Else
 		    Status.Text = "Failed to Build LLFile"
-		    MsgBox "Failed to Build LLFile"
+		    If Debugging Then Debug ("Built Failed")
+		    If Not AutoBuild Then MsgBox "Failed to Build LLFile"
 		  End If
-		  
-		  
-		  'Below not needed anymore
-		  'Else
-		  'MsgBox "No Build To Output Path Set, Failed"
-		  'End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
