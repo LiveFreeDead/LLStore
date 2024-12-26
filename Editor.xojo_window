@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -2409,7 +2409,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   456
+         Top             =   453
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2540,11 +2540,11 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   85
+         Left            =   416
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   False
+         LockRight       =   True
          LockTop         =   True
          MaximumCharactersAllowed=   0
          Password        =   False
@@ -2562,7 +2562,7 @@ Begin DesktopWindow Editor
          Underline       =   False
          ValidationMask  =   ""
          Visible         =   True
-         Width           =   211
+         Width           =   208
       End
       Begin DesktopLabel Label26
          AllowAutoDeactivate=   True
@@ -2575,7 +2575,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   7
+         Left            =   334
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -2591,7 +2591,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   66
+         Top             =   65
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2632,7 +2632,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   65
+         Top             =   95
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -2666,7 +2666,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   65
+         Top             =   95
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2699,7 +2699,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   95
+         Top             =   125
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2740,7 +2740,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   95
+         Top             =   125
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -2774,7 +2774,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   125
+         Top             =   155
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2815,7 +2815,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   125
+         Top             =   155
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -2849,7 +2849,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   155
+         Top             =   185
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2890,7 +2890,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   155
+         Top             =   185
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -2923,7 +2923,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   155
+         Top             =   185
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -3262,7 +3262,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   4
+         Left            =   20
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -3278,7 +3278,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   228
+         Top             =   226
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -3331,7 +3331,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   248
+         Left            =   251
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -3438,7 +3438,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   249
+         Left            =   252
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -3509,7 +3509,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   6
+         Left            =   16
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -3525,7 +3525,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   258
+         Top             =   255
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4101,7 +4101,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   353
+         Top             =   351
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4134,7 +4134,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   375
+         Top             =   373
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4167,7 +4167,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   396
+         Top             =   394
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4200,7 +4200,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   419
+         Top             =   417
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4233,7 +4233,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   441
+         Top             =   439
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4266,7 +4266,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   353
+         Top             =   351
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4299,7 +4299,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   375
+         Top             =   373
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4332,7 +4332,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   396
+         Top             =   394
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4365,7 +4365,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   419
+         Top             =   417
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4398,7 +4398,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   441
+         Top             =   439
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -4644,7 +4644,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   5
+         Left            =   20
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -4660,7 +4660,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   197
+         Top             =   196
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5049,7 +5049,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   363
+         Top             =   361
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5082,7 +5082,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   363
+         Top             =   361
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5115,7 +5115,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   363
+         Top             =   361
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5148,7 +5148,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   461
+         Top             =   459
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5917,11 +5917,16 @@ End
 #tag Events CheckShowDesktop
 	#tag Event
 		Sub ValueChanged()
-		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
-		    If EditingLnk <= LnkCount  And LnkCount >= 0Then ' Just a precaution
-		      ItemLnk(EditingLnk).Desktop = Me.Value
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
+		      If EditingLnk <= LnkCount  And LnkCount >= 0Then ' Just a precaution
+		        ItemLnk(EditingLnk).Desktop = Me.Value
+		      End If
 		    End If
-		  End If
+		  Catch
+		  End Try
+		  #Pragma BreakOnExceptions On
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -5946,8 +5951,6 @@ End
 		  End If
 		End Sub
 	#tag EndEvent
-#tag EndEvents
-#tag Events CheckSendTo
 #tag EndEvents
 #tag Events TextFlags
 	#tag Event
@@ -6203,6 +6206,22 @@ End
 		Group="Deprecated"
 		InitialValue="False"
 		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="EditingCBLnk"
+		Visible=false
+		Group="Behavior"
+		InitialValue="-1"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="EditingLnk"
+		Visible=false
+		Group="Behavior"
+		InitialValue="-1"
+		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior
