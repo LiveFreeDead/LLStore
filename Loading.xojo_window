@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1222,7 +1226,11 @@ End
 		    
 		    'Get Manual Locations
 		    If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
-		      IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		      If TargetWindows Then
+		        IniFile = Slash(AppPath)+"LLL_Launcher_Win_Manual_Locations.ini"
+		      Else
+		        IniFile = Slash(AppPath)+"LLL_Launcher_Linux_Manual_Locations.ini"
+		      End If
 		      If Exist(IniFile) Then
 		        ManIn = LoadDataFromFile(IniFile)
 		        Sp() = ManIn.Split(Chr(10))
@@ -1496,10 +1504,19 @@ End
 		  'Get Manual Locations
 		  If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
 		    If StoreMode = 0 Then
-		      IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
+		      If TargetWindows Then
+		        IniFile = Slash(AppPath)+"LLL_Store_Win_Manual_Locations.ini"
+		      Else
+		        IniFile = Slash(AppPath)+"LLL_Store_Linux_Manual_Locations.ini"
+		      End If
 		    Else
-		      IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		      If TargetWindows Then
+		        IniFile = Slash(AppPath)+"LLL_Launcher_Win_Manual_Locations.ini"
+		      Else
+		        IniFile = Slash(AppPath)+"LLL_Launcher_Linux_Manual_Locations.ini"
+		      End If
 		    End If
+		    ManualLocationsFile = IniFile
 		    If Exist(IniFile) Then
 		      Settings.SetManualLocations.Text = LoadDataFromFile(IniFile)
 		    End If
@@ -1874,9 +1891,17 @@ End
 		  'Save Manual Locations
 		  Dim IniFile As String
 		  If StoreMode = 0 Then
-		    IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
+		    If TargetWindows Then
+		      IniFile = Slash(AppPath)+"LLL_Store_Win_Manual_Locations.ini"
+		    Else
+		      IniFile = Slash(AppPath)+"LLL_Store_Linux_Manual_Locations.ini"
+		    End If
 		  Else
-		    IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
+		    If TargetWindows Then
+		      IniFile = Slash(AppPath)+"LLL_Launcher_Win_Manual_Locations.ini"
+		    Else
+		      IniFile = Slash(AppPath)+"LLL_Launcher_Linux_Manual_Locations.ini"
+		    End If
 		  End If
 		  SaveDataToFile(Settings.SetManualLocations.Text, IniFile)
 		End Sub
@@ -2364,10 +2389,12 @@ End
 		    SysDesktopEnvironment = System.EnvironmentVariable("XDG_SESSION_DESKTOP").Lowercase
 		    SysPackageManager = ""
 		    SysTerminal = ""
+		    ManualLocationsFile = "Linux"
 		  Else
 		    SysDesktopEnvironment = "explorer" 'Windows only uses Explorer
 		    SysPackageManager = ""
 		    SysTerminal = "cmd "
+		    ManualLocationsFile = "Win"
 		  End If
 		  
 		  SysAvailableDesktops = Array("All","All-Linux","Cinnamon","Explorer","Gnome","KDE","LXDE","Mate","Unity","XFCE")
@@ -2397,29 +2424,32 @@ End
 		  
 		  'Get App Paths
 		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
-		  If TargetWindows Then
-		    G = GetFolderItem("C:\Windows\LLStore\LLStore.exe",FolderItem.PathTypeShell) 'Pretend path for now, might move it to be system wide tool in System32
-		  Else
-		    G = GetFolderItem("/bin/llfile",FolderItem.PathTypeShell) 'Hardcoded path, will exist on LastOS's
-		  End If
 		  
-		  If G.Exists Then 'Use LLFile path
-		    AppPath = G.Parent.NativePath
-		  Else 'This one works fine for the rest that aren't symlinks and Windows always works.
-		    F = App.ExecutableFile.Parent
-		    Do
-		      If Exist(Slash(F.ShellPath) + "Tools") Then
-		        Exit Do
+		  
+		  F = App.ExecutableFile.Parent
+		  Do
+		    If Exist(Slash(F.ShellPath) + "Tools") Then
+		      AppPath  = F.NativePath
+		      Exit Do
+		    End If
+		    F = F.Parent
+		    If F = Nil Then
+		      If TargetWindows Then
+		        G = GetFolderItem("C:\Windows\LLStore\LLStore.exe",FolderItem.PathTypeShell) 'Pretend path for now, might move it to be system wide tool in System32
+		      Else
+		        G = GetFolderItem("/bin/llfile",FolderItem.PathTypeShell) 'Hardcoded path, will exist on LastOS's
 		      End If
-		      F = F.Parent
-		      If F = Nil Then
-		        MsgBox "Can't find exe path"
+		      If G.Exists Then 'Use LLFile path
+		        AppPath = G.Parent.NativePath
+		        F = G
+		        Exit Do 'Exit Loop
+		      Else
+		        MsgBox "Can't find Tool path, Exiting"
 		        Quit
 		        Exit
 		      End If
-		    Loop
-		    AppPath  = F.NativePath
-		  End If
+		    End If
+		  Loop
 		  'AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
 		  OldAppPath = AppPath
 		  'AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE

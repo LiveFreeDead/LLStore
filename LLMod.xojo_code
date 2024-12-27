@@ -3479,6 +3479,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		ManualLocationsFile As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		MenuWindows(1024,2) As String
 	#tag EndProperty
 
