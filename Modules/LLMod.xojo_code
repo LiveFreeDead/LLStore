@@ -386,14 +386,14 @@ Protected Module LLMod
 		  'Do This Last so can conver subpaths above first
 		  PathIn = PathIn.ReplaceAll("$HOME", NoSlash(HomePath))
 		  
+		  'Change Flatpak --user to --system Or Vice Versa as set (Defaults to User)
+		  If FlatPakAsUser = True Then
+		    PathIn = PathIn.ReplaceAll("--system", "--user")
+		  Else 'Must be System Wide
+		    PathIn = PathIn.ReplaceAll("--user", "--system")
+		  End If
+		  
 		  Return PathIn
-		  
-		  'Glenn 2027 Add Below
-		  
-		  ''Change --user to --system if set to, else leaves as set in App/Game
-		  'If FlatpakDest = "system" Then PathIn = Replace(PathIn, "--user", "--system", gb.IgnoreCase)
-		  'If FlatpakDest = "user" Then PathIn = Replace(PathIn, "--system", "--user", gb.IgnoreCase)  
-		  
 		End Function
 	#tag EndMethod
 
@@ -663,14 +663,16 @@ Protected Module LLMod
 		    End If
 		  End If
 		  
+		  'Change Flatpak --user to --system Or Vice Versa as set (Defaults to User)
+		  If FlatpakAsUser = True Then
+		    PathIn = PathIn.ReplaceAll("--system", "--user")
+		  Else 'Must be System Wide
+		    PathIn = PathIn.ReplaceAll("--user", "--system")
+		  End If
+		  
 		  
 		  Return PathIn
 		  
-		  'Glenn Add Below so that it handles Scripts Parsing
-		  
-		  ''Change --user to --system if set to, else leaves as set in App/Game
-		  'If FlatpakDest = "system" Then PathIn = Replace(PathIn, "--user", "--system", gb.IgnoreCase)
-		  'If FlatpakDest = "user" Then PathIn = Replace(PathIn, "--system", "--user", gb.IgnoreCase)  
 		End Function
 	#tag EndMethod
 
@@ -3452,6 +3454,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		FlatpakAsUser As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		FontDescription As String = "Ubuntu"
 	#tag EndProperty
 
@@ -3576,6 +3582,14 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		MovieFile As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		MovieVolume As Integer = 20
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		OutputStream As TextOutputStream
 	#tag EndProperty
 
@@ -3645,6 +3659,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		Running As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		RunningGame As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -4687,6 +4705,38 @@ Protected Module LLMod
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="LoadedPosition"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="DebugFileOk"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MovieFile"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MovieVolume"
+			Visible=false
+			Group="Behavior"
+			InitialValue="20"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="RunningGame"
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"

@@ -57,7 +57,7 @@ Begin DesktopWindow Settings
    Begin DesktopCheckBox SetQuitOnComplete
       AllowAutoDeactivate=   True
       Bold            =   False
-      Caption         =   "Quit onComplete"
+      Caption         =   "Quit on Complete"
       Enabled         =   True
       FontName        =   "System"
       FontSize        =   0.0
@@ -75,7 +75,7 @@ Begin DesktopWindow Settings
       TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
-      Tooltip         =   ""
+      Tooltip         =   "Closes the main windows after installing any items"
       Top             =   11
       Transparent     =   False
       Underline       =   False
@@ -522,7 +522,7 @@ Begin DesktopWindow Settings
       Visible         =   True
       Width           =   114
    End
-   Begin DesktopButton SaveRescan
+   Begin DesktopButton ButtonSaveRescan
       AllowAutoDeactivate=   True
       Bold            =   False
       Cancel          =   False
@@ -643,6 +643,67 @@ Begin DesktopWindow Settings
       VisualState     =   0
       Width           =   152
    End
+   Begin DesktopCheckBox SetAlwaysShowRes
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Always Show Res"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   27
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   158
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   20
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   128
+      Transparent     =   False
+      Underline       =   False
+      Value           =   False
+      Visible         =   True
+      VisualState     =   0
+      Width           =   152
+   End
+   Begin DesktopButton ButtonSave
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Save"
+      Default         =   True
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   26
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   466
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   21
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   167
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   101
+   End
 End
 #tag EndDesktopWindow
 
@@ -675,6 +736,25 @@ End
 
 #tag EndWindowCode
 
+#tag Events SetFlatpakAsUser
+	#tag Event
+		Sub ValueChanged()
+		  If Me.Value = True Then
+		    SetFlatpakAsSystem.Value = False
+		  Else
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events SetFlatpakAsSystem
+	#tag Event
+		Sub ValueChanged()
+		  If Me.Value = True Then
+		    SetFlatpakAsUser.Value = False
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events DefaultRepos
 	#tag Event
 		Sub Pressed()
@@ -682,13 +762,22 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events SaveRescan
+#tag Events ButtonSaveRescan
 	#tag Event
 		Sub Pressed()
 		  Settings.Hide
 		  Loading.SaveSettings
 		  Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
 		  Loading.RefreshDBs
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonSave
+	#tag Event
+		Sub Pressed()
+		  Settings.Hide
+		  Loading.SaveSettings
+		  Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
 		End Sub
 	#tag EndEvent
 #tag EndEvents

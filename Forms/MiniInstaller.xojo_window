@@ -169,7 +169,6 @@ Begin DesktopWindow MiniInstaller
       Width           =   80
    End
    Begin Thread InstallItems
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Priority        =   5
@@ -179,7 +178,6 @@ Begin DesktopWindow MiniInstaller
       Type            =   0
    End
    Begin Timer UpdateUI
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -212,6 +210,7 @@ End
 		Sub Opening()
 		  If Debugging Then Debug("--- Starting MiniInstaller Opening ---")
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
+		  
 		End Sub
 	#tag EndEvent
 
@@ -681,6 +680,11 @@ End
 		    
 		    'Bring back main form, if enabled to
 		    MiniInstaller.Hide ' Hide the installer
+		    If Settings.SetQuitOnComplete.Value = True Then
+		      QuitApp 'If set to Quit on Complete then do so
+		      Exit
+		    End If
+		    
 		    Main.Show
 		    QuitInstaller = False
 		    Exit'Don't Continue this Sub after Quitting

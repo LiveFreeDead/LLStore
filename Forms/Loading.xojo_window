@@ -1198,29 +1198,26 @@ End
 		        Next
 		      End If
 		      If Debugging Then Debug("---------- End  Manual Locations ----------")
-		      
-		      'If StoreMode = 0 Then
-		      'IniFile = Slash(AppPath)+"LLL_Store_Manual_Locations.ini"
-		      'Else
-		      'IniFile = Slash(AppPath)+"LLL_Launcher_Manual_Locations.ini"
-		      'End If
-		      'If Exist(IniFile) Then
-		      'ManIn = LoadDataFromFile(IniFile)
-		      'Sp() = ManIn.Split(Chr(10))
-		      'If Sp.Count >=1 Then
-		      'For I = 0 To Sp.Count -1
-		      'DirToCheck = Sp(I).Trim
-		      'GetItemsPaths(DirToCheck, True)
-		      'Next
-		      'End If
-		      'End If
 		    End If
 		    
 		    
-		  ElseIf StoreMode = 1 Then 'Launcher Mode - Glenn 2027 - Make it check the root folder to LLStore, so can carry on USB stick with installed items to play
+		  ElseIf StoreMode = 1 Then 'Launcher Mode
 		    If TargetLinux Then
 		      GetItemsPaths(Slash(HomePath)+"LLGames/", True)
 		      GetItemsPaths(Slash(HomePath)+".wine/drive_c/ppGames/", True)
+		      
+		      'Make it check the root folder to LLStore, so can carry on USB stick with installed items to play - This may cause issues, needs Testing Glenn
+		      Dim GamePath As String
+		      GamePath = AppPath
+		      GamePath = Slash(Left(GamePath, Len(GamePath)-InStrRev(GamePath,"/")))
+		      If GamePath <> "/LastOS/" And GamePath <> "/" Then
+		        GetItemsPaths(Slash(GamePath)+"LLGames/", True)
+		      End If
+		      GamePath = Slash(Left(GamePath, Len(GamePath)-InStrRev(GamePath,"/"))) ' I check up to folders
+		      If GamePath <> "/LastOS/" And GamePath <> "/" Then
+		        GetItemsPaths(Slash(GamePath)+"LLGames/", True)
+		      End If
+		      
 		    ElseIf TargetWindows Then 'Only get Windows Games on Windows, can't run Linux games
 		      Let = Asc("C")
 		      For I = 0 To 23
@@ -1230,7 +1227,7 @@ End
 		    End If
 		    
 		    
-		    'Get Manual Locations
+		    'Get Manual Locations for Windows
 		    If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
 		      If TargetWindows Then
 		        IniFile = Slash(AppPath)+"LLL_Launcher_Win_Manual_Locations.ini"
@@ -1625,6 +1622,7 @@ End
 		      If LineData <> "" Then Settings.SetVideoVolume.Text = LineData.Trim
 		      If Val(Settings.SetVideoVolume.Text) > 100 Then Settings.SetVideoVolume.Text  = "100"
 		      If Val(Settings.SetVideoVolume.Text) < 0 Then Settings.SetVideoVolume.Text  = "0"
+		      MovieVolume = Val(Settings.SetVideoVolume.Text)
 		    Case "uselocaldbs"
 		      If LineData <> "" Then Settings.SetUseLocalDBFiles.Value = IsTrue(LineData)
 		    Case "copyitemstobuiltrepo"
@@ -1642,9 +1640,11 @@ End
 		      If LineData = "User" Then
 		        Settings.SetFlatpakAsUser.Value = True
 		        Settings.SetFlatpakAsSystem.Value = False
+		        FlatpakAsUser = Settings.SetFlatpakAsUser.Value
 		      Else
 		        Settings.SetFlatpakAsUser.Value = False
 		        Settings.SetFlatpakAsSystem.Value =  True
+		        FlatpakAsUser = Settings.SetFlatpakAsUser.Value
 		      End If
 		    Case "useonlinerepositiories"
 		      If LineData <> "" Then Settings.SetUseOnlineRepos.Value = IsTrue(LineData)
@@ -1656,6 +1656,8 @@ End
 		      Else
 		        Debugging = False 'If the file isn't writable then no point in enabling the debugger
 		      End If
+		    Case "alwaysshowres"
+		      If LineData <> "" Then Settings.SetAlwaysShowRes.Value = IsTrue(LineData)
 		    End Select
 		  Next
 		  App.DoEvents(1)' Update the Settings Form with the new Check values before we do anything, might fix it, else I'll need to use Variables
@@ -2125,6 +2127,7 @@ End
 		  
 		  RL = RL + "DebugEnabled=" + Str(Settings.SetDebugEnabled.Value) + Chr(10)
 		  
+		  RL = RL + "AlwaysShowRes=" + Str(Settings.SetAlwaysShowRes.Value) + Chr(10)
 		  
 		  
 		  'Msgbox RL
@@ -2248,11 +2251,16 @@ End
 		    
 		    If Data.ScanPaths.RowCount >=1 Then
 		      For I = 0 To Data.ScanPaths.RowCount - 1
-		        F = GetFolderItem(Data.ScanPaths.CellTextAt(I,0)+".lldb/lldb.ini",FolderItem.PathTypeNative)
-		        If F.Exists And ForceRefreshDBs = False Then
-		          LoadDB(Data.ScanPaths.CellTextAt(I,0))
-		          Data.ScanPaths.CellTextAt(I,1) = "T"
-		        Else 'Scan Items and Save DB Below
+		        If Settings.SetUseLocalDBFiles.Value = True Then
+		          F = GetFolderItem(Data.ScanPaths.CellTextAt(I,0)+".lldb/lldb.ini",FolderItem.PathTypeNative)
+		          If F.Exists And ForceRefreshDBs = False Then
+		            LoadDB(Data.ScanPaths.CellTextAt(I,0))
+		            Data.ScanPaths.CellTextAt(I,1) = "T"
+		          Else 'Scan Items and Save DB Below
+		            GetItems(Data.ScanPaths.CellTextAt(I,0))
+		            Data.ScanPaths.CellTextAt(I,1) = "F"
+		          End If
+		        Else 'Not using LocalDB's
 		          GetItems(Data.ScanPaths.CellTextAt(I,0))
 		          Data.ScanPaths.CellTextAt(I,1) = "F"
 		        End If
@@ -2279,11 +2287,13 @@ End
 		      Next
 		    End If
 		    
-		    'Save DBFiles (Need to add check it's enabled Glenn 2027)
-		    Loading.Status.Text = "Writing to DB Files..."
-		    Loading.Refresh
-		    App.DoEvents(1)
-		    SaveAllDBs
+		    'Save DBFiles
+		    If Settings.SetUseLocalDBFiles.Value = True Then
+		      Loading.Status.Text = "Writing to DB Files..."
+		      Loading.Refresh
+		      App.DoEvents(1)
+		      SaveAllDBs
+		    End If
 		    
 		    ForceRefreshDBs = False
 		    
@@ -2392,9 +2402,10 @@ End
 		    Main.Description.StyledText.TextColor(0, Len(Main.Description.Text)) = ColDescription 'Make sure it's the right colour in Linux
 		    
 		    If StoreMode = 1 Then
-		      Main.Description.Text = "Select a Game and press Start to Play it" +chr(13) +chr(13) _
-		      + "You can also double click or press Enter to start the selected Game" _
-		      + chr(13) +chr(13) + "Press Ctrl + Shift + F4 or Ctrl + Break during game play to exit from most games instantly"
+		      Main.Description.Text = "Select a Game and press Start to Play it, if no games are shown the Launcher only shows items installed with LLStore." +chr(13) +chr(13) _
+		      +"If you hold in Shift you can set the Screen Resolution of the game." + chr(13) _
+		      + "You can also double click or press Enter to start the selected Game." _
+		      + chr(13) +chr(13) + "Press Ctrl + Shift + F4 or Ctrl + Break during game play to exit from most games instantly in LastOSLinux"
 		      
 		      'Add extras so it shows Scrllbar always
 		      If TargetLinux Then Main.Description.Text = Main.Description.Text + Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)
@@ -2405,13 +2416,14 @@ End
 		      
 		      TriggerWords = Array("LLApps","LLGames","ssApps", "ppApps", "ppGames")
 		      
-		      Main.Description.Text = "Select the Items you wish to install by marking your selection." +chr(13) +chr(13) _
+		      Main.Description.Text = "Select the Items you wish to install by marking your selection with spacebar, double clicking or using the context menu Selection options." +chr(13) +chr(13) _
 		      + "Each Item you click will show its details in this description box." + chr(13)_
 		      + "LLApps, LLGames, are Linux items determined by their Location and/or .lla/.llg file, and they are color-coded in the Items list." + chr(13)_
 		      + "ssApps, ppApps, and ppGames are Windows/WINE items determined by their Location and/or .app/.ppg file, and they are color-coded in the Items list." _
 		      + chr(13) + chr(13) + "Right-click the Items list for a menu that allows you to change Item selection and/or load/save a Preset." _
 		      + "  Other options are available." + chr(13) + chr(13) _ 
-		      + "LLStore cannot always detect previously installed applications and therefore may not hide these applications from the Items list. Especially when they are tweaks, themes and do not use an installation path"
+		      + "LLStore cannot always detect previously installed applications and therefore may not hide these applications from the Items list. Especially when they are tweaks, themes and do not use an installation path" + chr(13) + chr(13) _ 
+		      + "LLStore requires an internet connection to show online repositories, only local items will be shown otherwise."
 		      
 		      'Add extras so it shows Scrllbar always
 		      If TargetLinux Then Main.Description.Text = Main.Description.Text + Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)+ Chr(13)
