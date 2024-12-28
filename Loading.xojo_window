@@ -1024,6 +1024,12 @@ End
 		    Next
 		  End If
 		  
+		  ''Get Remote WebLinks to use 'Disabled for now due to Google stopping API use with wget
+		  'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/WebLinks.db",Slash(RepositoryPathLocal)+"RemoteWebLinks.db")
+		  'While Downloading = True
+		  'App.DoEvents(3)
+		  'Wend
+		  
 		  'ForceQuit = True ' Not using this method anymore, it's too recursive
 		End Sub
 	#tag EndMethod
@@ -1643,6 +1649,13 @@ End
 		    Case "useonlinerepositiories"
 		      If LineData <> "" Then Settings.SetUseOnlineRepos.Value = IsTrue(LineData)
 		      'MsgBox  LineData +" "+ IsTrue(LineData).ToString
+		    Case "debugenabled"
+		      If LineData <> "" Then Settings.SetDebugEnabled.Value = IsTrue(LineData)
+		      If DebugFileOk = True Then
+		        Debugging = Settings.SetDebugEnabled.Value
+		      Else
+		        Debugging = False 'If the file isn't writable then no point in enabling the debugger
+		      End If
 		    End Select
 		  Next
 		  App.DoEvents(1)' Update the Settings Form with the new Check values before we do anything, might fix it, else I'll need to use Variables
@@ -2110,6 +2123,10 @@ End
 		  RL = RL + "UseManualLocations=" + Str(Settings.SetUseManualLocations.Value) + Chr(10)
 		  RL = RL + "UseOnlineRepositiories=" + Str(Settings.SetUseOnlineRepos.Value) + Chr(10)
 		  
+		  RL = RL + "DebugEnabled=" + Str(Settings.SetDebugEnabled.Value) + Chr(10)
+		  
+		  
+		  
 		  'Msgbox RL
 		  
 		  'Save to actual Settings File
@@ -2280,13 +2297,14 @@ End
 		      End If
 		    End If
 		    
-		    If StoreMode = 0 Then
-		      'Get Weblinks to use Google etcx to host large files
-		      Loading.Status.Text = "Get Weblinks for large items..."
-		      Loading.Refresh
-		      App.DoEvents(1)
-		      GetWebLinks()
-		    End If
+		    'Disabled Weblinks for now while I find an alternative as google API is blocked by wget for non logged in users.
+		    'If StoreMode = 0 Then
+		    ''Get Weblinks to use Google etcx to host large files
+		    'Loading.Status.Text = "Get Weblinks for large items..."
+		    'Loading.Refresh
+		    'App.DoEvents(1)
+		    'GetWebLinks()
+		    'End If
 		    
 		    'Hide Old Version (Only need to do this once as you load in Items)
 		    Loading.Status.Text = "Hiding Old Versions..."
@@ -2872,8 +2890,10 @@ End
 		    Else
 		      DebugOutput = TextOutputStream.Create(DebugFile)
 		    end if
+		    DebugFileOk = True
 		  Catch
 		    Debugging = False
+		    DebugFileOk = False
 		  End Try
 		  
 		  If Debugging Then Debug("--- Starting LLStore VeryFirstRunTimer ---")

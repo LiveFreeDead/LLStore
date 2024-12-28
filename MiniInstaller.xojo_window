@@ -746,8 +746,19 @@ End
 		    Try 'This is so pre listing doesn't crash it
 		      JobInstalling = True
 		      FileToInstallFrom = Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("FileINI"))
+		      Dim F As FolderItem
+		      Dim DownloadAnyway As Boolean
+		      DownloadAnyway = False
+		      Try
+		        F = GetFolderItem(FileToInstallFrom, FolderItem.PathTypeShell)
+		        If F.Length <=10000 Then '10KB is pretty small
+		          DownloadAnyway = True
+		        End If
+		      Catch
+		        DownloadAnyway = True 'If the file has errors then just set it to re-download
+		      End Try
 		      
-		      If Not Exist(FileToInstallFrom) Then 'Only if it doesn't exist download it
+		      If Not Exist(FileToInstallFrom) Or DownloadAnyway = True Then 'Only if it doesn't exist or the existing file is tiny download it
 		        'Download if possible
 		        If Left(Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("PathINI")), 4) = "http" Then
 		          GetOnlineFile(Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("PathINI")), FileToInstallFrom)

@@ -3400,7 +3400,11 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Debugging As Boolean = True
+		DebugFileOk As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Debugging As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

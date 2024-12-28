@@ -613,6 +613,36 @@ Begin DesktopWindow Settings
       VisualState     =   0
       Width           =   227
    End
+   Begin DesktopCheckBox SetDebugEnabled
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Debugger Enabled"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   27
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   8
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   19
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   128
+      Transparent     =   False
+      Underline       =   False
+      Value           =   False
+      Visible         =   True
+      VisualState     =   0
+      Width           =   152
+   End
 End
 #tag EndDesktopWindow
 
