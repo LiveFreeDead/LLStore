@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1435,6 +1439,61 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub LoadPosition()
+		  Dim FileIn As String
+		  Dim DataIn As String
+		  Dim DataSp() As String
+		  Dim I As Integer
+		  
+		  FileIn = ""
+		  If StoreMode = 0 Then 
+		    FileIn = Slash(SpecialFolder.ApplicationData.NativePath)+".LLStore.ini"
+		  ElseIf StoreMode = 1 Then
+		    FileIn = Slash(SpecialFolder.ApplicationData.NativePath)+".LLLauncher.ini"
+		  End If
+		  
+		  If FileIn <> "" Then
+		    If Exist(FileIn) Then
+		      If Debugging Then Debug ("--- Loading Position From File: " + FileIn)
+		      
+		      DataIn = LoadDataFromFile(FileIn)
+		      If DataIn.Trim <> "" Then
+		        DataSp = DataIn.Split(Chr(10))
+		        For I = 0 To DataSp.Count - 1
+		          If DataSp(I).IndexOf("MainLeft=") >=0 Then
+		            LoadedPosition = True
+		            Main.Left = DataSp(I).ReplaceAll("MainLeft=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("MainTop=") >=0 Then
+		            Main.Top = DataSp(I).ReplaceAll("MainTop=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("MainWidth=") >=0 Then
+		            Main.Width = DataSp(I).ReplaceAll("MainWidth=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("MainHeight=") >=0 Then
+		            Main.Height = DataSp(I).ReplaceAll("MainHeight=", "").Trim.ToInteger
+		          End If
+		          
+		          If DataSp(I).IndexOf("CatFont=") >=0 Then
+		            Main.Categories.FontSize = DataSp(I).ReplaceAll("CatFont=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("ItemFont=") >=0 Then
+		            Main.Items.FontSize = DataSp(I).ReplaceAll("ItemFont=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("DescriptionFont=") >=0 Then
+		            Main.Description.FontSize = DataSp(I).ReplaceAll("DescriptionFont=", "").Trim.ToInteger
+		          End If
+		          If DataSp(I).IndexOf("MetaFont=") >=0 Then
+		            Main.MetaData.FontSize = DataSp(I).ReplaceAll("MetaFont=", "").Trim.ToInteger
+		          End If
+		        Next
+		      End If
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub LoadSettings()
 		  If Debugging Then Debug("--- Starting Load Settings ---")
 		  Dim RL As String
@@ -1542,6 +1601,7 @@ End
 		      Settings.SetManualLocations.Text = LoadDataFromFile(IniFile)
 		    End If
 		  End If
+		  
 		End Sub
 	#tag EndMethod
 
@@ -1905,6 +1965,44 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SavePosition()
+		  Dim FileOut As String
+		  Dim DataOut As String
+		  
+		  FileOut = ""
+		  If StoreMode = 0 Then 
+		    FileOut = Slash(SpecialFolder.ApplicationData.NativePath)+".LLStore.ini"
+		  ElseIf StoreMode = 1 Then
+		    FileOut = Slash(SpecialFolder.ApplicationData.NativePath)+".LLLauncher.ini"
+		  End If
+		  
+		  If Debugging Then Debug ("--- Saving Position To File: " + FileOut)
+		  
+		  If FileOut <> "" Then
+		    If Main.Visible = True Then
+		      If Main.Left >=0 And Main.Top >=0 Then
+		        If Main.Left+Main.Width <= Screen(0).AvailableWidth And Main.Top+Main.Height <= Screen(0).AvailableHeight Then
+		          'Only save if visible
+		          DataOut = DataOut + "MainLeft=" + Main.Left.ToString+Chr(10)
+		          DataOut = DataOut + "MainTop=" + Main.Top.ToString+Chr(10)
+		          DataOut = DataOut + "MainWidth=" + Main.Width.ToString+Chr(10)
+		          DataOut = DataOut + "MainHeight=" + Main.Height.ToString+Chr(10)
+		          
+		          DataOut = DataOut + "CatFont=" + Main.Categories.FontSize.ToString+Chr(10)
+		          DataOut = DataOut + "ItemFont=" + Main.Items.FontSize.ToString+Chr(10)
+		          DataOut = DataOut + "DescriptionFont=" + Main.Description.FontSize.ToString+Chr(10)
+		          DataOut = DataOut + "MetaFont=" + Main.MetaData.FontSize.ToString+Chr(10)
+		          
+		          SaveDataToFile (DataOut, FileOut)
+		          
+		        End If
+		      End If
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SaveSettings()
 		  If Debugging Then Debug("--- Starting Save Settings ---")
 		  If SettingsLoaded = False Then Return
@@ -2184,11 +2282,16 @@ End
 		    
 		    
 		    'Centre Main Form (For now, will load in position once stored)
-		    Main.width=screen(0).AvailableWidth-(screen(0).AvailableWidth/6)
-		    Main.height=screen(0).AvailableHeight-(screen(0).AvailableHeight/12)
 		    
-		    Main.Left = (screen(0).AvailableWidth - Main.Width) / 2
-		    Main.top = (screen(0).AvailableHeight - Main.Height) / 2
+		    If StoreMode = 0 Or StoreMode = 1 Then Loading.LoadPosition 'Only Load if Store or Launcher
+		    
+		    If LoadedPosition = False Then 'Only resize to default position if none loaded
+		      Main.width=screen(0).AvailableWidth-(screen(0).AvailableWidth/6)
+		      Main.height=screen(0).AvailableHeight-(screen(0).AvailableHeight/12)
+		      
+		      Main.Left = (screen(0).AvailableWidth - Main.Width) / 2
+		      Main.top = (screen(0).AvailableHeight - Main.Height) / 2
+		    End If
 		    
 		    'Enable Resize Now, uses timer on main form to draw it properly
 		    Main.ResizeMainForm

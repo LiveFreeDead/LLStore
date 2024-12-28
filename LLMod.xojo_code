@@ -3532,6 +3532,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		LoadedPosition As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		LoadPresetFile As Boolean = False
 	#tag EndProperty
 
@@ -4648,6 +4652,14 @@ Protected Module LLMod
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FavCount"
+			Visible=false
+			Group="Behavior"
+			InitialValue="0"
+			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

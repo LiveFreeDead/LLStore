@@ -442,6 +442,7 @@ End
 	#tag Event
 		Function CancelClosing(appQuitting As Boolean) As Boolean
 		  If ForceQuit = False Then
+		    If StoreMode = 0 Or StoreMode = 1 Then Loading.SavePosition 'Only save if Store or Launcher
 		    Main.Hide
 		    PreQuitApp
 		    QuitApp
