@@ -2553,6 +2553,24 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function OpenDialog(FileTyp As FileType, Title As String, InitialPath As String) As String
+		  Dim Init, F As FolderItem
+		  Dim dlg As OpenDialog
+		  
+		  If InitialPath = "" Then InitialPath = SpecialFolder.Desktop.NativePath
+		  
+		  Init = GetFolderItem(InitialPath, FolderItem.PathTypeShell)
+		  dlg = New OpenDialog
+		  dlg.InitialDirectory = Init
+		  dlg.Title = Title
+		  dlg.Filter = FileTyp
+		  F = dlg.ShowModal()
+		  
+		  If F = Nil Then Return "" Else Return F.NativePath
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub PreQuitApp()
 		  If Debugging Then Debug("--- Starting Pre Quit LLStore ---")
 		  'MsgBox "Pre Quitting"
@@ -3017,6 +3035,29 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function SaveDialog(FileTyp As FileType, Title As String, InitialPath As String, DefaultName As String) As String
+		  Dim F, Init As FolderItem
+		  Dim dlg As SaveAsDialog
+		  
+		  Init = GetFolderItem(InitialPath, FolderItem.PathTypeShell)
+		  
+		  dlg = New SaveAsDialog
+		  dlg.InitialDirectory=Init
+		  dlg.Title = Title
+		  dlg.SuggestedFileName = DefaultName
+		  dlg.Filter = FileTyp
+		  F = dlg.ShowModal()
+		  
+		  If F = Nil Then
+		    Return ""
+		  Else
+		    If Lowercase(Right(F.ShellPath,3)) = Lowercase(FileTyp.Extensions) Then Return F.NativePath
+		    Return F.NativePath + "." + Lowercase(FileTyp.Extensions)
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function SaveLLFile(SaveToPath As String) As Boolean
 		  If Debugging Then Debug("--- Save LLFile ---")
 		  If Debugging Then Debug("Save To: "+ SaveToPath)
@@ -3427,6 +3468,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		InstallArg As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		InstallFromIni As String
 	#tag EndProperty
 
@@ -3479,6 +3524,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		LoadPresetFile As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		ManualLocationsFile As String
 	#tag EndProperty
 
@@ -3516,6 +3565,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		ppGamesFolder As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		PreviousPresetPath As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -4554,6 +4607,14 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue="False"
 			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ManualLocationsFile"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

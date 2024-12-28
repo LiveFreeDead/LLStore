@@ -862,6 +862,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub DoContextMenu()
+		  Dim Success As Boolean
+		  
 		  Dim base As New MenuItem
 		  Dim M, hitItem As MenuItem
 		  
@@ -940,6 +942,15 @@ End
 		    M.Checked =  HideOpen
 		    base.Item(MC).Append M
 		    
+		    'Presets
+		    base.Append New MenuItem("Load From Preset") '0
+		    MC = MC + 1
+		    base.Item(MC).Shortcut  = "O"
+		    base.Append New MenuItem("Save To Preset") '0
+		    MC = MC + 1
+		    base.Item(MC).Shortcut  = "S"
+		    
+		    
 		  End If
 		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
@@ -988,6 +999,12 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		  Case "Load Fr"
+		    'MsgBox "Load From Preset"
+		    Success = LoadFromPreset()
+		  Case "Save To"
+		    'MsgBox "Save To Preset"
+		    SaveToPreset()
 		  Case "Select "
 		    SelectItems (ContextText)
 		  Case "Un-Sele"
@@ -1033,7 +1050,6 @@ End
 		    Loading.RefreshDBs
 		  Case "&Edit I"
 		    'Load in Item fully
-		    Dim Success As Boolean
 		    'MsgBox CurrentItemID.ToString
 		    #Pragma BreakOnExceptions Off
 		    Try
@@ -1212,6 +1228,72 @@ End
 		    End If
 		  End If
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LoadFromPreset(PresetIn As String = "") As Boolean
+		  If Data.Items.RowCount <= 0 Then Return False'No Items, no point trying to tick blankness
+		  Dim I, J As Integer
+		  Dim SelCount As Integer
+		  Dim OutPut As String
+		  Dim RL As String
+		  Dim Sp() As String
+		  
+		  If Debugging Then Debug("--- Load From Preset: "+ PresetIn)
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "text/ini"
+		  iniType.MacType = "INI"
+		  iniType.Extensions = "ini"
+		  
+		  If PreviousPresetPath = "" Then PreviousPresetPath = Slash(AppPath)+"Presets"
+		  If PresetIn = "" Then PresetIn = OpenDialog(iniType, "Select Preset .ini File", PreviousPresetPath) ' browse for one 
+		  
+		  If TargetWindows Then
+		    PresetIn = PresetIn.ReplaceAll("/","\")
+		  Else
+		    PresetIn = PresetIn.ReplaceAll("\","/")
+		  End If
+		  
+		  If PresetIn <> "" Then
+		    If TargetWindows Then
+		      PreviousPresetPath = Left(PresetIn, InStrRev(PresetIn,"\")) ' Get Parent
+		    Else
+		      PreviousPresetPath = Left(PresetIn, InStrRev(PresetIn,"/")) ' Get Parent
+		    End If
+		    
+		    
+		    RL = LoadDataFromFile(PresetIn)
+		    RL = RL.ReplaceAll(Chr(10),Chr(13)) 'Make able to Load Windows ones
+		    RL = RL.ReplaceAll(Chr(13),Chr(10)) 'Make able to Load Windows ones, does it twice as to not make duplicates
+		    Sp() = RL.Split(Chr(10))
+		    If Sp.Count >=1 Then
+		      For J = 0 To Data.Items.RowCount - 1 'Unselect all items first
+		        Data.Items.CellTextAt(J, Data.GetDBHeader("Selected")) = "F"
+		      Next
+		      
+		      
+		      For I = 0 To Sp.Count -1
+		        If Left(Sp(I),2) = "1|" Then Sp(I) = Right (Sp(I),Len(Sp(I))-2)+"ssapp"
+		        If Left(Sp(I),2) = "2|" Then Sp(I) = Right (Sp(I),Len(Sp(I))-2)+"ppapp"
+		        If Left(Sp(I),2) = "3|" Then Sp(I) = Right (Sp(I),Len(Sp(I))-2)+"ppgame"
+		        If Sp(I).Trim = "" Then Continue 'Skip empty items
+		        'MsgBox Sp(I)
+		        For J = 0 To Data.Items.RowCount - 1
+		          If Sp(I).Trim = Data.Items.CellTextAt(J, Data.GetDBHeader("UniqueName")) And  Data.Items.CellTextAt(J, Data.GetDBHeader("Hidden")) <> "T" Then
+		            Data.Items.CellTextAt(J, Data.GetDBHeader("Selected")) = "T"
+		            Continue 'No Need to keep looking if it's already found it
+		          End If
+		        Next
+		      Next
+		      Items.Refresh 'Update Selection on Screen
+		      UpdateStats
+		      Return True
+		    End If
+		  End If
+		  
+		  Return False
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1547,6 +1629,43 @@ End
 		  Main.Width = PosWidth
 		  Main.Height = PosHeight
 		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SaveToPreset()
+		  If Data.Items.RowCount <= 0 Then Return 'No Items
+		  Dim I As Integer
+		  Dim SelCount As Integer
+		  Dim OutPut As String
+		  
+		  Dim PresetFileName As String
+		  Dim iniType As New FileType
+		  iniType.Name = "text/ini"
+		  iniType.MacType = "INI"
+		  iniType.Extensions = "ini"
+		  
+		  For I = 0 To Data.Items.RowCount - 1
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("Selected")) = "T" Then
+		      OutPut = OutPut + Data.Items.CellTextAt(I, Data.GetDBHeader("UniqueName")) + Chr(10)
+		      SelCount = SelCount + 1
+		    End If
+		  Next
+		  If SelCount >= 1 Then
+		    'Select a File to save to
+		    If PreviousPresetPath = "" Then PreviousPresetPath = Slash(AppPath)+"Presets"
+		    PresetFileName = SaveDialog(iniType, "Save Preset .ini File", PreviousPresetPath, "My Preset.ini")
+		    
+		    If PresetFileName <> "" Then
+		      If TargetWindows Then
+		        PreviousPresetPath = Left(PresetFileName, InStrRev(PresetFileName,"\"))
+		      Else
+		        PreviousPresetPath = Left(PresetFileName, InStrRev(PresetFileName,"/"))
+		      End If
+		      'MsgBox PresetFileName
+		      SaveDataToFile(OutPut, PresetFileName)
+		    End If
+		  End If
 		End Sub
 	#tag EndMethod
 

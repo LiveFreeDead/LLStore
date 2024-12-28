@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1959,6 +1955,8 @@ End
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
+		  Dim Success As Boolean
+		  Dim Test As String
 		  
 		  'Center Form
 		  self.Left = (screen(0).AvailableWidth - self.Width) / 2
@@ -2186,6 +2184,36 @@ End
 		    End If
 		    #Pragma BreakOnExceptions True
 		    '--------------
+		    
+		    'Load The Preset specified
+		    If LoadPresetFile = True Then
+		      'MsgBox CommandLineFile
+		      If CommandLineFile <> "" Then
+		        If Not Exist(CommandLineFile) Then
+		          Test = Slash(Slash(AppPath)+"Presets")+CommandLineFile
+		          If Exist(Test) Then CommandLineFile = Test 'Look in the Presets folder for it
+		        End If
+		        Success = Main.LoadFromPreset(CommandLineFile)
+		        If Success Then
+		          If InstallArg = True Then
+		            'Hide Loading now it's done
+		            Loading.Visible = False
+		            App.DoEvents(1)'Make it hide before showing the main form (Less redraw)
+		            
+		            FirstRun = True 'Set this once everything is done and it's ready to go, used by ChangeItem so the intro isn't erased
+		            
+		            'Start Installer
+		            MiniInstaller.StartInstaller()
+		            
+		            'Clean up Main so it's ready
+		            Main.ResizeMainForm 'Just check again as sometimes it's wrong
+		            App.DoEvents(1)'Make sure it draws before doing other stuff that would make it draw ugly
+		            
+		            Return 'Quit Routine
+		          End If
+		        End If
+		      End If
+		    End If
 		    
 		    'Hide Loading now it's done
 		    Loading.Visible = False
@@ -2655,11 +2683,20 @@ End
 		    If StoreMode = 2 Or StoreMode = 3 Then
 		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
+		    Else
+		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
+		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
 		    End If
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
 		    If ArgsSP(I).Lowercase = "-l" Then StoreMode = 1
-		    If ArgsSP(I).Lowercase = "-install" Then StoreMode = 2
-		    If ArgsSP(I).Lowercase = "-i" Then StoreMode = 2
+		    If ArgsSP(I).Lowercase = "-install" Then
+		      StoreMode = 2
+		      InstallArg = True
+		    End If
+		    If ArgsSP(I).Lowercase = "-i" Then
+		      StoreMode = 2
+		      InstallArg = True
+		    End If
 		    If ArgsSP(I).Lowercase = "-edit" Then StoreMode = 3
 		    If ArgsSP(I).Lowercase = "-e" Then StoreMode = 3
 		    
@@ -2683,9 +2720,38 @@ End
 		      Compress = True
 		    End If
 		    
+		    If ArgsSP(I).Lowercase = "-preset" Then
+		      StoreMode = 0
+		      LoadPresetFile = True
+		    End If
+		    
+		    If ArgsSP(I).Lowercase = "-p" Then
+		      StoreMode = 0
+		      LoadPresetFile = True
+		    End If
+		    
 		  Next
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
+		  'Remove Flags from name
+		  CommandLineFile = CommandLineFile.ReplaceAll("-preset","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-p","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-build","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-b","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-compress","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-c","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-install","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-i","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-edit","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-e","")
+		  
+		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
+		  
+		  If LoadPresetFile = True Then
+		    'If InstallArg = True Then
+		    StoreMode = 0
+		    'End If
+		  End If
 		  
 		  'Example of Try event captured
 		  'MsgBox Str(Args().Count)
