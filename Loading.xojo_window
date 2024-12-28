@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1276,6 +1280,40 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub GetWebLinks()
+		  Dim I As Integer
+		  Dim RL As String
+		  Dim Sp() As String
+		  Dim TemStrSp() As String
+		  Dim FileIn As String
+		  
+		  FileIn = Slash(RepositoryPathLocal)+"RemoteWebLinks.db"
+		  If TargetWindows Then
+		    FileIn = FileIn.ReplaceAll("/","\")
+		  Else
+		    FileIn = FileIn.ReplaceAll("\","/")
+		  End If
+		  
+		  RL = LoadDataFromFile(FileIn)
+		  RL = RL.ReplaceAll(Chr(13),Chr(10))
+		  
+		  Sp = RL.Split(Chr(10))
+		  If Sp.Count >= 1 Then
+		    WebLinksCount = 0
+		    For I = 0 To Sp.Count - 1
+		      TemStrSp = Sp(I).Split("|")
+		      If TemStrSp.Count = 2 Then
+		        WebLinksName(WebLinksCount) = TemStrSp(0).Trim
+		        WebLinksLink(WebLinksCount) = TemStrSp(1).Trim            
+		        'MsgBox WebLinksName(WebLinksCount) + " = " + WebLinksLink(WebLinksCount)
+		        WebLinksCount = WebLinksCount + 1
+		      End If
+		    Next
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub HideOldVersions()
 		  If Debugging Then Debug("--- Starting Hide Old Versions ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
@@ -2171,25 +2209,6 @@ End
 		    Loading.Refresh
 		    App.DoEvents
 		    
-		    ''Test Downloader
-		    'Loading.Status.Text = "Downloading..."
-		    'Loading.Refresh
-		    'App.DoEvents(1)
-		    '
-		    ''GetOnlineFile ("https://www.lastos.org/linuxrepo/Unreal.Tournament_v1.0_LLGame.tar","/home/glenn/Desktop/Unreal.Tournament_v1.0_LLGame.tar")
-		    'GetOnlineFile ("https://www.lastos.org/linuxrepo/Limbo_LLGame.tar",SpecialFolder.Desktop.NativePath+"/Limbo_LLGame.tar")
-		    '
-		    'While Downloading 'Wait for Downloading to end
-		    'App.DoEvents(5)
-		    'Wend
-		    '
-		    'Loading.Status.Text = "Downloading Done..."
-		    'Loading.Refresh
-		    'App.DoEvents(1)
-		    '
-		    'MsgBox ("Done")
-		    'Quit
-		    
 		    'Check For Updates
 		    'Msgbox RunningInIDE.ToString
 		    If Settings.SetCheckForUpdates.Value = True And RunningInIDE = False Then
@@ -2253,10 +2272,20 @@ End
 		    
 		    'Get online Databases
 		    If Settings.SetUseOnlineRepos.Value = True Then
-		      Loading.Status.Text = "Downloading Online Databases..."
+		      If StoreMode = 0 Then 
+		        Loading.Status.Text = "Downloading Online Databases..."
+		        Loading.Refresh
+		        App.DoEvents(1)
+		        GetOnlineDBs 'Only do this when in Installation mode
+		      End If
+		    End If
+		    
+		    If StoreMode = 0 Then
+		      'Get Weblinks to use Google etcx to host large files
+		      Loading.Status.Text = "Get Weblinks for large items..."
 		      Loading.Refresh
 		      App.DoEvents(1)
-		      If StoreMode = 0 Then GetOnlineDBs 'Only do this when in Installation mode
+		      GetWebLinks()
 		    End If
 		    
 		    'Hide Old Version (Only need to do this once as you load in Items)
@@ -2479,12 +2508,12 @@ End
 		    GetURL = QueueURL(QueueUpTo)
 		    
 		    'Add Weblinks back in to get from there instead of the repo's Glenn 2029
-		    'If WebLinksCount >= 1 Then
-		    'For I = 0 To WebLinksCount - 1
-		    'LocalName = Replace(QueueLocal(QueueUpTo), Slash(RepositoryPathLocal), "") 'Remove Path, just use File Name
-		    'If WebLinksName(I) = LocalName Then GetURL = WebLinksLink(I) 'Use WebLinks if file name is found in that list
-		    'Next
-		    'End If
+		    If WebLinksCount >= 1 Then
+		      For I = 0 To WebLinksCount - 1
+		        LocalName = Replace(QueueLocal(QueueUpTo), Slash(RepositoryPathLocal), "") 'Remove Path, just use File Name
+		        If WebLinksName(I) = LocalName Then GetURL = WebLinksLink(I) 'Use WebLinks if file name is found in that list
+		      Next
+		    End If
 		    
 		    'Check Remote file exist, else it'll fail
 		    Test = RunCommandResults("curl --head --silent " + Chr(34) + GetURL + Chr(34))

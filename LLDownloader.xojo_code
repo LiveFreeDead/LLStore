@@ -63,6 +63,18 @@ Protected Module LLDownloader
 		QueueURL(1024) As String
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		WebLinksCount As Integer = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		WebLinksLink(2048) As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		WebLinksName(2048) As String
+	#tag EndProperty
+
 
 	#tag ViewBehavior
 		#tag ViewProperty
