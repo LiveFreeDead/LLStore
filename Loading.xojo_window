@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1247,6 +1243,39 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub GetTheme()
+		  Dim F As FolderItem
+		  Dim RL As String
+		  
+		  
+		  #Pragma BreakOnExceptions Off
+		  Try
+		    If StoreMode = 0 Then
+		      ThemePath = AppPath+"Themes/Theme.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		      Loading.Visible = True 'Show the loading form here
+		    ElseIf StoreMode = 1 Then
+		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
+		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
+		      InputStream = TextInputStream.Open(F)
+		      RL = InputStream.ReadLine.Trim
+		      inputStream.Close
+		      ThemePath = AppPath+"Themes/"+RL+"/"
+		      LoadTheme (RL)
+		    End If
+		  Catch
+		    'No Theme files found
+		  End Try
+		  #Pragma BreakOnExceptions On
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub HideOldVersions()
 		  If Debugging Then Debug("--- Starting Hide Old Versions ---")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
@@ -1582,6 +1611,7 @@ End
 		  
 		  
 		  'Get Manual Locations
+		  Settings.SetManualLocations.Text = "" 'Clear it, will load again if one is available for Store Mode
 		  If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
 		    If StoreMode = 0 Then
 		      If TargetWindows Then
@@ -1976,6 +2006,12 @@ End
 		    FileOut = Slash(SpecialFolder.ApplicationData.NativePath)+".LLLauncher.ini"
 		  End If
 		  
+		  If TargetWindows Then
+		    FileOut = FileOut.ReplaceAll("/","\")
+		  Else
+		    FileOut = FileOut.ReplaceAll("\","/")
+		  End If
+		  
 		  If Debugging Then Debug ("--- Saving Position To File: " + FileOut)
 		  
 		  If FileOut <> "" Then
@@ -2107,7 +2143,7 @@ End
 		Sub Action()
 		  'This disables errors from breaking/debugging in the IDE, disable to debug
 		  '# Pragma BreakOnExceptions False
-		  
+		  If Debugging Then Debug("########################################")
 		  If Debugging Then Debug("--- Starting LLStore FirstRunTimer ---")
 		  
 		  Dim I As Integer
@@ -2969,6 +3005,12 @@ End
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
 		  
+		  If TargetWindows Then
+		    CommandLineFile = CommandLineFile.ReplaceAll("/","\")
+		  Else
+		    CommandLineFile = CommandLineFile.ReplaceAll("\","/")
+		  End If
+		  
 		  If Debugging Then Debug("Command Line File: "+CommandLineFile)
 		  
 		  If LoadPresetFile = True Then
@@ -2980,30 +3022,7 @@ End
 		  Dim RL As String
 		  
 		  'Get theme
-		  #Pragma BreakOnExceptions Off
-		  Try
-		    If StoreMode = 0 Then
-		      ThemePath = AppPath+"Themes/Theme.ini"
-		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		      InputStream = TextInputStream.Open(F)
-		      RL = InputStream.ReadLine.Trim
-		      inputStream.Close
-		      ThemePath = AppPath+"Themes/"+RL+"/"
-		      LoadTheme (RL)
-		      Loading.Visible = True 'Show the loading form here
-		    ElseIf StoreMode = 1 Then
-		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
-		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
-		      InputStream = TextInputStream.Open(F)
-		      RL = InputStream.ReadLine.Trim
-		      inputStream.Close
-		      ThemePath = AppPath+"Themes/"+RL+"/"
-		      LoadTheme (RL)
-		    End If
-		  Catch
-		    'No Theme files found
-		  End Try
-		  #Pragma BreakOnExceptions On
+		  GetTheme
 		  
 		  'Load Settings
 		  LoadSettings

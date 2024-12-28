@@ -1385,26 +1385,39 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function LoadDataFromFile(FileIn As String) As String
-		  Dim F As FolderItem
-		  Dim T As TextInputStream
+		  If TargetWindows Then
+		    FileIn = FileIn.ReplaceAll("/","\")
+		  Else
+		    FileIn = FileIn.ReplaceAll("\","/")
+		  End If
 		  
-		  #Pragma BreakOnExceptions Off
-		  
-		  Try
-		    F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
-		    If F <> Nil Then
-		      If F.Exists And F.IsReadable Then
-		        T = TextInputStream.Open(F)
-		        While Not T.EndOfFile 'If Empty file this skips it
-		          Return T.ReadAll '.ConvertEncoding(Encodings.ASCII)
-		        Wend
-		        T.Close
+		  If FileIn <> "" Then
+		    
+		    If Debugging Then Debug("Load Data From File: "+ FileIn)
+		    
+		    Dim F As FolderItem
+		    Dim T As TextInputStream
+		    
+		    #Pragma BreakOnExceptions Off
+		    
+		    Try
+		      F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
+		      If F <> Nil Then
+		        If F.Exists And F.IsReadable Then
+		          T = TextInputStream.Open(F)
+		          While Not T.EndOfFile 'If Empty file this skips it
+		            Return T.ReadAll '.ConvertEncoding(Encodings.ASCII)
+		          Wend
+		          T.Close
+		        End If
 		      End If
-		    End If
-		  Catch
-		  End Try
+		    Catch
+		    End Try
+		    Return ""
+		    #Pragma BreakOnExceptions On
+		  End If
+		  
 		  Return ""
-		  #Pragma BreakOnExceptions On
 		  
 		End Function
 	#tag EndMethod
@@ -3007,6 +3020,12 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub SaveDataToFile(Data As String, FileIn As String)
+		  If TargetWindows Then
+		    FileIn = FileIn.ReplaceAll("/","\")
+		  Else
+		    FileIn = FileIn.ReplaceAll("\","/")
+		  End If
+		  
 		  If Debugging Then Debug("Save Data To File: "+ FileIn)
 		  
 		  Dim F As FolderItem
@@ -3026,6 +3045,7 @@ Protected Module LLMod
 		      End If
 		    End If
 		  Catch
+		    If Debugging Then Debug("* Error - Saving Data To File: "+ FileIn)
 		  End Try
 		  
 		  #Pragma BreakOnExceptions On
@@ -4659,6 +4679,14 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LoadedPosition"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

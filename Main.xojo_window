@@ -1025,6 +1025,20 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		  Case "&Change"
+		    Loading.SavePosition 'Save the current modes position
+		    If StoreMode = 0 Then
+		      StoreMode = 1
+		    Else
+		      StoreMode = 0
+		    End If
+		    ForceRefreshDBs = False
+		    App.DoEvents(1)
+		    Main.Visible = False
+		    Loading.LoadSettings() 'Due to changing store mode, we need to change the scan paths
+		    Loading.FirstRunTime.RunMode = Timer.RunModes.Single
+		    ''''Loading.VeryFirstRunTimer.RunMode = Timer.RunModes.Single 'Need to use VeryFirst so it can load the theme again - NO - crashes due to double Debug file and Checking Admin etc
+		    Return 'Quit Main Loop and start it again
 		  Case "Add Fav"
 		    AddFavorite()
 		  Case "Remove "
@@ -1252,6 +1266,14 @@ End
 		      End If
 		    End If
 		    
+		    If StoreMode = 1 Then 'Make sure Launcher only shows Games
+		      If Data.Items.CellTextAt(I, ColBuildType) = "ppGame" Or Data.Items.CellTextAt(I, ColBuildType) = "LLGame" Then
+		      Else
+		        Hidden = True
+		      End If
+		    End If
+		    
+		    
 		    
 		    If Hidden = False Then
 		      
@@ -1295,6 +1317,12 @@ End
 		  iniType.Extensions = "ini"
 		  
 		  If PreviousPresetPath = "" Then PreviousPresetPath = Slash(AppPath)+"Presets"
+		  If TargetWindows = True Then
+		    PreviousPresetPath = PreviousPresetPath.ReplaceAll("/","\")
+		  Else
+		    PreviousPresetPath = PreviousPresetPath.ReplaceAll("\","/")
+		  End If
+		  
 		  If PresetIn = "" Then PresetIn = OpenDialog(iniType, "Select Preset .ini File", PreviousPresetPath) ' browse for one 
 		  
 		  If TargetWindows Then
@@ -1719,6 +1747,13 @@ End
 		  If SelCount >= 1 Then
 		    'Select a File to save to
 		    If PreviousPresetPath = "" Then PreviousPresetPath = Slash(AppPath)+"Presets"
+		    
+		    If TargetWindows = True Then
+		      PreviousPresetPath = PreviousPresetPath.ReplaceAll("/","\")
+		    Else
+		      PreviousPresetPath = PreviousPresetPath.ReplaceAll("\","/")
+		    End If
+		    
 		    PresetFileName = SaveDialog(iniType, "Save Preset .ini File", PreviousPresetPath, "My Preset.ini")
 		    
 		    If PresetFileName <> "" Then
