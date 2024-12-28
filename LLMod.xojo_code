@@ -3412,6 +3412,14 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		FavCount As Integer = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Favorites(2048) As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		FirstItem As Integer = -1
 	#tag EndProperty
 
@@ -4615,7 +4623,31 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="InstallArg"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
 			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LoadPresetFile"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="PreviousPresetPath"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

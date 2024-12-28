@@ -1410,6 +1410,31 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub LoadFavorites()
+		  Dim I As Integer
+		  'Load in Favorites if exists
+		  FavCount = 0
+		  Dim InFavs As String
+		  Dim InFavSp() As String
+		  If StoreMode = 1 Then
+		    If Exist(Slash(AppPath)+"Favorites.ini") Then
+		      InFavs = LoadDataFromFile(Slash(AppPath)+"Favorites.ini")
+		      InFavs = Replace(InFavs, Chr(13), Chr(10))
+		      InFavSp() = InFavs.Split(Chr(10))
+		      If InFavSp.Count >= 1 Then
+		        For I = 0 To InFavSp.Count - 1
+		          If InFavSp(I).Trim <> "" Then
+		            Favorites(FavCount) = InFavSp(I).Trim
+		            FavCount = FavCount + 1
+		          End If
+		        Next
+		      End If
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub LoadSettings()
 		  If Debugging Then Debug("--- Starting Load Settings ---")
 		  Dim RL As String
@@ -2101,6 +2126,10 @@ End
 		    Main.ChangeCat("All")
 		    'Main.GenerateItems()
 		    
+		    'Load Favorites
+		    LoadFavorites()
+		    
+		    
 		    'Last Status 
 		    Loading.Status.Text = "Generating GUI..."
 		    Loading.Refresh
@@ -2696,71 +2725,95 @@ End
 		    StoreMode = 3
 		  End If
 		  
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llfile")-6) 'Will be 0 if it can't find it, meaning it'll keep tthe whole Argments and File name
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llapp")-5)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llgame")-6)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"lledit")-6)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llinstall")-9)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"lllauncher")-10)
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore")-7)
+		  If Args.IndexOf("llfile") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llfile",-1)-6) 'Will be 0 if it can't find it, meaning it'll keep tthe whole Argments and File name
+		  If Args.IndexOf("llapp") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llapp",-1)-5)
+		  If Args.IndexOf("llgame") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llgame",-1)-6)
+		  If Args.IndexOf("lledit") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"lledit",-1)-6)
+		  If Args.IndexOf("llinstall") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llinstall",-1)-9)
+		  If Args.IndexOf("lllauncher") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"lllauncher",-1)-10)
+		  If Args.IndexOf("llstore.exe") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
+		  If Args.IndexOf("llstore") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llstore",-1)-7)
 		  
-		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
+		  If Debugging Then Debug("Clean Arguments: "+Args)
+		  
+		  'Args = Args + " " 'Make at least 1 item
 		  
 		  'MsgBox Args
+		  
 		  Dim I As Integer
 		  Dim ArgsSP(-1) As String
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
-		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore
-		    If StoreMode = 2 Or StoreMode = 3 Then
-		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
-		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
-		    Else
-		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
-		      If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
-		    End If
+		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
+		    If Debugging Then Debug("Arguments Array: "+ArgsSP(I))
+		    'If StoreMode = 2 Or StoreMode = 3 Then
+		    'CommandLineFile = CommandLineFile + ArgsSP(I) + " "
+		    'If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
+		    'Else
+		    
+		    'If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
+		    'End If
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
-		    If ArgsSP(I).Lowercase = "-l" Then StoreMode = 1
+		    If ArgsSP(I).Lowercase = "-l" Then
+		      StoreMode = 1
+		      Continue
+		    End If
 		    If ArgsSP(I).Lowercase = "-install" Then
 		      StoreMode = 2
 		      InstallArg = True
+		      Continue
 		    End If
 		    If ArgsSP(I).Lowercase = "-i" Then
 		      StoreMode = 2
 		      InstallArg = True
+		      Continue
 		    End If
-		    If ArgsSP(I).Lowercase = "-edit" Then StoreMode = 3
-		    If ArgsSP(I).Lowercase = "-e" Then StoreMode = 3
+		    If ArgsSP(I).Lowercase = "-edit" Then
+		      StoreMode = 3
+		      Continue
+		    End If
+		    If ArgsSP(I).Lowercase = "-e" Then 
+		      StoreMode = 3
+		      Continue
+		    End If
 		    
 		    If ArgsSP(I).Lowercase = "-build" Then
 		      StoreMode = 3
 		      Build = True
+		      Continue
 		    End If
 		    If ArgsSP(I).Lowercase = "-b" Then
 		      StoreMode = 3
 		      Build = True
+		      Continue
 		    End If
 		    
 		    If ArgsSP(I).Lowercase = "-compress" Then
 		      StoreMode = 3
 		      Build = True
 		      Compress = True
+		      Continue
 		    End If
 		    If ArgsSP(I).Lowercase = "-c" Then
 		      StoreMode = 3
 		      Build = True
 		      Compress = True
+		      Continue
 		    End If
 		    
 		    If ArgsSP(I).Lowercase = "-preset" Then
 		      StoreMode = 0
 		      LoadPresetFile = True
+		      Continue
 		    End If
 		    
 		    If ArgsSP(I).Lowercase = "-p" Then
 		      StoreMode = 0
 		      LoadPresetFile = True
+		      Continue
 		    End If
+		    
+		    CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		    
 		  Next
 		  
@@ -2779,22 +2832,13 @@ End
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
 		  
+		  If Debugging Then Debug("Command Line File: "+CommandLineFile)
+		  
 		  If LoadPresetFile = True Then
-		    'If InstallArg = True Then
 		    StoreMode = 0
-		    'End If
 		  End If
 		  
-		  'Example of Try event captured
-		  'MsgBox Str(Args().Count)
-		  Try
-		    'MsgBox Args(0)
-		    'MsgBox Args(1)
-		    'MsgBox Args(2)
-		    'MsgBox Args(3)
-		    'MsgBox System.CommandLine
-		  Catch
-		  End Try
+		  If Debugging Then Debug("Store Mode: "+StoreMode.ToString)
 		  
 		  Dim RL As String
 		  
