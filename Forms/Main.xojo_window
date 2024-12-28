@@ -601,6 +601,11 @@ End
 		    #Pragma BreakOnExceptions On
 		  End If
 		  
+		  'Do Tools
+		  If Asc(Key) = 200 Or Asc(Key) = 210 Then 'F11 (Linux and Windows) Tools
+		    Tools.Show
+		  End If
+		  
 		  
 		  If StoreMode = 0 Then
 		    If Asc(Key) = 13 Or Asc(Key) = 3 Or Asc(Key) = 32 Then 'Return and Enter and Space
@@ -1104,6 +1109,11 @@ End
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F10"
 		  
+		  'Tools Item
+		  base.Append New MenuItem("&LLStore Tools") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "F11"
+		  
 		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
 		  
 		  
@@ -1114,6 +1124,9 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		  Case "&LLStor"
+		    'Tools.Visible = True
+		    Tools.Show
 		  Case "&Change"
 		    Loading.SavePosition 'Save the current modes position
 		    If StoreMode = 0 Then
@@ -2413,11 +2426,13 @@ End
 		  
 		  If StoreMode = 0 Then 'Installer
 		    If SelectsCount >= 1 Then ' Must have selected one item
+		      MiniInstallerShowing = True
 		      MiniInstaller.StartInstaller()
 		    Else
 		      If CurrentItemID >=0 Then
 		        SelectsCount = 1 'Install current item
 		        Data.Items.CellTextAt(CurrentItemID, ColSelected) = "T" ' Select it
+		        MiniInstallerShowing = True
 		        MiniInstaller.StartInstaller()
 		      End If
 		    End If

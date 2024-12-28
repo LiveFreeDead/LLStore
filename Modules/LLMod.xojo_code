@@ -2051,8 +2051,8 @@ Protected Module LLMod
 		    If TargetWindows Then 'Only windows has the stupid shell bug, so only it needs an external script called instead
 		      'Sh.Execute(S)
 		      'If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
-		      'Sh.Execute ("icacls"+ Path+ " /grant "+ "Users:F")
-		      Res = RunCommandResults (S + Chr(10) + "icacls "+Chr(34)+ Path+Chr(34)+ " /grant "+ "Users:F") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
+		      'Sh.Execute ("icacls"+ NoSlash(Path)+ " /grant "+ "Users:F /t /c /q")
+		      Res = RunCommandResults (S + Chr(10) + "icacls "+Chr(34)+ NoSlash(Path)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
 		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Res)
 		    Else
 		      'RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done, Can't do this here as it doesn't have a tmpPath folder to make the Script to make TmpPath
@@ -2950,6 +2950,38 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub RunSudo(Command As String)
+		  If Debugging Then Debug("--- Starting Run Sudo Command ---")
+		  
+		  Dim Sh As New Shell
+		  
+		  Sh.ExecuteMode = Shell.ExecuteModes.Synchronous
+		  Sh.TimeOut = -1
+		  
+		  Dim ScriptFile As String
+		  
+		  If Not TargetWindows Then
+		    if SudoShellLoop.IsRunning = True Then ' Check still running
+		      SudoEnabled = True
+		    Else
+		      SudoEnabled = False
+		    End If
+		    If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
+		      
+		      SaveDataToFile (Command, "/tmp/Expanded_Script.sh")
+		      
+		      Sh.Execute("mv -f /tmp/Expanded_Script.sh /tmp/LLScript_Sudo.sh") 'Do it the solid way, not with Xojo
+		      
+		      While Exist ("/tmp/LLScript_Sudo.sh") 'This script gets removed after it completes, do not continue the processing until this happens
+		        App.DoEvents(7)
+		      Wend
+		    End If
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub RunSudoScripts()
 		  If Debugging Then Debug("--- Starting Run Sudo Scripts ---")
 		  
@@ -3579,6 +3611,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		MenuWindowsCount As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		MiniInstallerShowing As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -4725,7 +4761,7 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="MovieVolume"
@@ -4740,6 +4776,14 @@ Protected Module LLMod
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FlatpakAsUser"
+			Visible=false
+			Group="Behavior"
+			InitialValue="True"
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -2203,6 +2199,11 @@ End
 		  '# Pragma BreakOnExceptions False
 		  If Debugging Then Debug("########################################")
 		  If Debugging Then Debug("--- Starting LLStore FirstRunTimer ---")
+		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
+		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
+		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
+		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
+		  If Debugging Then Debug("Args: "+System.CommandLine+" CommandLineFile: " + CommandLineFile)
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
@@ -2464,6 +2465,7 @@ End
 		            FirstRun = True 'Set this once everything is done and it's ready to go, used by ChangeItem so the intro isn't erased
 		            
 		            'Start Installer
+		            MiniInstallerShowing = True
 		            MiniInstaller.StartInstaller()
 		            
 		            'Clean up Main so it's ready
@@ -2567,11 +2569,13 @@ End
 		        FailedDownload = False
 		        
 		        If TargetWindows Then
-		          Commands = LinuxWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " && echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
+		          Commands = WinWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " && echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
 		          'SaveDataToFile (Commands, SpecialFolder.Desktop.NativePath+"Here.cmd")
+		          If Debugging Then Debug(Commands)
 		          DownloadShell.Execute (Commands)
 		        Else
 		          Commands = LinuxWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " ; echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
+		          If Debugging Then Debug(Commands)
 		          DownloadShell.Execute (Commands)
 		        End If
 		        
@@ -2585,7 +2589,7 @@ End
 		          If DownloadShell.IsRunning = False Then Exit 'Disabled for testing purposes
 		          
 		          'Update Progress
-		          If MiniInstaller.Visible Then
+		          If MiniInstallerShowing Then
 		            theResults = DownloadShell.ReadAll
 		            
 		            ProgPerc = Right(theResults, 80)
@@ -2619,6 +2623,7 @@ End
 		            While Sh.IsRunning
 		              App.DoEvents(1)
 		            Wend
+		            If Debugging Then Debug (Commands +" = "+ Sh.Result)
 		          Else
 		            'MsgBox "Move "+ QueueLocal(QueueUpTo) + ".partial"
 		            Sh.Execute ("mv -f " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34))
@@ -2852,8 +2857,8 @@ End
 		  
 		  Linux7z = ToolPath + "7zzs"
 		  LinuxWget = ToolPath + "wget"
-		  Win7z = ToolPath + "7z.exe"
-		  WinWget = ToolPath + "wget.exe"
+		  Win7z = Chr(34)+ToolPath + "7z.exe"+Chr(34) 'Added " to make it work in paths with spaces?
+		  WinWget = Chr(34)+ToolPath + "wget.exe"+Chr(34) 'Added " to make it work in paths with spaces?
 		  
 		  
 		  'Clean Temp folders
