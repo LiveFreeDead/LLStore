@@ -499,7 +499,7 @@ End
 		    If FirstRun = False Then 'Only check it the first run, else you already quit or decided to run without admin
 		      Quitting = False
 		      If TargetWindows Then
-		        If StoreMode = 0 Then 'If Install Mode then check has Admin
+		        If StoreMode = 0 Or StoreMode = 2 Then 'If Install Mode or Installer then check has Admin
 		          If IsAdmin = False Then
 		            Dim LLStoreAppExe As FolderItem
 		            LLStoreAppExe = App.ExecutableFile
@@ -3052,6 +3052,11 @@ End
 		      Continue
 		    End If
 		    
+		    'If ArgsSP(I).Lowercase = "llstore.exe" Then 'This will skip items that have llstore.exe in it, helpful for Spaced paths
+		    'CommandLineFile = "" 'Start Again if it's found this
+		    'Continue
+		    'End If
+		    
 		    CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		    
 		  Next
@@ -3059,15 +3064,21 @@ End
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
 		  'Remove Flags from name
 		  CommandLineFile = CommandLineFile.ReplaceAll("-preset","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-p","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-p ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-build","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-b","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-b ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-compress","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-c","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-c ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-install","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-i","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-i ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-edit","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-e","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-e ","")
+		  
+		  CommandLineFile = CommandLineFile.ReplaceAll(Chr(34)+"C:\Program Files\LLStore\llstore.exe"+Chr(34),"") 'Remove dodgy path
+		  CommandLineFile = CommandLineFile.ReplaceAll("C:\Program Files\LLStore\llstore.exe","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("Files\LLStore\llstore.exe"+Chr(34),"")
+		  CommandLineFile = CommandLineFile.ReplaceAll("Files\LLStore\llstore.exe","")
+		  CommandLineFile = CommandLineFile.ReplaceAll(" "+Chr(34),Chr(34)) 'If the Loading file has a space after it, it'll have the quote around it, removed.
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
 		  
@@ -3113,6 +3124,15 @@ End
 		  End If
 		  
 		  'If CommandLineFile <> "" Then MsgBox CommandLineFile
+		  
+		  
+		  If Debugging Then Debug("--- About to Do First Actions ---")
+		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
+		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
+		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
+		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
+		  If Debugging Then Debug("Args: "+System.CommandLine+" CommandLineFile: " + CommandLineFile)
+		  
 		  
 		  'Move from FirstRunTimer to here
 		  GetAdminMode

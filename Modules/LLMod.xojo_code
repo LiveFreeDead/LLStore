@@ -139,10 +139,17 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String)
+		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String, Args As String = "")
 		  If Debugging Then Debug("--- Starting Create Shortcuts ---")
 		  
+		  'WorkingDir = NoSlash(WorkingDir).ReplaceAll("/","\") 'Used for Windows
+		  'LinkFolder = NoSlash(LinkFolder).ReplaceAll("/","\") 'Used for Windows
+		  'Target = Target.ReplaceAll("/","\") 'Used for Windows
+		  
+		  If Debugging Then Debug("TitleName: "+TitleName+" , Target: "+Target+" , Working: "+WorkingDir+" , LinkFolder: "+LinkFolder)
+		  
 		  Dim scWorkingDir As FolderItem
+		  
 		  
 		  'Dim scTarget As FolderItem
 		  'scTarget = GetFolderItem(Target, FolderItem.PathTypeShell)
@@ -161,6 +168,7 @@ Protected Module LLMod
 		          lnkObj.Description = TitleName
 		          'lnkObj.TargetPath = scTarget.NativePath
 		          lnkObj.TargetPath = Target 'Target may also have some Arguments, so use text not folder item.
+		          If Args <> "" Then lnkObj.Arguments = Args 'Target may also have some Arguments, so use text not folder item.
 		          lnkObj.WorkingDirectory = Slash(FixPath(scWorkingDir.NativePath))
 		          lnkObj.Save
 		          'Return SpecialFolder.Desktop.TrueChild(scName + ".lnk")
@@ -1917,7 +1925,7 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub MakeFileType(APP As String, EXT As String, COMMENT As String, EXECU As String, PathIn As String, LOGO As String)
+		Sub MakeFileType(APP As String, EXT As String, COMMENT As String, EXECU As String, PathIn As String, LOGO As String, Args As String = "")
 		  If Debugging Then Debug("--- Starting Make Associations ---")
 		  Dim OrigAppName As String
 		  Dim FileOut As String
@@ -1940,9 +1948,9 @@ Protected Module LLMod
 		        TypeName = Replace(APP, "(", "") 'Remove Brackets
 		        TypeName = Replace(TypeName.Trim, ")", "") 'Remove Brackets
 		        TypeName = Replace(TypeName, " ", ".") 'Remove Spaces
-		        Res = RunCommandResults("assoc "+"." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+Chr(10)+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" %1 %*")
+		        Res = RunCommandResults("assoc "+"." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+Chr(10)+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34))
 		        'If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+EXECU+Chr(34)+ Chr(10)+ Shelly.Result)
-		        If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+"|"+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" %1 %*"+ Chr(10)+ Res)
+		        If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+"|"+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34)+ Chr(10)+ Res)
 		      Next
 		    End If
 		    
@@ -4784,6 +4792,14 @@ Protected Module LLMod
 			Visible=false
 			Group="Behavior"
 			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MiniInstallerShowing"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

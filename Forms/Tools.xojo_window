@@ -85,7 +85,9 @@ End
 		  Dim InstallPath As String
 		  Dim MainPath As String = Slash(AppPath)
 		  Dim Res As String
-		  
+		  Dim TargetPath As String
+		  Dim Target As String
+		  Dim OutPath As String
 		  
 		  If TargetWindows Then
 		    MainPath = MainPath.ReplaceAll("/","\")
@@ -107,6 +109,21 @@ End
 		    XCopyFile(MainPath+"llstore.exe", InstallPath)
 		    XCopyFile(MainPath+"llstore", InstallPath)
 		    Res = RunCommandResults ("icacls "+Chr(34)+ NoSlash(InstallPath)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
+		    
+		    'Make Shortcuts to SendTo and Start Menu
+		    TargetPath = "C:\Program Files\LLStore"
+		    Target = TargetPath +"\llstore.exe"
+		    OutPath = Slash(SpecialFolder.ApplicationData.NativePath).ReplaceAll("/","\") + "Microsoft\Windows\SendTo\"
+		    
+		    CreateShortcut("LLInstall", Target, TargetPath, OutPath, "-i")
+		    CreateShortcut("LLEdit", Target, TargetPath, OutPath, "-e")
+		    CreateShortcut("LLEdit (AutoBuild Archive)", Target, TargetPath, OutPath, "-c")
+		    CreateShortcut("LLEdit (AutoBuild Folder)", Target, TargetPath, OutPath, "-b")
+		    
+		    'Make .apz, .pgz, .app and .ppg associations.
+		    MakeFileType("LLStore", "apz pgz app ppg", "LLStore File", Target, TargetPath, Target, "-i ") '2nd Target is the icon, The -i allows it to install default
+		    
+		    
 		  Else
 		    MainPath = MainPath.ReplaceAll("\","/")
 		    InstallPath = "/LastOS/LLStore/"
