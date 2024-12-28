@@ -2452,8 +2452,6 @@ End
 		  
 		  'Get App Paths
 		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
-		  
-		  
 		  F = App.ExecutableFile.Parent
 		  Do
 		    If Exist(Slash(F.ShellPath) + "Tools") Then
@@ -2668,10 +2666,44 @@ End
 		  
 		  If Debugging Then Debug("Arguments: "+Args)
 		  
+		  
+		  'Pick mode depending on calling name
+		  If Args.IndexOf("lllauncher") >= 0 Then
+		    StoreMode = 1
+		  End If
+		  
+		  If Args.IndexOf("llfile") >= 0 Then
+		    StoreMode = 2
+		    InstallArg = True
+		  End If
+		  
+		  If Args.IndexOf("llapp") >= 0 Then
+		    StoreMode = 2
+		    InstallArg = True
+		  End If
+		  
+		  If Args.IndexOf("llgame") >= 0 Then
+		    StoreMode = 2
+		    InstallArg = True
+		  End If
+		  
+		  If Args.IndexOf("llinstall") >= 0 Then
+		    StoreMode = 2
+		    InstallArg = True
+		  End If
+		  
+		  If Args.IndexOf("lledit") >= 0 Then
+		    StoreMode = 3
+		  End If
+		  
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llfile")-6) 'Will be 0 if it can't find it, meaning it'll keep tthe whole Argments and File name
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llapp")-5)
-		  
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llgame")-6)
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"lledit")-6)
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"llinstall")-9)
+		  Args = Right(Args,Len(Args)-InStrRev(Args,"lllauncher")-10)
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore")-7)
+		  
 		  Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
 		  
 		  'MsgBox Args
