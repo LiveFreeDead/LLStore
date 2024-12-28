@@ -665,6 +665,23 @@ End
 
 
 	#tag Method, Flags = &h0
+		Sub AddFavorite()
+		  Dim I As Integer  
+		  If CurrentCat = "Favorites" Then Return' Don't need to add it twice
+		  If CurrentItemID = -1 Then Return 'No Item Text, skip
+		  For I = 0 To FavCount - 1
+		    If Favorites(I).Trim <> "" Then
+		      If Favorites(I).Lowercase = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")).Lowercase Then Return 'Don't add Existing
+		    End If
+		  Next  
+		  'MsgBox "Add Fav " + Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName"))
+		  Favorites(FavCount) = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName"))
+		  FavCount = FavCount + 1
+		  Loading.SaveFavorites
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub AddManualLocation(FolderIn As String = "")
 		  Dim F As FolderItem
 		  If FolderIn  = "" Then
@@ -877,6 +894,14 @@ End
 		    base.Append New MenuItem("&Run With Resolution") '0
 		    MC = MC + 1
 		    base.Item(MC).Shortcut  = "Shift-Return"
+		    
+		    base.Append New MenuItem("Add Favorite") '0
+		    MC = MC + 1
+		    base.Item(MC).Shortcut  = "F"
+		    base.Append New MenuItem("Remove Favorite") '0
+		    MC = MC + 1
+		    base.Item(MC).Shortcut  = "R"
+		    
 		  End If
 		  
 		  
@@ -999,6 +1024,10 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		  Case "Add Fav"
+		    AddFavorite()
+		  Case "Remove "
+		    RemoveFavorite()
 		  Case "Load Fr"
 		    'MsgBox "Load From Preset"
 		    Success = LoadFromPreset()
@@ -1112,6 +1141,7 @@ End
 		  Dim DeTest As String
 		  
 		  Dim I As Integer
+		  Dim J As Integer
 		  Dim ItemToAdd As String
 		  Dim Hidden As Boolean = False
 		  Dim ItemCats, CCat As String
@@ -1132,6 +1162,9 @@ End
 		      If ItemCats.IndexOf(CurrentCat) < 0 Then Hidden = True 'Hide Categories to found in string
 		      'MsgBox Str(ItemCats.IndexOf(CurrentCat)) +" "+CurrentCat+" = "+ ItemCats
 		    End If
+		    
+		    'Not Needed As it'll hide itself below
+		    'If CurrentCat = "Favorites" Then Hidden = False 'Show all on Favs as they get hidden by the scan below
 		    
 		    If CurrentCat = "Games" Then
 		      If Data.Items.CellTextAt(I, ColBuildType) = "ppGame" Or Data.Items.CellTextAt(I, ColBuildType) = "LLGame" Then  Hidden = False
@@ -1203,6 +1236,20 @@ End
 		    'Hidden = True ' Hide if the PM isn't found in supported list
 		    'End If
 		    'End If
+		    
+		    If CurrentCat = "Favorites" Then
+		      If StoreMode = 1 Then 'Launcher - Do Favorites
+		        If FavCount >= 1 Then
+		          Hidden = True
+		          For J = 0 To FavCount - 1
+		            If Data.Items.CellTextAt(I, Data.GetDBHeader("TitleName")) = Favorites(J) Then
+		              Hidden = False
+		              Continue
+		            End If
+		          Next
+		        End If
+		      End If
+		    End If
 		    
 		    
 		    If Hidden = False Then
@@ -1294,6 +1341,23 @@ End
 		  
 		  Return False
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub RemoveFavorite()
+		  Dim I As Integer  
+		  If CurrentItemID = -1 Then Return 'No Item Text, skip
+		  For I = 0 To FavCount - 1
+		    If Favorites(I).Lowercase = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")).Lowercase  Then 
+		      Favorites(I) = ""
+		      If CurrentCat = "Favorites" Then GenerateItems
+		      Loading.SaveFavorites
+		      Return 'Only need to remove one
+		    End If
+		  Next 
+		  Loading.SaveFavorites
+		  
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

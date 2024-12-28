@@ -1871,6 +1871,40 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SaveFavorites()
+		  If FavCount <= 0 Then Return
+		  Dim I As Integer
+		  Dim FavOut As String
+		  'Save Favorites if some are set
+		  For I = 0 To FavCount - 1
+		    If Favorites(I) <> "" Then FavOut = FavOut + Favorites(I) + Chr(10)
+		  Next I
+		  'MsgBox FavOut
+		  
+		  If FavOut <> "" Then
+		    SaveDataToFile (FavOut, Slash(AppPath)+"Favorites.ini")
+		  End If
+		  
+		  
+		  'If StoreMode = 1 Then
+		  'If Exist(Slash(AppPath)+"Favorites.ini") Then
+		  'InFavs = LoadDataFromFile(Slash(AppPath)+"Favorites.ini")
+		  'InFavs = Replace(InFavs, Chr(13), Chr(10))
+		  'InFavSp() = InFavs.Split(Chr(10))
+		  'If InFavSp.Count >= 1 Then
+		  'For I = 0 To InFavSp.Count - 1
+		  'If InFavSp(I).Trim <> "" Then
+		  'Favorites(FavCount) = InFavSp(I).Trim
+		  'FavCount = FavCount + 1
+		  'End If
+		  'Next
+		  'End If
+		  'End If
+		  'End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SaveSettings()
 		  If Debugging Then Debug("--- Starting Save Settings ---")
 		  If SettingsLoaded = False Then Return
