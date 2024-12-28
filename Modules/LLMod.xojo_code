@@ -139,7 +139,7 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String, Args As String = "")
+		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String, Args As String = "", IconFile As String = "")
 		  If Debugging Then Debug("--- Starting Create Shortcuts ---")
 		  
 		  'WorkingDir = NoSlash(WorkingDir).ReplaceAll("/","\") 'Used for Windows
@@ -170,6 +170,10 @@ Protected Module LLMod
 		          lnkObj.TargetPath = Target 'Target may also have some Arguments, so use text not folder item.
 		          If Args <> "" Then lnkObj.Arguments = Args 'Target may also have some Arguments, so use text not folder item.
 		          lnkObj.WorkingDirectory = Slash(FixPath(scWorkingDir.NativePath))
+		          
+		          If IconFile <> "" Then lnkObj.IconLocation = IconFile 'If Icon (.ico) Provided it can be used/set
+		          
+		          
 		          lnkObj.Save
 		          'Return SpecialFolder.Desktop.TrueChild(scName + ".lnk")
 		        Else

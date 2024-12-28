@@ -116,15 +116,28 @@ End
 		    Target = TargetPath +"\llstore.exe"
 		    OutPath = Slash(SpecialFolder.ApplicationData.NativePath).ReplaceAll("/","\") + "Microsoft\Windows\SendTo\"
 		    
-		    CreateShortcut("LLInstall", Target, TargetPath, OutPath, "-i")
-		    CreateShortcut("LLEdit", Target, TargetPath, OutPath, "-e")
-		    CreateShortcut("LLEdit (AutoBuild Archive)", Target, TargetPath, OutPath, "-c")
-		    CreateShortcut("LLEdit (AutoBuild Folder)", Target, TargetPath, OutPath, "-b")
+		    'Send To
+		    CreateShortcut("LL Install", Target, TargetPath, OutPath, "-i")
+		    CreateShortcut("LL Edit", Target, TargetPath, OutPath, "-e", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Edit (AutoBuild Archive)", Target, TargetPath, OutPath, "-c", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Edit (AutoBuild Folder)", Target, TargetPath, OutPath, "-b", TargetPath +"\Themes\LLEdit.ico")
+		    
+		    'Start Menu
+		    OutPath = Slash(SpecialFolder.ApplicationData.NativePath).ReplaceAll("/","\") + "Microsoft\Windows\Start Menu\Programs\"
+		    CreateShortcut("LL Edit", Target, TargetPath, OutPath, "-e", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Store", Target, TargetPath, OutPath, "")
+		    CreateShortcut("LL Launcher", Target, TargetPath, OutPath, "-l", TargetPath +"\Themes\LLLauncher.ico") 'Specifying the Icon is required for making the Launcher Blue
+		    
+		    'Desktop
+		    OutPath = Slash(SpecialFolder.Desktop.NativePath).ReplaceAll("/","\")
+		    CreateShortcut("LL Store", Target, TargetPath, OutPath, "")
+		    CreateShortcut("LL Launcher", Target, TargetPath, OutPath, "-l", TargetPath +"\Themes\LLLauncher.ico") 'Specifying the Icon is required for making the Launcher Blue
+		    
 		    
 		    'Make .apz, .pgz, .app and .ppg associations.
 		    MakeFileType("LLStore", "apz pgz app ppg", "LLStore File", Target, TargetPath, Target, "-i ") '2nd Target is the icon, The -i allows it to install default
 		    
-		    
+		    Tools.Hide
 		  Else
 		    If Debugging Then Debug ("--- Installing LLStore in Linux ---")
 		    MainPath = MainPath.ReplaceAll("\","/")
@@ -140,11 +153,11 @@ End
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Presets"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Themes"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp  "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"version.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"LLL_Settings.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"version.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLL_Settings.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
 		    RunSudo("chmod -R 777 "+Chr(34)+InstallPath+Chr(34)) 'Make all executable
 		    
@@ -161,6 +174,7 @@ End
 		    Dim DesktopFile As String
 		    Dim DesktopOutPath As String
 		    
+		    'Store
 		    DesktopContent = "[Desktop Entry]" + Chr(10)
 		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
 		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
@@ -180,8 +194,28 @@ End
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		    
-		    'Launcher
+		    'Editor
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Editor" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=llstore -e" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Edit LLFiles" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"llstore Resources/appicon_48.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
 		    
+		    DesktopFile = "lledit.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    DesktopOutPath = Slash(HomePath)+"Desktop/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    
+		    'Launcher
 		    DesktopContent = "[Desktop Entry]" + Chr(10)
 		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
 		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
