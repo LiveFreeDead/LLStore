@@ -90,6 +90,7 @@ End
 		  Dim OutPath As String
 		  
 		  If TargetWindows Then
+		    If Debugging Then Debug ("--- Installing LLStore in Windows ---")
 		    MainPath = MainPath.ReplaceAll("/","\")
 		    InstallPath = Slash(SpecialFolder.Applications.NativePath) + "\LLStore\"
 		    InstallPath = InstallPath.ReplaceAll("/","\")
@@ -125,10 +126,91 @@ End
 		    
 		    
 		  Else
+		    If Debugging Then Debug ("--- Installing LLStore in Linux ---")
 		    MainPath = MainPath.ReplaceAll("\","/")
 		    InstallPath = "/LastOS/LLStore/"
+		    Target = InstallPath+"llstore"
+		    'If Not Exist(InstallPath) Then 'Only do this if required
 		    EnableSudoScript
-		    RunSudo("mkdir -p "+Chr(34)+InstallPath+Chr(34))
+		    RunSudo("mkdir -p "+Chr(34)+InstallPath+Chr(34)+ " ; " + "chmod -R 777 "+Chr(34)+InstallPath+Chr(34))
+		    'End If
+		    
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Libs"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Resources"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Presets"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Themes"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp  "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"version.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"LLL_Settings.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp  "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    
+		    RunSudo("chmod -R 777 "+Chr(34)+InstallPath+Chr(34)) 'Make all executable
+		    
+		    Dim Bin As String = " /usr/bin/" 'Make sure to include the space at the start of this as it's used.
+		    
+		    'Make SymLinks to Store
+		    RunSudo("ln -sf "+Target+Bin+"llapp ; ln -sf "+Target+Bin+"lledit ; ln -sf "+Target+Bin+"llfile ; ln -sf "+Target+Bin+"llinstall ; ln -sf "+Target+Bin+"lllauncher ; ln -sf "+Target+Bin+"llstore" ) 'Sym Links do not need to be set to Exec
+		    
+		    'Make Associations
+		    MakeFileType("LLFile", "apz pgz tar app ppg lla llg", "Install LLFiles", Target, InstallPath, InstallPath+"llstore Resources/appicon_48.png")
+		    
+		    'Make Shortcuts
+		    Dim DesktopContent As String
+		    Dim DesktopFile As String
+		    Dim DesktopOutPath As String
+		    
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Store" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=llstore" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Install LLFiles" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"llstore Resources/appicon_48.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		    
+		    DesktopFile = "llstore.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    DesktopOutPath = Slash(HomePath)+"Desktop/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    'Launcher
+		    
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Launcher" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=llstore -l" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Launch LLStore games" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLOSLauncher.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Game;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		    
+		    DesktopFile = "lllauncher.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    DesktopOutPath = Slash(HomePath)+"Desktop/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    
+		    'Close Sudo Terminal
+		    'Make sure Sudo is closed (not added ability to echo to /tmp/LLSudo to close it yet, so disabled) Glenn 2029
+		    If Not TargetWindows Then 'Only make Sudo in Linux
+		      If SudoEnabled = True Then
+		        SudoEnabled = False
+		        ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
+		      End If
+		    End If
+		    Tools.Hide
 		  End If
 		End Sub
 	#tag EndEvent

@@ -1916,7 +1916,7 @@ Protected Module LLMod
 		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
 		  
 		  if TargetLinux Then 'Only Linux needs this, Win doesn't
-		    Sh.Execute ("chmod -R 775 "+Chr(34)+PathIn+Chr(34)) +" ; "+ "chmod 775 "+Chr(34)+PathIn+Chr(34) 'Change Read/Write/Execute to defaults
+		    Sh.Execute ("chmod -R 775 "+Chr(34)+PathIn+Chr(34)) '+" ; "+ "chmod 775 "+Chr(34)+PathIn+Chr(34) 'Change Read/Write/Execute to defaults 'remarked this Glenn 2027
 		    While Sh.IsRunning
 		      App.DoEvents(2)  ' used to be 50, trying 7 to see if more responsive. - It is
 		    Wend
@@ -1963,6 +1963,8 @@ Protected Module LLMod
 		    APP = Replace(APP.Lowercase.Trim, ")", "") 'Remove Brackets
 		    APP = Replace(APP, " ", ".") 'Remove Spaces
 		    
+		    If Debugging Then Debug ("Making Linux Association for: " + APP)
+		    
 		    
 		    If Not Exist(TmpPath) Then Shelly.Execute ("mkdir -p " + Chr(34) + TmpPath + Chr(34))
 		    'MIME Type
@@ -1971,9 +1973,9 @@ Protected Module LLMod
 		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
 		    CurrentIconTheme = Shelly.Result
 		    CurrentIconTheme = Replace(CurrentIconTheme, "'", "")  
-		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 --theme " + CurrentIconTheme + " " + LOGO + " application-x-" + APP)
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 --theme " + CurrentIconTheme + " " + Chr(34) + LOGO + Chr(34) + " application-x-" + APP)
 		    
-		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 " + LOGO + " application-x-" + APP)
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
 		    
 		    FileOut = Slash(TmpPath) + APP + "-mime.xml"
 		    FileContent = "<?xml version=" + Chr(34) + "1.0" + Chr(34) + " encoding=" + Chr(34) + "UTF-8" + Chr(34) + "?>" + Chr(10)
@@ -2977,12 +2979,14 @@ Protected Module LLMod
 		    If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
 		      
 		      SaveDataToFile (Command, "/tmp/Expanded_Script.sh")
+		      Sh.Execute ("chmod 775 "+Chr(34)+"/tmp/Expanded_Script.sh"+Chr(34)) 'Change Read/Write/Execute to Output script
 		      
 		      Sh.Execute("mv -f /tmp/Expanded_Script.sh /tmp/LLScript_Sudo.sh") 'Do it the solid way, not with Xojo
 		      
 		      While Exist ("/tmp/LLScript_Sudo.sh") 'This script gets removed after it completes, do not continue the processing until this happens
 		        App.DoEvents(7)
 		      Wend
+		      
 		    End If
 		  End If
 		  
