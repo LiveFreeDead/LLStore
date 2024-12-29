@@ -3658,10 +3658,6 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		MovieFile As String
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
 		MovieVolume As Integer = 20
 	#tag EndProperty
 
@@ -4794,14 +4790,6 @@ Protected Module LLMod
 			InitialValue="False"
 			Type="Boolean"
 			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="MovieFile"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="MovieVolume"

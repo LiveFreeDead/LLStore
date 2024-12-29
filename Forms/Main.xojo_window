@@ -435,64 +435,6 @@ Begin DesktopWindow Main
       Scope           =   0
       TabPanelIndex   =   0
    End
-   Begin DesktopMoviePlayer MoviePlayer1
-      Active          =   False
-      AllowAutoDeactivate=   True
-      AllowTabStop    =   True
-      AutoAdjustToMovieSize=   True
-      AutoPlay        =   True
-      AutoRepeat      =   False
-      ControllerHeight=   0
-      ControllerWidth =   0
-      Duration        =   0.0
-      Enabled         =   True
-      HasBorder       =   False
-      HasController   =   False
-      HasStepControls =   False
-      HasVolumeControl=   False
-      Height          =   100
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   741
-      LockBottom      =   False
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
-      LockTop         =   True
-      Movie           =   0
-      PanelIndex      =   0
-      Position        =   0.0
-      RepeatInReverse =   False
-      Scope           =   0
-      TabIndex        =   13
-      TabPanelIndex   =   0
-      Tooltip         =   ""
-      Top             =   -124
-      Transparent     =   False
-      Visible         =   False
-      Volume          =   0
-      Width           =   100
-      _mIndex         =   0
-      _mInitialParent =   ""
-      _mName          =   ""
-      _mPanelIndex    =   0
-   End
-   Begin Timer StartMovie
-      Index           =   -2147483648
-      LockedInPosition=   False
-      Period          =   2000
-      RunMode         =   0
-      Scope           =   0
-      TabPanelIndex   =   0
-   End
-   Begin Timer StopMovie
-      Index           =   -2147483648
-      LockedInPosition=   False
-      Period          =   7
-      RunMode         =   0
-      Scope           =   0
-      TabPanelIndex   =   0
-   End
 End
 #tag EndDesktopWindow
 
@@ -611,9 +553,6 @@ End
 		    If Asc(Key) = 13 Or Asc(Key) = 3 Or Asc(Key) = 32 Then 'Return and Enter and Space
 		      If KeyBoard.AsyncControlKey Then
 		        'Start Mini
-		        
-		        MovieFile = ""
-		        StopMovie.RunMode = Timer.RunModes.Single
 		        
 		        If SelectsCount >= 1 Then ' Must have selected one item
 		          MiniInstaller.StartInstaller()
@@ -801,14 +740,6 @@ End
 		Sub ChangeItem(CurrentItemIn As Integer)
 		  If FirstRun = False Then Return  'Ignore doing this until the main form is shown and the Default text is set
 		  
-		  'ALways do this here
-		  MoviePlayer1.Visible = False
-		  ScreenShot.Visible = True
-		  
-		  If Settings.SetVideoPlayback.Value = True Then
-		    MovieFile = ""
-		    StopMovie.RunMode = Timer.RunModes.Single
-		  End If
 		  
 		  Dim WebWall As String
 		  Dim F, G As FolderItem
@@ -886,12 +817,6 @@ End
 		  End If
 		  F = GetFolderItem(WebWall, FolderItem.PathTypeShell)
 		  CurrentFader = Picture.Open(F)
-		  
-		  'Movie
-		  If Settings.SetVideoPlayback.Value = True And RunningGame = False Then 'Only if Enabled and not just ran a game (as it refreshes
-		    MovieFile = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("FileMovie")).ReplaceAll("%AppPath%", ItemLLItem.PathApp)
-		    StopMovie.RunMode = Timer.RunModes.Single 'Use Stop Movie to Load in the next one without tying up the thread
-		  End If
 		  
 		  If RunningGame = True Then 
 		    RunningGame = False
@@ -1552,9 +1477,6 @@ End
 
 	#tag Method, Flags = &h0
 		Sub ResizeMainForm()
-		  'MoviePlayer1.Stop 'Stop movie if resizing
-		  'MoviePlayer1.Visible = False
-		  
 		  Dim Padding As Integer = 2
 		  Dim PaddingCat As Integer = 8 * (Main.Width/600)
 		  Dim PaddingCatTop As Integer = ((Main.Height/20))-18
@@ -1587,18 +1509,6 @@ End
 		  ScreenShot.Top = TitleLabel.Top+16 +  PaddingCatTop + 2
 		  ScreenShot.Width = TitleLabel.Width
 		  ScreenShot.Height = Main.Height / 2.1
-		  
-		  If MoviePlayer1.Visible Then
-		    MoviePlayer1.Left = ScreenShot.Left
-		    MoviePlayer1.Top = ScreenShot.Top
-		    MoviePlayer1.Width = ScreenShot.Width
-		    MoviePlayer1.Height = ScreenShot.Height
-		  Else
-		    MoviePlayer1.Left = 1
-		    MoviePlayer1.Top = 1
-		    MoviePlayer1.Width = 1
-		    MoviePlayer1.Height = 1
-		  End If
 		  
 		  Stats.Left=ItemsLabel.Left
 		  Stats.Height = 24
@@ -1717,10 +1627,6 @@ End
 		  If Debugging Then Debug("--- Starting Run Game ---")
 		  
 		  'MsgBox "Starting: " + Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("TitleName"))
-		  
-		  'Stop any movie from playing when running a game
-		  StopMovie.RunMode = Timer.RunModes.Single
-		  MovieFile = ""
 		  
 		  RunningGame = True
 		  If GameIDIn = -1 Then Return 'No Item given
@@ -1898,8 +1804,6 @@ End
 		  Main.Height = PosHeight
 		  
 		  App.DoEvents(40) 'Wait .04 of a second
-		  MoviePlayer1.Visible = False
-		  ScreenShot.Visible = True
 		  Main.Show
 		  App.DoEvents(40) 'Wait .04 of a second
 		  'Restore Position
@@ -2470,7 +2374,6 @@ End
 	#tag EndEvent
 	#tag Event
 		Function MouseDown(x As Integer, y As Integer) As Boolean
-		  StopMovie.RunMode = Timer.RunModes.Single
 		  Return True
 		End Function
 	#tag EndEvent
@@ -2478,8 +2381,6 @@ End
 		Sub MouseUp(x As Integer, y As Integer)
 		  Dim ColSelected As Integer = Data.GetDBHeader("Selected")
 		  
-		  MovieFile = ""
-		  StopMovie.RunMode = Timer.RunModes.Single
 		  
 		  Installing = False 'Clear the flag to make sure it only enabled if all is corect to.
 		  
@@ -2593,72 +2494,6 @@ End
 		  Typing = False
 		  Typed = ""
 		  KeyTimer.Mode = 0
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events MoviePlayer1
-	#tag Event
-		Sub PlaybackStopped()
-		  MoviePlayer1.Visible = False
-		  ScreenShot.Visible = True
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseMove(x As Integer, y As Integer)
-		  If System.MouseDown = True Then 'It's a little dodgy having to move the mouse when you click to stop the video, but what choice did I have?
-		    MoviePlayer1.Stop
-		  End If
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events StartMovie
-	#tag Event
-		Sub Action()
-		  StartMovie.RunMode = Timer.RunModes.Off 'Stop it
-		  MoviePlayer1.Left = ScreenShot.Left
-		  MoviePlayer1.Top = ScreenShot.Top
-		  MoviePlayer1.Width = ScreenShot.Width
-		  MoviePlayer1.Height = ScreenShot.Height
-		  
-		  If MovieFile <> "" Then 'Only do it if still set
-		    MoviePlayer1.Play
-		    ScreenShot.Visible = False
-		    MoviePlayer1.Visible = True
-		  End If
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events StopMovie
-	#tag Event
-		Sub Action()
-		  'MovieFile = "" 'Only do this on other events or can't use it to preload the movie file
-		  MoviePlayer1.Stop
-		  MoviePlayer1.Visible = False
-		  ScreenShot.Visible = True
-		  StartMovie.RunMode = Timer.RunModes.Off
-		  StopMovie.RunMode = Timer.RunModes.Off
-		  
-		  MoviePlayer1.Left = 1
-		  MoviePlayer1.Top = 1
-		  MoviePlayer1.Width = 1
-		  MoviePlayer1.Height = 1
-		  
-		  #Pragma BreakOnExceptions Off
-		  If MovieFile <> "" Then 'Only do movie if supplied
-		    Dim G As FolderItem
-		    Try
-		      G = GetFolderItem(MovieFile, FolderItem.PathTypeShell)
-		      If G.Exists Then
-		        MoviePlayer1.Movie = G.OpenAsMovie
-		        MoviePlayer1.Volume = MovieVolume
-		        ''App.DoEvents(1)
-		        MoviePlayer1.Stop
-		        StartMovie.RunMode = Timer.RunModes.Single
-		      End If
-		    Catch
-		    End Try
-		  End If
-		  #Pragma BreakOnExceptions On
 		End Sub
 	#tag EndEvent
 #tag EndEvents
