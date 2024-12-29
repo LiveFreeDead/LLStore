@@ -210,10 +210,6 @@ End
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		    
-		    DesktopOutPath = Slash(HomePath)+"Desktop/"
-		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
-		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
-		    
 		    
 		    'Launcher
 		    DesktopContent = "[Desktop Entry]" + Chr(10)
