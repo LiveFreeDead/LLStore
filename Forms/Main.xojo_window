@@ -974,6 +974,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub DoContextMenu()
+		  
+		  Dim I As Integer
 		  Dim Success As Boolean
 		  
 		  Dim base As New MenuItem
@@ -997,6 +999,8 @@ End
 		    MC = MC + 1
 		    base.Item(MC).Shortcut  = "R"
 		    
+		    base.Append New MenuItem("Make Desktop Shortcut") '0
+		    MC = MC + 1
 		  End If
 		  
 		  
@@ -1073,6 +1077,9 @@ End
 		    
 		  End If
 		  
+		  base.Append New MenuItem("Save Current List") '0
+		  MC = MC + 1
+		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		  MC = MC + 1
 		  
@@ -1114,6 +1121,11 @@ End
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F11"
 		  
+		  'Open Item Location
+		  base.Append New MenuItem("Open Item Location") '0
+		  MC = MC + 1
+		  
+		  
 		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
 		  
 		  
@@ -1124,6 +1136,53 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		  Case "Make De" 'Desktop Shortcut
+		    Dim IconFile As String
+		    IconFile = ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkIcon")))
+		    If Not Exist(IconFile) Then IconFile = Slash(ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("PathApp"))))+"ppGame.png"
+		    If Not Exist(IconFile) Then IconFile = Slash(ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("PathApp"))))+"LLGame.png"
+		    'Need to add more icon file checks here, Like the Ones from Multi Link releases. Or make it generate them for the DB
+		    
+		    If TargetWindows Then
+		      'I use the exe name as windows can't use png's, I don't want to include a converter... yet
+		      CreateShortcut(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")), Slash(ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkRunPath"))))+Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkExec")), ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkRunPath"))), Slash(FixPath(SpecialFolder.Desktop.NativePath)),"", Slash(ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkRunPath"))))+Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkExec")))
+		    Else 'Linux
+		      MakeLinuxLink(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")), ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkExec"))), ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkRunPath"))), Slash(SpecialFolder.Desktop.NativePath), "", IconFile)
+		    End If
+		  Case "Save Cu" 'Save Current List
+		    Dim OutText As String
+		    If Items.RowCount > 0 Then
+		      For I = 0 To Items.RowCount - 1
+		        OutText = OutText + Items.CellTextAt(I,0)+Chr(10)
+		      Next 
+		      SaveDataToFile(OutText, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_CurrentList.txt")
+		    End If
+		  Case "Open It"
+		    If TargetWindows Then
+		      #Pragma BreakOnExceptions Off
+		      Try
+		        Dim OpenPath As String
+		        OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("/","\")
+		        OpenPath = Left(OpenPath, InStrRev(OpenPath,"\")) 'Removes the Ini File name
+		        If Exist(OpenPath) Then
+		          ShellFast.Execute("explorer " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		        End If
+		      Catch
+		      End Try
+		      #Pragma BreakOnExceptions On
+		    Else
+		      #Pragma BreakOnExceptions Off
+		      Try
+		        Dim OpenPath As String
+		        OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("\","/")
+		        OpenPath = Left(OpenPath, InStrRev(OpenPath,"/")) 'Removes the Ini File name
+		        If Exist(OpenPath) Then
+		          ShellFast.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		        End If
+		      Catch
+		      End Try
+		      #Pragma BreakOnExceptions On
+		    End If
 		  Case "&LLStor"
 		    'Tools.Visible = True
 		    Tools.Show

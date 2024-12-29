@@ -2352,6 +2352,30 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub MakeLinuxLink(TitleName As String, Exec As String, RunPath As String, LinkOutLocation As String, Args As String = "", Icon As String = "")
+		  Dim DesktopFile As String
+		  Dim DesktopContent As String
+		  
+		  DesktopFile = LinkOutLocation+TitleName.ReplaceAll(" ", ".") + ".desktop" 'Remove Spaces and add .desktop back to file name
+		  
+		  DesktopContent = "[Desktop Entry]" + Chr(10)
+		  DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		  DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		  DesktopContent = DesktopContent + "Name=" + TitleName + Chr(10)
+		  DesktopContent = DesktopContent + "Exec=" + Exec + Chr(10)
+		  DesktopContent = DesktopContent + "Path=" + RunPath + Chr(10)
+		  'DesktopContent = DesktopContent + "Comment=" + ItemLnk(I).Comment + Chr(10)
+		  DesktopContent = DesktopContent + "Icon=" + Icon + Chr(10)
+		  DesktopContent = DesktopContent + "Categories=Game" + Chr(10)
+		  DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		  
+		  SaveDataToFile (DesktopContent, DesktopFile)
+		  ShellFast.Execute("chmod 775 "+Chr(34)+DesktopFile+Chr(34))
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub MkDir(InPath As String)
 		  MakeFolder (InPath) 'Forward it on to the good one
 		End Sub
