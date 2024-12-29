@@ -201,7 +201,7 @@ End
 		    DesktopContent = DesktopContent + "Name=LL Editor" + Chr(10)
 		    DesktopContent = DesktopContent + "Exec=llstore -e" + Chr(10)
 		    DesktopContent = DesktopContent + "Comment=Edit LLFiles" + Chr(10)
-		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"llstore Resources/appicon_48.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLEditor.png" + Chr(10)
 		    DesktopContent = DesktopContent + "Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;" + Chr(10)
 		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
 		    
@@ -222,7 +222,7 @@ End
 		    DesktopContent = DesktopContent + "Name=LL Launcher" + Chr(10)
 		    DesktopContent = DesktopContent + "Exec=llstore -l" + Chr(10)
 		    DesktopContent = DesktopContent + "Comment=Launch LLStore games" + Chr(10)
-		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLOSLauncher.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLLauncher.png" + Chr(10)
 		    DesktopContent = DesktopContent + "Categories=Game;" + Chr(10)
 		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
 		    
