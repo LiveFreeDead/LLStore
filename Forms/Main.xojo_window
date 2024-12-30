@@ -461,7 +461,22 @@ End
 
 	#tag Event
 		Function KeyDown(key As String) As Boolean
-		  'MsgBox Str(asc(Key))
+		  ''MsgBox Str(asc(Key))
+		  'if Keyboard.ControlKey then MessageBox "Control key was pressed."
+		  If Keyboard.ControlKey Then
+		    Dim Successed As Boolean
+		    If Asc(Key) = 65 Or Asc(Key) = 97 Then SelectItems ("Select All") 'Ctrl + A or a
+		    If Asc(Key) = 78 Or Asc(Key) = 110 Then SelectItems ("Select None") 'Ctrl + N or n
+		    If Asc(Key) = 73 Or Asc(Key) = 105 Then SelectItems ("Select Invert") 'Ctrl + I or i
+		    
+		    If Asc(Key) = 79 Or Asc(Key) = 111 Then Successed = LoadFromPreset() 'Ctrl + O or o
+		    If Asc(Key) = 83 Or Asc(Key) = 115 Then SaveToPreset() 'Ctrl + S or s
+		    If Asc(Key) = 76 Or Asc(Key) = 108 Then SaveCurrentList() 'Ctrl + L or l
+		    
+		    If Asc(Key) = 84 Or Asc(Key) = 116 Then Tools.Show 'Ctrl + T or t
+		    
+		    Return True
+		  End If
 		  
 		  If Asc(Key) = 194 Or Asc(Key) = 204 Then 'F5 194 in Linux 204 in Windows?
 		    Loading.RefreshDBs
@@ -543,9 +558,8 @@ End
 		    #Pragma BreakOnExceptions On
 		  End If
 		  
-		  'Do Tools
-		  If Asc(Key) = 200 Or Asc(Key) = 210 Then 'F11 (Linux and Windows) Tools
-		    Tools.Show
+		  If Asc(Key) = 200 Or Asc(Key) = 210 Then 'F11
+		    Main.FullScreen = Not Main.FullScreen
 		  End If
 		  
 		  
@@ -991,6 +1005,35 @@ End
 		    M.Checked =  HideOpen
 		    base.Item(MC).Append M
 		    
+		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator) 'Sep
+		    
+		    M = New MenuItem
+		    M.Text = "LLApps"
+		    M.Checked =  HideLLApps
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "LLGames"
+		    M.Checked =  HideLLGames
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "ssApps"
+		    M.Checked =  HidessApps
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "ppApps"
+		    M.Checked =  HideppApps
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
+		    M.Text = "ppGames"
+		    M.Checked =  HideppGames
+		    base.Item(MC).Append M
+		    
+		    
+		    
 		    'Presets
 		    base.Append New MenuItem("Load From Preset") '0
 		    MC = MC + 1
@@ -1002,8 +1045,9 @@ End
 		    
 		  End If
 		  
-		  base.Append New MenuItem("Save Current List") '0
+		  base.Append New MenuItem("Save Current &List") '0
 		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "L"
 		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		  MC = MC + 1
@@ -1041,14 +1085,19 @@ End
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F10"
 		  
-		  'Tools Item
-		  base.Append New MenuItem("&LLStore Tools") '0
+		  'Full Screen
+		  base.Append New MenuItem("Toggle Fullscreen") '0
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F11"
 		  
+		  'Tools Item
+		  base.Append New MenuItem("LLStore &Tools") '0
+		  MC = MC + 1
+		  base.Item(MC).Shortcut  = "T"
+		  
 		  'Open Item Location
 		  base.Append New MenuItem("Open Item Location") '0
-		  MC = MC + 1
+		  MC = MC + 1 
 		  
 		  
 		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
@@ -1061,6 +1110,9 @@ End
 		  Dim ContextText As String = hitItem.Text
 		  
 		  Select Case Left(hitItem.Text,7)
+		    
+		  Case "Toggle "
+		    Main.FullScreen = Not Main.FullScreen
 		  Case "Make De" 'Desktop Shortcut
 		    Dim IconFile As String
 		    IconFile = ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkIcon")))
@@ -1075,40 +1127,10 @@ End
 		      MakeLinuxLink(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")), ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkExec"))), ExpPath(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("LnkRunPath"))), Slash(SpecialFolder.Desktop.NativePath), "", IconFile)
 		    End If
 		  Case "Save Cu" 'Save Current List
-		    Dim OutText As String
-		    If Items.RowCount > 0 Then
-		      For I = 0 To Items.RowCount - 1
-		        OutText = OutText + Items.CellTextAt(I,0)+Chr(10)
-		      Next 
-		      SaveDataToFile(OutText, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_CurrentList.txt")
-		    End If
+		    SaveCurrentList()
 		  Case "Open It"
-		    If TargetWindows Then
-		      #Pragma BreakOnExceptions Off
-		      Try
-		        Dim OpenPath As String
-		        OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("/","\")
-		        OpenPath = Left(OpenPath, InStrRev(OpenPath,"\")) 'Removes the Ini File name
-		        If Exist(OpenPath) Then
-		          ShellFast.Execute("explorer " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
-		        End If
-		      Catch
-		      End Try
-		      #Pragma BreakOnExceptions On
-		    Else
-		      #Pragma BreakOnExceptions Off
-		      Try
-		        Dim OpenPath As String
-		        OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("\","/")
-		        OpenPath = Left(OpenPath, InStrRev(OpenPath,"/")) 'Removes the Ini File name
-		        If Exist(OpenPath) Then
-		          ShellFast.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
-		        End If
-		      Catch
-		      End Try
-		      #Pragma BreakOnExceptions On
-		    End If
-		  Case "&LLStor"
+		    OpenItemLocation()
+		  Case "LLStore"
 		    'Tools.Visible = True
 		    Tools.Show
 		  Case "&Change"
@@ -1172,6 +1194,22 @@ End
 		  Case "Open" ' Hide Open Items
 		    HideOpen = Not HideOpen
 		    GenerateItems()
+		  Case "LLApps" ' Hide
+		    HideLLApps = Not HideLLApps
+		    GenerateItems()
+		  Case "LLGames" ' Hide 
+		    HideLLGames= Not HideLLGames
+		    GenerateItems()
+		  Case "ssApps" ' Hide
+		    HidessApps = Not HidessApps
+		    GenerateItems()
+		  Case "ppApps" ' Hide 
+		    HideppApps = Not HideppApps
+		    GenerateItems()
+		  Case "ppGames" ' Hide
+		    HideppGames= Not HideppGames
+		    GenerateItems()
+		    
 		  Case "Add &Ma"
 		    AddManualLocation()
 		  Case "Re(Scan"
@@ -1303,6 +1341,13 @@ End
 		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) = "ht" And HideOnline = True Then Hidden = True 'Hide Online
 		      
 		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) <> "ht" And HideLocal = True Then Hidden = True 'Hide Local items
+		      
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "LLApp" And HideLLApps = True Then Hidden = True ' Hide types
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "LLGame" And HideLLGames = True Then Hidden = True ' Hide
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ssApp" And HidessApps = True Then Hidden = True ' Hide
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ppApp" And HideppApps = True Then Hidden = True ' Hide
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ppGame" And HideppGames = True Then Hidden = True ' Hide
+		      
 		    End If
 		    
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "1" And HidePaid = True Then Hidden = True 'Hide Paid
@@ -1456,6 +1501,36 @@ End
 		  
 		  Return False
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub OpenItemLocation()
+		  If TargetWindows Then
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      Dim OpenPath As String
+		      OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("/","\")
+		      OpenPath = Left(OpenPath, InStrRev(OpenPath,"\")) 'Removes the Ini File name
+		      If Exist(OpenPath) Then
+		        ShellFast.Execute("explorer " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		      End If
+		    Catch
+		    End Try
+		    #Pragma BreakOnExceptions On
+		  Else
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      Dim OpenPath As String
+		      OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("\","/")
+		      OpenPath = Left(OpenPath, InStrRev(OpenPath,"/")) 'Removes the Ini File name
+		      If Exist(OpenPath) Then
+		        ShellFast.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		      End If
+		    Catch
+		    End Try
+		    #Pragma BreakOnExceptions On
+		  End If
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1818,6 +1893,19 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SaveCurrentList()
+		  Dim OutText As String
+		  Dim I As Integer
+		  If Items.RowCount > 0 Then
+		    For I = 0 To Items.RowCount - 1
+		      OutText = OutText + Items.CellTextAt(I,0)+Chr(10)
+		    Next 
+		    SaveDataToFile(OutText, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_CurrentList.txt")
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SaveToPreset()
 		  If Data.Items.RowCount <= 0 Then Return 'No Items
 		  Dim I As Integer
@@ -2003,6 +2091,14 @@ End
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		HideLLApps As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideLLGames As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		HideLocal As Boolean = False
 	#tag EndProperty
 
@@ -2016,6 +2112,18 @@ End
 
 	#tag Property, Flags = &h0
 		HidePaid As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideppApps As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideppGames As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HidessApps As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -2332,7 +2440,20 @@ End
 		  Data.Left = (screen(0).AvailableWidth - Data.Width) / 2
 		  Data.top = (screen(0).AvailableHeight - Data.Height) / 2
 		  
-		  Data.Show
+		  If Keyboard.ControlKey Then 'Holding Ctrl shows debugger
+		    Data.Show
+		  Else 'Draw Fader into Screenshot area at full size
+		    Dim Cent As Integer
+		    #Pragma BreakOnExceptions Off
+		    Try
+		      Cent = (ScreenShot.Width / 2)- (CurrentFader.Width/2)
+		      ScreenShot.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,ScreenShot.Width, ScreenShot.Height, ScreenShot.Left, ScreenShot.Top, ScreenShot.Width, ScreenShot.Height)
+		      ScreenShot.Backdrop.Graphics.DrawPicture(CurrentFader,Cent,0,CurrentFader.Width, CurrentFader.Height,0,0,CurrentFader.Width, CurrentFader.Height)
+		      ScreenShot.Refresh
+		    Catch
+		    End Try
+		    #Pragma BreakOnExceptions On
+		  End If
 		End Sub
 	#tag EndEvent
 	#tag Event
