@@ -125,7 +125,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckCompatible()
-		  If Debugging Then Debug("--- Starting Check Compatible ---")
+		  If Debugging Then Debug("- Starting Check Compatible -")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  Dim I As Integer
@@ -159,7 +159,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckForLLStoreUpdates()
-		  If Debugging Then Debug("--- Starting Check For LLStore Updates ---")
+		  If Debugging Then Debug("- Starting Check For LLStore Updates -")
 		  ForceQuit = False ' Need to do this if using downloader as that aborts if it's set
 		  
 		  Dim CurrentVersion As Double
@@ -265,7 +265,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub CheckInstalled()
-		  If Debugging Then Debug("--- Starting Check Installed Items ---")
+		  If Debugging Then Debug("- Starting Check Installed Items -")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  DIm I As Integer
@@ -289,7 +289,7 @@ End
 		  Else
 		    F = GetFolderItem(DirToCheck, FolderItem.PathTypeShell)
 		  End If
-		  If Debugging Then Debug("Checking if Item Path is a Folder and Readable: "+ FixPath(F.NativePath))
+		  'If Debugging Then Debug("Checking Item Path: "+ FixPath(F.NativePath)) 'Don't need to show all these, the parent folder will do.
 		  If F.IsFolder And F.IsReadable Then
 		    Data.ScanPaths.AddRow(FixPath(F.NativePath))
 		    If Debugging Then Debug("Adding Item Path: "+ FixPath(F.NativePath))
@@ -423,7 +423,6 @@ End
 		    Deltree(ScriptOutFile)
 		    Deltree(ScriptOutMkDirFile)
 		  End If
-		  If Debugging Then Debug("--- End Extract All ---")
 		  
 		End Sub
 	#tag EndMethod
@@ -504,6 +503,7 @@ End
 		      Quitting = False
 		      If TargetWindows Then
 		        If StoreMode = 0 Or StoreMode = 2 Then 'If Install Mode or Installer then check has Admin
+		          If Debugging Then Debug("--- Checking Admin Mode in Windows")
 		          If IsAdmin = False Then
 		            Dim LLStoreAppExe As FolderItem
 		            LLStoreAppExe = App.ExecutableFile
@@ -530,7 +530,10 @@ End
 		              
 		              If RetVal = False Then 'If denied UAC it will be false
 		                Dim Ret As Integer
-		                If StoreMode = 0 Then Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
+		                If StoreMode = 0 Then
+		                  If Debugging Then Debug("Run Without Admin?")
+		                  Ret = MsgBox ("Run LLStore Without Administrator Access", 52)
+		                End If
 		                If Ret = 7 Then
 		                  ForceQuit = True
 		                  Quitting = True
@@ -942,7 +945,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub GetItemsPaths(Inn As String, ScanRoot As Boolean = False)
-		  If Debugging Then Debug("--- Starting Get Item Path ---")
+		  'If Debugging Then Debug("- Starting Get Item Path -")
 		  Dim F As FolderItem
 		  Dim DirToCheck As String
 		  Dim I As Integer
@@ -1037,6 +1040,8 @@ End
 	#tag Method, Flags = &h0
 		Sub GetScanPaths()
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
+		  
+		  If Debugging Then Debug("--- Starting Scan Paths for Items ---")
 		  
 		  Dim IniFile As String
 		  Dim ManIn As String
@@ -1185,7 +1190,7 @@ End
 		    
 		    'Get Manual Locations
 		    If Settings.SetUseManualLocations.Value = True Then 'Only use them if set to use them
-		      If Debugging Then Debug("---------- Get Manual Locations: ----------")
+		      If Debugging Then Debug("--- Get Manual Locations: ---")
 		      TestLocations = Settings.SetManualLocations.Text
 		      TestLocations = TestLocations.ReplaceAll(Chr(10), Chr(13))
 		      Sp() = TestLocations.Split(Chr(13))
@@ -1197,7 +1202,6 @@ End
 		          GetItemsPaths(DirToCheck, True)
 		        Next
 		      End If
-		      If Debugging Then Debug("---------- End  Manual Locations ----------")
 		    End If
 		    
 		    
@@ -1318,7 +1322,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub HideOldVersions()
-		  If Debugging Then Debug("--- Starting Hide Old Versions ---")
+		  If Debugging Then Debug("- Starting Hide Old Versions -")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
 		  DIm I, J As Integer
@@ -1524,7 +1528,7 @@ End
 		  
 		  If FileIn <> "" Then
 		    If Exist(FileIn) Then
-		      If Debugging Then Debug ("--- Loading Position From File: " + FileIn)
+		      If Debugging Then Debug ("- Load Windows Position From File: " + FileIn)
 		      
 		      DataIn = LoadDataFromFile(FileIn)
 		      If DataIn.Trim <> "" Then
@@ -1568,6 +1572,7 @@ End
 		  If Debugging Then Debug("--- Starting Load Settings ---")
 		  Dim RL As String
 		  Dim F As FolderItem
+		  Dim EnableDebugging As Boolean
 		  
 		  SettingsLoaded = True
 		  
@@ -1652,9 +1657,10 @@ End
 		    Case "debugenabled"
 		      If LineData <> "" Then Settings.SetDebugEnabled.Value = IsTrue(LineData)
 		      If DebugFileOk = True Then
-		        Debugging = Settings.SetDebugEnabled.Value
+		        EnableDebugging = Settings.SetDebugEnabled.Value
 		      Else
 		        Debugging = False 'If the file isn't writable then no point in enabling the debugger
+		        EnableDebugging = False
 		      End If
 		    Case "alwaysshowres"
 		      If LineData <> "" Then Settings.SetAlwaysShowRes.Value = IsTrue(LineData)
@@ -1684,6 +1690,8 @@ End
 		      Settings.SetManualLocations.Text = LoadDataFromFile(IniFile)
 		    End If
 		  End If
+		  
+		  If EnableDebugging Then Debugging = True 'Do this after the above settings or it shows them before the first line later on
 		  
 		End Sub
 	#tag EndMethod
@@ -2065,7 +2073,7 @@ End
 		    FileOut = FileOut.ReplaceAll("\","/")
 		  End If
 		  
-		  If Debugging Then Debug ("--- Saving Position To File: " + FileOut)
+		  If Debugging Then Debug ("- Saving Position To File: " + FileOut)
 		  
 		  If FileOut <> "" Then
 		    If Main.Visible = True Then
@@ -2201,13 +2209,7 @@ End
 		Sub Action()
 		  'This disables errors from breaking/debugging in the IDE, disable to debug
 		  '# Pragma BreakOnExceptions False
-		  If Debugging Then Debug("########################################")
 		  If Debugging Then Debug("--- Starting LLStore FirstRunTimer ---")
-		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
-		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
-		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
-		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
-		  If Debugging Then Debug("Args: "+System.CommandLine+" CommandLineFile: " + CommandLineFile)
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
@@ -2369,10 +2371,12 @@ End
 		    'Save Debug Of The Scanned Items:
 		    
 		    If Debugging Then
+		      Debug ("--- ITEMS IN DB ---")
 		      If Data.Items.RowCount >=1 Then
 		        For I = 0 To Data.Items.RowCount - 1
-		          Debug("Item "+Str(I)+": "+ Data.Items.CellTextAt(I, Data.GetDBHeader("TitleName")))
+		          Debug("Item "+Str(I)+": "+ Data.Items.CellTextAt(I, Data.GetDBHeader("TitleName"))+" "+Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")))
 		        Next
+		        Debug("") 'Adds Blank Line
 		      Else
 		        Debug("No Items Added To Known Items")
 		      End If
@@ -2508,7 +2512,7 @@ End
 #tag Events DownloadTimer
 	#tag Event
 		Sub Action()
-		  If Debugging Then Debug("--- Starting Download Timer ---")
+		  If Debugging Then Debug("- Starting Download Timer -")
 		  
 		  Dim Test As String
 		  Dim I As Integer
@@ -2554,13 +2558,20 @@ End
 		    'Check Remote file exist, else it'll fail
 		    Test = RunCommandResults("curl --head --silent " + Chr(34) + GetURL + Chr(34))
 		    
-		    If Debugging Then Debug(">> Download :"+ GetURL +" to " + QueueLocal(QueueUpTo) + " = "+ Left(Test,12))
+		    If Debugging Then Debug(">>> Download <<<")
+		    If Debugging Then Debug("URL: "+GetURL)
+		    If Debugging Then Debug("To: " + QueueLocal(QueueUpTo))
+		    If Debugging Then Debug("Results: "+Left(Test,12)) ' Test) '
 		    
 		    If Trim(Test) = "" Then 'No Internet or very dodgy item, just abort all internet and try the next item that gets sent here
 		      SaveDataToFile ("Failed Header Getting : "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
+		      If Debugging Then Debug ("* Download Error *")
+		      If Debugging Then Debug ("Failed Getting Header of: "+GetURL)
 		    Else ' Try to get item
-		      If Test.IndexOf("404") >= 0 Then '404 not found
-		        'SaveDataToFile(GetURL+Chr(10)+Test, Slash(SpecialFolder.Desktop.NativePath)+"Debug.txt")
+		      Test = Left(Test,18) 'Only need the start of the header, the time stamps sometimes have 404 in them
+		      If Test.IndexOf("404") >= 0  Then '404 not found in Header result 'And Test.IndexOf("404") <= 18 <- Not needed as I reduce the header to 18 characters
+		        If Debugging Then Debug ("* Download Error *")
+		        If Debugging Then Debug ("Download Not Found: "+GetURL)
 		        Test = ""
 		        If Right(GetURL, 4) = ".jpg" Or Right(GetURL, 4) = ".png" Or Right(GetURL, 4) = ".ini" Then
 		        Else 'Only show missing for actual Items, not just their screenshots and faders
@@ -2569,17 +2580,16 @@ End
 		        SaveDataToFile ("Failed Finding Remote: "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
 		      Else ' It exist, download it
 		        'SaveDataToFile(GetURL+Chr(10)+Test, Slash(SpecialFolder.Desktop.NativePath)+"Debug_Worked.txt")
-		        
+		        If Debugging Then Debug ("Start Downloading From: "+GetURL)
 		        FailedDownload = False
-		        
 		        If TargetWindows Then
 		          Commands = WinWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " && echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
 		          'SaveDataToFile (Commands, SpecialFolder.Desktop.NativePath+"Here.cmd")
-		          If Debugging Then Debug(Commands)
+		          If Debugging Then Debug("Command: "+Chr(10)+Commands)
 		          DownloadShell.Execute (Commands)
 		        Else
 		          Commands = LinuxWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " ; echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
-		          If Debugging Then Debug(Commands)
+		          If Debugging Then Debug("Command: "+Chr(10)+Commands)
 		          DownloadShell.Execute (Commands)
 		        End If
 		        
@@ -2623,26 +2633,30 @@ End
 		            Commands = Commands.ReplaceAll("/", "\")'Windows move commands requires backslash's
 		            Commands = "move /y " + Commands
 		            'SaveDataToFile (Commands, SpecialFolder.Desktop.NativePath+"Here.cmd")
+		            Sh = New Shell ' Clear previous results
 		            Sh.Execute (Commands)
 		            While Sh.IsRunning
 		              App.DoEvents(1)
 		            Wend
-		            If Debugging Then Debug (Commands +" = "+ Sh.Result)
+		            If Debugging Then Debug ("Move Results: "+ Sh.Result)
 		          Else
 		            'MsgBox "Move "+ QueueLocal(QueueUpTo) + ".partial"
+		            Sh = New Shell ' Clear previous results
 		            Sh.Execute ("mv -f " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34))
 		            While Sh.IsRunning
 		              App.DoEvents(1)
 		            Wend
+		            If Debugging Then Debug ("Move Results: "+ Sh.Result)
 		          End If
 		          
 		          Deltree(Slash(RepositoryPathLocal) + "DownloadDone")
-		          If Debugging Then Debug(">> Download Detected as Successful")
+		          If Debugging Then Debug("Download Detected as Successful")
 		        Else 'Failed, Clean Up
 		          If Not TargetWindows Then RunCommand ("notify-send " + Chr(34) + "Failed Downloading Item: " + QueueLocal(QueueUpTo) + Chr(34))
 		          SaveDataToFile ("Failed Finding Local: "+QueueLocal(QueueUpTo) + ".partial", Slash(RepositoryPathLocal) + "FailedDownload")
 		          FailedDownload = True
-		          If Debugging Then Debug(">> Download Fail Detected ")
+		          If Debugging Then Debug ("* Download Error *")
+		          If Debugging Then Debug("Download Fail Results: " + Chr(10)+theResults)
 		        End If
 		      End If
 		    End If    
@@ -2917,12 +2931,6 @@ End
 		    DebugFileOk = False
 		  End Try
 		  
-		  If Debugging Then Debug("--- Starting LLStore VeryFirstRunTimer ---")
-		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
-		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
-		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
-		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
-		  
 		  #Pragma BreakOnExceptions On
 		  
 		  'Set Default Settings, these get replaced by the loading of Settings, but we need defaults when there isn't one
@@ -2935,8 +2943,6 @@ End
 		  'Check the Arguments here and don't show if installer mode or editor etc
 		  Dim Args As String
 		  Args = System.CommandLine
-		  
-		  If Debugging Then Debug("Arguments: "+Args)
 		  
 		  
 		  'Pick mode depending on calling name
@@ -2977,25 +2983,14 @@ End
 		  If Args.IndexOf("llstore.exe") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llstore.exe")-11)
 		  If Args.IndexOf("llstore") >=0 Then Args = Right(Args,Len(Args)-InStrRev(Args,"llstore",-1)-7)
 		  
-		  If Debugging Then Debug("Clean Arguments: "+Args)
+		  'Cleaning above isn't really required, maybe kill it off once testing is done
 		  
-		  'Args = Args + " " 'Make at least 1 item
-		  
-		  'MsgBox Args
 		  
 		  Dim I As Integer
 		  Dim ArgsSP(-1) As String
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
 		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
-		    If Debugging Then Debug("Arguments Array: "+ArgsSP(I))
-		    'If StoreMode = 2 Or StoreMode = 3 Then
-		    'CommandLineFile = CommandLineFile + ArgsSP(I) + " "
-		    'If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
-		    'Else
-		    
-		    'If I = ArgsSP().Count -1 Then Exit 'Quits Looping, the Command Line is done
-		    'End If
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
 		    If ArgsSP(I).Lowercase = "-l" Then
 		      StoreMode = 1
@@ -3092,20 +3087,16 @@ End
 		    CommandLineFile = CommandLineFile.ReplaceAll("\","/")
 		  End If
 		  
-		  If Debugging Then Debug("Command Line File: "+CommandLineFile)
-		  
 		  If LoadPresetFile = True Then
 		    StoreMode = 0
 		  End If
-		  
-		  If Debugging Then Debug("Store Mode: "+StoreMode.ToString)
 		  
 		  Dim RL As String
 		  
 		  'Get theme
 		  GetTheme
 		  
-		  'Load Settings
+		  'Load Settings - (This is Where the Debugger is activated, else it's not writing until after here)
 		  LoadSettings
 		  
 		  'Get Actual CommandLineFile File if only a Folder is given
@@ -3127,25 +3118,29 @@ End
 		    End If
 		  End If
 		  
-		  'If CommandLineFile <> "" Then MsgBox CommandLineFile
-		  
-		  
-		  If Debugging Then Debug("--- About to Do First Actions ---")
-		  If Debugging Then Debug("Paths - AppPath: "+AppPath+" ToolPath: "+ToolPath+" TmpPath: "+TmpPath)
-		  If Debugging Then Debug("Paths - CurrentPath: "+CurrentPath)
-		  If Debugging Then Debug(" RepositoryPathLocal: "+RepositoryPathLocal+" WinWget: "+WinWget)
-		  If Debugging Then Debug("ppApps: "+ppApps+" ppGames: "+ppGames)
-		  If Debugging Then Debug("Args: "+System.CommandLine+" CommandLineFile: " + CommandLineFile)
-		  
+		  If Debugging Then Debug("--- Debugging Starts Here ---")
+		  If Debugging Then Debug("Store Mode: "+StoreMode.ToString)
+		  If Debugging Then Debug("AppPath: "+AppPath)
+		  If Debugging Then Debug("ToolPath: "+ToolPath)
+		  If Debugging Then Debug("TmpPath: "+TmpPath)
+		  If Debugging Then Debug("CurrentPath: "+CurrentPath)
+		  If Debugging Then Debug("RepositoryPathLocal: "+RepositoryPathLocal)
+		  If Debugging Then Debug("WinWget: "+WinWget)
+		  If Debugging Then Debug("LinuxWget: "+LinuxWget)
+		  If Debugging Then Debug("ppApps: "+ppApps)
+		  If Debugging Then Debug("ppGames: "+ppGames+ Chr(10))
+		  If Debugging Then Debug("Args: "+System.CommandLine)
+		  If Debugging Then Debug("CommandLineFile: " + CommandLineFile)
 		  
 		  'Move from FirstRunTimer to here
 		  GetAdminMode
 		  
-		  
+		  If Debugging Then Debug("Admin Enabled: " + AdminEnabled.ToString)
 		  
 		  'Install Mode
 		  If StoreMode = 2 Then
 		    InstallOnly = True
+		    If Debugging Then Debug("--- Install From Commandline ---")
 		    #Pragma BreakOnExceptions Off
 		    'MsgBox "Check to Install: "+ CommandLineFile
 		    If CommandLineFile <> "" Then
@@ -3155,7 +3150,7 @@ End
 		        If Success Then 'Worked
 		          If Debugging Then Debug("Installed: "+ CommandLineFile)
 		        Else 'Failed
-		          If Debugging Then Debug("Error Failed Installing: "+ CommandLineFile)
+		          If Debugging Then Debug("* Error Installing: "+ CommandLineFile)
 		        End If
 		      End If
 		    End If

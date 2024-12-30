@@ -195,7 +195,31 @@ Protected Module LLMod
 		  #Pragma BreakOnExceptions Off
 		  Try
 		    Var d As DateTime = DateTime.Now
-		    DebugOutput.WriteLine (d.Hour.ToString("00")+":"+d.Minute.ToString("00")+":"+d.Second.ToString("00")+Chr(9)+Debugger)
+		    If Left(Debugger,3) = "---" Then 'Don't time stamp new sections
+		      DebugOutput.WriteLine (Chr(10)+Debugger)
+		      DebugOutput.WriteLine ("--------------------------------------------------------------------------------")
+		    Else
+		      If Left (Debugger,1) = "*" Then 'Make Errors Stand Out
+		        DebugOutput.WriteLine (Chr(10)+Debugger)
+		        DebugOutput.WriteLine ("********************************************************************************")
+		      Else 
+		        If Left(Debugger,3) = ">>>" Then
+		          DebugOutput.WriteLine (Chr(10)+Debugger)
+		          DebugOutput.WriteLine ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		        Else
+		          If Left(Debugger,4) = "Item" Then 'Remove time stamps from this list
+		            DebugOutput.WriteLine (Debugger)
+		          Else
+		            'Standard Debug
+		            If Debugger.Trim = "" Then
+		              DebugOutput.WriteLine (Debugger) 'Just add empty line
+		            Else
+		              DebugOutput.WriteLine (d.Hour.ToString("00")+":"+d.Minute.ToString("00")+":"+d.Second.ToString("00")+Chr(9)+Debugger)
+		            End If
+		          End If
+		        End If
+		      End If
+		    End If
 		    DebugOutput.Flush ' Actually Write to file after each thing
 		  Catch
 		  End Try
@@ -215,7 +239,7 @@ Protected Module LLMod
 		  
 		  S = S.Trim
 		  
-		  If Debugging Then Debug("Deltree: " + S)
+		  If Debugging Then Debug("- Deltree: " + S)
 		  
 		  'Delete Folders
 		  If TargetWindows Then
@@ -1407,7 +1431,7 @@ Protected Module LLMod
 		  
 		  If FileIn <> "" Then
 		    
-		    If Debugging Then Debug("Load Data From File: "+ FileIn)
+		    If Debugging Then Debug("- Load Data From File: "+ FileIn)
 		    
 		    Dim F As FolderItem
 		    Dim T As TextInputStream
@@ -2043,7 +2067,6 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MakeFolder(Txt as String)
-		  If Debugging Then Debug("Make Folder Path In: "+Txt)
 		  Dim F As FolderItem
 		  Dim Path As String
 		  Dim Sh As New Shell
@@ -2067,15 +2090,15 @@ Protected Module LLMod
 		      'If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
 		      'Sh.Execute ("icacls"+ NoSlash(Path)+ " /grant "+ "Users:F /t /c /q")
 		      Res = RunCommandResults (S + Chr(10) + "icacls "+Chr(34)+ NoSlash(Path)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
-		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Res)
+		      If Debugging Then Debug ("- Make Folder: "+Path+" = " + Res)
 		    Else
 		      'RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done, Can't do this here as it doesn't have a tmpPath folder to make the Script to make TmpPath
 		      Sh.Execute(S)
-		      If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
+		      If Debugging Then Debug ("- Make Folder: "+Path+" = " + Sh.Result)
 		      Sh.Execute("chmod 775 "+Chr(34)+Path+Chr(34)) 'Change Read/Write/Execute to defaults, -R would do all files and folders, but we might not want this here
 		    End If
 		  Catch
-		    If Debugging Then Debug ("* Failed to Make Folder: "+Path)
+		    If Debugging Then Debug ("~ Failed to Make Folder: " + Path)
 		  End Try
 		  'SaveDataToFile(S+Chr(10)+Sh.Result, SpecialFolder.Desktop.NativePath+"/DebugMakeFolder.txt")
 		  
@@ -2589,8 +2612,8 @@ Protected Module LLMod
 		      
 		    End If
 		    
-		    DaBugs = StartPathAll+ItemLLItem.StartMenuSourcePath+"/"+ ItemLLItem.ShortCutNamesKeep +".lnk"+">>>"+ StartPathAll+DestStartPath
-		    'SaveDataToFile (DaBugs+Chr(10)+"------"+Chr(10)+Debugger ,Slash(FixPath(SpecialFolder.Desktop.NativePath))+"Test.txt")
+		    'DaBugs = StartPathAll+ItemLLItem.StartMenuSourcePath+"/"+ ItemLLItem.ShortCutNamesKeep +".lnk"+">>>"+ StartPathAll+DestStartPath
+		    ''SaveDataToFile (DaBugs+Chr(10)+"------"+Chr(10)+Debugger ,Slash(FixPath(SpecialFolder.Desktop.NativePath))+"Test.txt")
 		    
 		  End If
 		End Sub
@@ -2625,7 +2648,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub PreQuitApp()
-		  If Debugging Then Debug("--- Starting Pre Quit LLStore ---")
+		  If Debugging Then Debug("- Pre Quit LLStore -")
 		  'MsgBox "Pre Quitting"
 		  
 		  Loading.SaveSettings
@@ -2781,7 +2804,13 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub RunCommand(CmdIn As String, FoldIn As String = "")
-		  If Debugging Then Debug("--- Starting Run Command ---")
+		  If Debugging Then 
+		    Debug("--- RunCommand ---")
+		    Debug("Cmd: -"+Chr(10)+ CmdIn)
+		    If FoldIn <> "" Then
+		      Debug("From Folder: "+FoldIn)
+		    End If
+		  End If
 		  
 		  Dim Sh As New Shell
 		  Dim Success As Boolean
@@ -2809,6 +2838,7 @@ Protected Module LLMod
 		        Wend
 		      End If
 		      F = Nil
+		      If Debugging Then Debug("Results: -"+Chr(10)+Sh.Result.Trim+Chr(10))
 		      'Delete Temp Script
 		      Deltree ScriptFile
 		    Else ''Linux Command, doesn't need to go to script file to work (it just does)
@@ -2819,7 +2849,7 @@ Protected Module LLMod
 		      While Sh.IsRunning
 		        App.DoEvents(1)
 		      Wend
-		      If Debugging Then Debug(Sh.Result)
+		      If Debugging Then Debug("Results: -"+Chr(10)+Sh.Result.Trim+Chr(10))
 		      
 		    End If
 		  End If
@@ -2828,9 +2858,16 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function RunCommandResults(CmdIn As String, FoldIn As String = "") As String
-		  If Debugging Then Debug("--- Starting Run Command Results ---")
+		  If Debugging Then 
+		    Debug("--- RunCommandResults ---")
+		    Debug("Cmd: -"+Chr(10)+ CmdIn)
+		    If FoldIn <> "" Then
+		      Debug("From Folder: "+FoldIn)
+		    End If
+		  End If
 		  Dim Sh As New Shell
 		  Dim Success As Boolean
+		  Dim Res As String
 		  
 		  Sh.TimeOut = -1
 		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
@@ -2853,7 +2890,11 @@ Protected Module LLMod
 		        While Sh.IsRunning
 		          App.DoEvents(1)
 		        Wend
-		        If Debugging Then Debug(Sh.Result)
+		        If Debugging Then
+		          Res = Sh.Result.Trim
+		          If Left (CmdIn,4) = "curl" Then Res = Left(Res,12) 'Shrink curl output
+		          Debug("Results: -"+Chr(10)+Res+Chr(10))
+		        End If
 		        
 		        'Delete Temp Script
 		        F.Remove
@@ -2868,7 +2909,12 @@ Protected Module LLMod
 		      While Sh.IsRunning
 		        App.DoEvents(1)
 		      Wend
-		      If Debugging Then Debug(Sh.Result)
+		      If Debugging Then
+		        Res = Sh.Result.Trim
+		        If Left (CmdIn,4) = "curl" Then Res = Left(Res,12) 'Shrink curl output
+		        Debug("Results: -"+Chr(10)+Res+Chr(10))
+		      End If
+		      
 		    End If
 		    
 		    'For Both
@@ -3100,7 +3146,7 @@ Protected Module LLMod
 		    FileIn = FileIn.ReplaceAll("\","/")
 		  End If
 		  
-		  If Debugging Then Debug("Save Data To File: "+ FileIn)
+		  If Debugging Then Debug("- Save Data To File: "+ FileIn)
 		  
 		  Dim F As FolderItem
 		  Dim T As TextOutputStream

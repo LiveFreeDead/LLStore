@@ -350,7 +350,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub ClearData()
-		  If Debugging Then Debug("--- Starting Clear Data ---")
+		  If Debugging Then Debug("- Starting Clear Data -")
 		  Dim  I, CurrentColumn As Integer
 		  Dim ColumnsTitle As String
 		  Dim RL As String
