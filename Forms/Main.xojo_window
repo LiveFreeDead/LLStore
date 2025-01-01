@@ -1354,9 +1354,12 @@ End
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "2" And HideFree = True Then Hidden = True 'Hide Free
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "3" And HideOpen = True Then Hidden = True 'Hide Open
 		    
-		    ''SysDesktopEnvironment Checks
+		    'Moved to it's own Function
+		    'SysDesktopEnvironment Checks
 		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		    '
 		    'If DeTest <> "" Then 'Only do Items with Values set
+		    'MsgBox "Allowed: "+ DeTest + " Detected: "+ SysDesktopEnvironment
 		    'If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Then
 		    'Else
 		    'Hidden = True ' Hide if the DE isn't found in supported list
@@ -2936,6 +2939,46 @@ End
 	#tag EndViewProperty
 	#tag ViewProperty
 		Name="HidePaid"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideLLApps"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideLLGames"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideppApps"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideppGames"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HidessApps"
 		Visible=false
 		Group="Behavior"
 		InitialValue="False"

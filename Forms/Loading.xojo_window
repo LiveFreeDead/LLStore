@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -744,6 +740,17 @@ End
 		        Data.Items.CellTextAt(ItemCount,I) = "F"
 		      Case "Compressed"
 		        Data.Items.CellTextAt(ItemCount,I) = Left(Str(ItemLLItem.Compressed),1)
+		        
+		        
+		      Case "OSCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLLItem.OSCompatible
+		      Case "DECompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLLItem.DECompatible
+		      Case "PMCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLLItem.PMCompatible
+		      Case "ArchCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLLItem.ArchCompatible
+		        
 		      Case "LnkMultiple" 'Links
 		        If LnkCount >1 Then
 		          Data.Items.CellTextAt(ItemCount,I) = "T"
@@ -773,6 +780,16 @@ End
 		        Data.Items.CellTextAt(ItemCount,I) = Left(Str(ItemLnk(1).Terminal),1)
 		      Case "LnkIcon"
 		        Data.Items.CellTextAt(ItemCount,I) = ExpPath(ItemLnk(1).Icon)
+		        
+		      Case "LnkOSCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLnk(1).LnkOSCompatible
+		      Case "LnkDECompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLnk(1).LnkDECompatible
+		      Case "LnkPMCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLnk(1).LnkPMCompatible
+		      Case "LnkArchCompatible"
+		        Data.Items.CellTextAt(ItemCount,I) = ItemLnk(1).LnkArchCompatible
+		        
 		      End Select
 		    Next
 		    
@@ -847,6 +864,16 @@ End
 		            Data.Items.CellTextAt(ItemCount,I) = Left(Str(ItemLnk(J).Terminal),1)
 		          Case "LnkIcon"
 		            Data.Items.CellTextAt(ItemCount,I) = ExpPath(ItemLnk(J).Icon)
+		            
+		          Case "LnkOSCompatible"
+		            Data.Items.CellTextAt(ItemCount,I) = ItemLnk(J).LnkOSCompatible
+		          Case "LnkDECompatible"
+		            Data.Items.CellTextAt(ItemCount,I) = ItemLnk(J).LnkDECompatible
+		          Case "LnkPMCompatible"
+		            Data.Items.CellTextAt(ItemCount,I) = ItemLnk(J).LnkPMCompatible
+		          Case "LnkArchCompatible"
+		            Data.Items.CellTextAt(ItemCount,I) = ItemLnk(J).LnkArchCompatible
+		            
 		          End Select
 		        Next
 		      Next
@@ -3118,8 +3145,23 @@ End
 		    End If
 		  End If
 		  
+		  'Get Package Manager
+		  For I = 0 To SysAvailablePackageManagers.Count -1
+		    ShellFast.Execute("which "+SysAvailablePackageManagers(I))
+		    If ShellFast.Result <> "" Then
+		      SysPackageManager = SysAvailablePackageManagers(I)
+		      Exit ' Found It
+		    End If
+		  Next
+		  
+		  'Check if Online
+		  IsOnline = True
+		  ShellFast.Execute("curl -fsS http://google.com > /dev/null")
+		  If  ShellFast.Result.Trim <> "" Then IsOnline = False
+		  
 		  If Debugging Then Debug("--- Debugging Starts Here ---")
 		  If Debugging Then Debug("Store Mode: "+StoreMode.ToString)
+		  If Debugging Then Debug("Online Status: "+IsOnline.ToString)
 		  If Debugging Then Debug("AppPath: "+AppPath)
 		  If Debugging Then Debug("ToolPath: "+ToolPath)
 		  If Debugging Then Debug("TmpPath: "+TmpPath)
@@ -3129,6 +3171,11 @@ End
 		  If Debugging Then Debug("LinuxWget: "+LinuxWget)
 		  If Debugging Then Debug("ppApps: "+ppApps)
 		  If Debugging Then Debug("ppGames: "+ppGames+ Chr(10))
+		  
+		  If Debugging Then Debug("Desktop Environment: "+SysDesktopEnvironment)
+		  If Debugging Then Debug("Package Manager: "+SysPackageManager)
+		  If Debugging Then Debug("Terminal: "+SysTerminal+ Chr(10))
+		  
 		  If Debugging Then Debug("Args: "+System.CommandLine)
 		  If Debugging Then Debug("CommandLineFile: " + CommandLineFile)
 		  

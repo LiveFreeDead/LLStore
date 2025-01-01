@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   6
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -3777,7 +3777,7 @@ Begin DesktopWindow Editor
          Transparent     =   False
          Underline       =   False
          Visible         =   True
-         Width           =   218
+         Width           =   329
       End
       Begin DesktopTextField TextInstaller
          AllowAutoDeactivate=   True
@@ -5576,6 +5576,41 @@ End
 
 #tag EndWindowCode
 
+#tag Events TextTitle
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.TitleName = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextVersion
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Version = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextURLs
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.URL = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextDescription
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Descriptions = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPriority
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Rating = Me.Text.Trim.ToDouble
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events ButtonBrowseIncludeFolder
 	#tag Event
 		Sub Pressed()
@@ -6069,6 +6104,79 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events TextMovieFile
+#tag EndEvents
+#tag Events TextTags
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Tags = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPublisher
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Publisher = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextReleaseVersion
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ReleaseVersion = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextReleaseDate
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ReleaseDate = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextInstalledSize
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.InstallSize = Me.Text.Trim.ToInteger
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextLanguage
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Language = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextRating
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Rating = Me.Text.Trim.ToDouble
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPlayers
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Players = Me.Text.Trim.ToInteger
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPM
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.PMCompatible = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextDE
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.DECompatible = Me.Text.Trim
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextFlags
 	#tag Event
 		Sub TextChanged()
@@ -6077,6 +6185,20 @@ End
 		      ItemLnk(EditingLnk).Flags = Me.Text.Trim
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextKeepShortcuts
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ShortCutNamesKeep = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextDefaultMenuPath
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.StartMenuSourcePath = Me.Text.Trim
 		End Sub
 	#tag EndEvent
 #tag EndEvents

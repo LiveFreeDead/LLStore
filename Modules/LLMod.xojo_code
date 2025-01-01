@@ -3648,6 +3648,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		IsOnline As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		ItemCount As Integer
 	#tag EndProperty
 
