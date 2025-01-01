@@ -1355,6 +1355,167 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub InstallLLStore()
+		  Dim InstallPath As String
+		  Dim MainPath As String = Slash(AppPath)
+		  Dim Res As String
+		  Dim TargetPath As String
+		  Dim Target As String
+		  Dim OutPath As String
+		  
+		  If TargetWindows Then
+		    If Debugging Then Debug ("--- Installing LLStore in Windows ---")
+		    MainPath = MainPath.ReplaceAll("/","\")
+		    InstallPath = Slash(SpecialFolder.Applications.NativePath) + "\LLStore\"
+		    InstallPath = InstallPath.ReplaceAll("/","\")
+		    MakeFolder(InstallPath+"llstore Libs")
+		    XCopy(MainPath+"llstore Libs", InstallPath+"llstore Libs\")
+		    MakeFolder(InstallPath+"llstore Resources")
+		    XCopy(MainPath+"llstore Resources", InstallPath+"llstore Resources\")
+		    MakeFolder(InstallPath+"Presets")
+		    XCopy(MainPath+"Presets", InstallPath+"Presets\")
+		    MakeFolder(InstallPath+"Themes")
+		    XCopy(MainPath+"Themes", InstallPath+"Themes\")
+		    MakeFolder(InstallPath+"Tools")
+		    XCopy(MainPath+"Tools", InstallPath+"Tools\")
+		    XCopyFile(MainPath+"*.dll", InstallPath)
+		    XCopyFile(MainPath+"version.ini", InstallPath)
+		    XCopyFile(MainPath+"LLL_Settings.ini", InstallPath)
+		    XCopyFile(MainPath+"llstore.exe", InstallPath)
+		    XCopyFile(MainPath+"llstore", InstallPath)
+		    Res = RunCommandResults ("icacls "+Chr(34)+ NoSlash(InstallPath)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
+		    
+		    'Make Shortcuts to SendTo and Start Menu
+		    TargetPath = "C:\Program Files\LLStore"
+		    Target = TargetPath +"\llstore.exe"
+		    OutPath = Slash(SpecialFolder.ApplicationData.NativePath).ReplaceAll("/","\") + "Microsoft\Windows\SendTo\"
+		    
+		    'Send To
+		    CreateShortcut("LL Install", Target, TargetPath, OutPath, "-i")
+		    CreateShortcut("LL Edit", Target, TargetPath, OutPath, "-e", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Edit (AutoBuild Archive)", Target, TargetPath, OutPath, "-c", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Edit (AutoBuild Folder)", Target, TargetPath, OutPath, "-b", TargetPath +"\Themes\LLEdit.ico")
+		    
+		    'Start Menu
+		    OutPath = Slash(SpecialFolder.ApplicationData.NativePath).ReplaceAll("/","\") + "Microsoft\Windows\Start Menu\Programs\"
+		    CreateShortcut("LL Edit", Target, TargetPath, OutPath, "-e", TargetPath +"\Themes\LLEdit.ico")
+		    CreateShortcut("LL Store", Target, TargetPath, OutPath, "")
+		    CreateShortcut("LL Launcher", Target, TargetPath, OutPath, "-l", TargetPath +"\Themes\LLLauncher.ico") 'Specifying the Icon is required for making the Launcher Blue
+		    
+		    'Desktop
+		    OutPath = Slash(SpecialFolder.Desktop.NativePath).ReplaceAll("/","\")
+		    CreateShortcut("LL Store", Target, TargetPath, OutPath, "")
+		    CreateShortcut("LL Launcher", Target, TargetPath, OutPath, "-l", TargetPath +"\Themes\LLLauncher.ico") 'Specifying the Icon is required for making the Launcher Blue
+		    
+		    
+		    'Make .apz, .pgz, .app and .ppg associations.
+		    MakeFileType("LLStore", "apz pgz app ppg", "LLStore File", Target, TargetPath, Target, "-i ") '2nd Target is the icon, The -i allows it to install default
+		    
+		    Tools.Hide
+		  Else
+		    If Debugging Then Debug ("--- Installing LLStore in Linux ---")
+		    MainPath = MainPath.ReplaceAll("\","/")
+		    InstallPath = "/LastOS/LLStore/"
+		    Target = InstallPath+"llstore"
+		    'If Not Exist(InstallPath) Then 'Only do this if required
+		    EnableSudoScript
+		    RunSudo("mkdir -p "+Chr(34)+InstallPath+Chr(34)+ " ; " + "chmod -R 777 "+Chr(34)+InstallPath+Chr(34))
+		    'End If
+		    
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Libs"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Resources"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Presets"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Themes"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"version.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLL_Settings.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    
+		    RunSudo("chmod -R 777 "+Chr(34)+InstallPath+Chr(34)) 'Make all executable
+		    
+		    Dim Bin As String = " /usr/bin/" 'Make sure to include the space at the start of this as it's used.
+		    
+		    'Make SymLinks to Store
+		    RunSudo("ln -sf "+Target+Bin+"llapp ; ln -sf "+Target+Bin+"lledit ; ln -sf "+Target+Bin+"llfile ; ln -sf "+Target+Bin+"llinstall ; ln -sf "+Target+Bin+"lllauncher ; ln -sf "+Target+Bin+"llstore" ) 'Sym Links do not need to be set to Exec
+		    
+		    'Make Associations
+		    MakeFileType("LLFile", "apz pgz tar app ppg lla llg", "Install LLFiles", Target, InstallPath, InstallPath+"llstore Resources/appicon_48.png")
+		    
+		    'Make Shortcuts
+		    Dim DesktopContent As String
+		    Dim DesktopFile As String
+		    Dim DesktopOutPath As String
+		    
+		    'Store
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Store" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=env GDK_BACKEND=x11 llstore" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Install LLFiles" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"llstore Resources/appicon_48.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		    
+		    DesktopFile = "llstore.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    DesktopOutPath = Slash(HomePath)+"Desktop/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    'Editor
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Editor" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=env GDK_BACKEND=x11 llstore -e" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Edit LLFiles" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLEditor.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		    
+		    DesktopFile = "lledit.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    
+		    'Launcher
+		    DesktopContent = "[Desktop Entry]" + Chr(10)
+		    DesktopContent = DesktopContent + "Type=Application" + Chr(10)
+		    DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
+		    DesktopContent = DesktopContent + "Name=LL Launcher" + Chr(10)
+		    DesktopContent = DesktopContent + "Exec=env GDK_BACKEND=x11 llstore -l" + Chr(10)
+		    DesktopContent = DesktopContent + "Comment=Launch LLStore games" + Chr(10)
+		    DesktopContent = DesktopContent + "Icon=" + InstallPath+"Themes/LLLauncher.png" + Chr(10)
+		    DesktopContent = DesktopContent + "Categories=Game;" + Chr(10)
+		    DesktopContent = DesktopContent + "Terminal=No" + Chr(10)
+		    
+		    DesktopFile = "lllauncher.desktop"
+		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    DesktopOutPath = Slash(HomePath)+"Desktop/"
+		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    
+		    'Close Sudo Terminal
+		    'Make sure Sudo is closed (not added ability to echo to /tmp/LLSudo to close it yet, so disabled) Glenn 2029
+		    
+		    'If Not SudoShellLoop.IsRunning Then 
+		    ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function InStrRev(SourceString As String, FindString As String, Start As Integer = -1) As Integer
 		  Dim k, LastFound, Length As Integer
 		  
@@ -3142,10 +3303,10 @@ Protected Module LLMod
 		    
 		    If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
 		      
-		      SaveDataToFile (Command, "/tmp/Expanded_Script.sh")
-		      Sh.Execute ("chmod 775 "+Chr(34)+"/tmp/Expanded_Script.sh"+Chr(34)) 'Change Read/Write/Execute to Output script
+		      SaveDataToFile (Command, Slash(TmpPath)+"Expanded_Script.sh")
+		      Sh.Execute ("chmod 775 "+Chr(34)+Slash(TmpPath)+"Expanded_Script.sh"+Chr(34)) 'Change Read/Write/Execute to Output script
 		      
-		      Sh.Execute("mv -f /tmp/Expanded_Script.sh /tmp/LLScript_Sudo.sh") 'Do it the solid way, not with Xojo
+		      Sh.Execute("mv -f "+Slash(TmpPath)+"Expanded_Script.sh /tmp/LLScript_Sudo.sh") 'Do it the solid way, not with Xojo
 		      
 		      While Exist ("/tmp/LLScript_Sudo.sh") 'This script gets removed after it completes, do not continue the processing until this happens
 		        App.DoEvents(7)
@@ -3751,6 +3912,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		InstallOnly As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		InstallStore As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

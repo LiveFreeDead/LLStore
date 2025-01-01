@@ -3054,7 +3054,7 @@ End
 		  Dim ArgsSP(-1) As String
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
-		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
+		  For I = 0 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
 		    If ArgsSP(I).Lowercase = "-l" Then
 		      StoreMode = 1
@@ -3115,6 +3115,18 @@ End
 		      Continue
 		    End If
 		    
+		    If ArgsSP(I).Lowercase = "-setup" Then
+		      StoreMode = 4
+		      InstallStore = True
+		      Continue
+		    End If
+		    
+		    If ArgsSP(I).Lowercase = "-s" Then
+		      StoreMode = 4
+		      InstallStore = True
+		      Continue
+		    End If
+		    
 		    'If ArgsSP(I).Lowercase = "llstore.exe" Then 'This will skip items that have llstore.exe in it, helpful for Spaced paths
 		    'CommandLineFile = "" 'Start Again if it's found this
 		    'Continue
@@ -3136,6 +3148,9 @@ End
 		  CommandLineFile = CommandLineFile.ReplaceAll("-i ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-edit","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-e ","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-setup","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-s ","")
+		  
 		  
 		  CommandLineFile = CommandLineFile.ReplaceAll(Chr(34)+"C:\Program Files\LLStore\llstore.exe"+Chr(34),"") 'Remove dodgy path
 		  CommandLineFile = CommandLineFile.ReplaceAll("C:\Program Files\LLStore\llstore.exe","")
@@ -3236,6 +3251,15 @@ End
 		  GetAdminMode
 		  
 		  If Debugging Then Debug("Admin Enabled: " + AdminEnabled.ToString)
+		  
+		  'Install Store Mode
+		  If StoreMode = 4 Or InstallStore = True Then
+		    InstallLLStore
+		    PreQuitApp ' Save Debug etc
+		    QuitApp 'Done installing, exit app, no need to continue
+		    Return ' Just get out of here once set to show editor
+		  End If
+		  
 		  
 		  'Install Mode
 		  If StoreMode = 2 Then
