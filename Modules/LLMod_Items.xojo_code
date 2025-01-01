@@ -57,7 +57,8 @@ Protected Module LLMod_Items
 		  IconRef As Integer
 		  Installed As Boolean
 		  InstallSize As Integer
-		  InternetRequired As Boolean
+		  KeepAll As Boolean
+		  KeepInFolder As Boolean
 		  Language As String * 1024
 		  License As Integer
 		  LnkCount As Integer
@@ -75,6 +76,7 @@ Protected Module LLMod_Items
 		  ReleaseVersion As String * 64
 		  RequiredRuntimes As String * 512
 		  Selected As Boolean
+		  SendTo As Boolean
 		  ShortCutNamesKeep As String * 1024
 		  ShowAlways As Boolean
 		  ShowSetupOnly As Boolean
@@ -88,7 +90,8 @@ Protected Module LLMod_Items
 		  OSCompatible As String * 1024
 		  DECompatible As String * 1024
 		  PMCompatible As String * 1024
-		ArchCompatible As String * 32
+		  ArchCompatible As String * 32
+		InternetRequired As Boolean
 	#tag EndStructure
 
 	#tag Structure, Name = LLLnk, Flags = &h0
@@ -112,7 +115,8 @@ Protected Module LLMod_Items
 		  LnkOSCompatible As String * 1024
 		  LnkDECompatible As String * 1024
 		  LnkPMCompatible As String * 1024
-		LnkArchCompatible As String * 32
+		  LnkArchCompatible As String * 32
+		LnkSendTo As Boolean
 	#tag EndStructure
 
 

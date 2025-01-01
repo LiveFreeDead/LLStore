@@ -1465,6 +1465,9 @@ Protected Module LLMod
 		  'MsgBox "LoadLLFile: "+ ItemInn
 		  
 		  App.DoEvents(1)
+		  
+		  EditingLnk = 0
+		  
 		  ItemLLItem = BlankItem 'Clear All Data
 		  InstallFromIni = ""
 		  
@@ -1734,6 +1737,24 @@ Protected Module LLMod
 		            ItemLLItem.NoInstall = False
 		          End If
 		          
+		          If ItemLLItem.Flags.IndexOf("keepall") >=0 Then
+		            ItemLLItem.KeepAll = True
+		          Else
+		            ItemLLItem.KeepAll = False
+		          End If
+		          
+		          If ItemLLItem.Flags.IndexOf("keepinfolder") >=0 Then
+		            ItemLLItem.KeepInFolder = True
+		          Else
+		            ItemLLItem.KeepInFolder = False
+		          End If
+		          
+		          If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
+		            ItemLLItem.SendTo = True
+		          Else
+		            ItemLLItem.SendTo = False
+		          End If
+		          
 		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
 		        Case "priority"
 		          ItemLLItem.Priority = Val(LineData)
@@ -1851,6 +1872,7 @@ Protected Module LLMod
 		          If OrigLine.IndexOf("desktop") >= 1 Then ItemLnk(LnkEditing).Desktop = True Else ItemLnk(LnkEditing).Desktop = False
 		          If OrigLine.IndexOf("panel") >= 1  Then ItemLnk(LnkEditing).Panel = True Else ItemLnk(LnkEditing).Panel = False
 		          If OrigLine.IndexOf("favorite") >= 1 Then ItemLnk(LnkEditing).Favorite = True Else ItemLnk(LnkEditing).Favorite = False
+		          If OrigLine.IndexOf("sendto") >= 1 Then ItemLnk(LnkEditing).LnkSendTo = True Else ItemLnk(LnkEditing).LnkSendTo = False
 		        Case "lnkoscompatible"
 		          ItemLnk(LnkEditing).LnkOSCompatible = LineData
 		        Case "lnkdecompatible"
@@ -2117,8 +2139,24 @@ Protected Module LLMod
 		  Dim TestLen As Integer
 		  Dim LinkOutPath As String
 		  Dim DaBugs As String
+		  Dim DeTest As String
 		  Dim StartPath As String
 		  Dim ExecName As String
+		  Dim BT As String
+		  
+		  BT = ItemLLItem.BuildType
+		  
+		  If TargetWindows Then 'Do ssApps/SentTo here
+		    'Make SentTo for first item if Main flag set
+		    If BT ="ssApp" Then 'Do Send To if Set in
+		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
+		        'Glenn 2027 - not done ssApp Processing yet, onyl the cleanup
+		      End If
+		    End If
+		    
+		  End If
+		  
+		  
 		  
 		  'Sort Catalog to Shortcuts - Windows ItemsOnly
 		  'Get the StartMenu Stuff for ssApps and then for ppApps/Games
@@ -2176,6 +2214,30 @@ Protected Module LLMod
 		  If LnkCount > 0 Then
 		    If TargetLinux Then
 		      For I = 1 To LnkCount
+		        'Check if on Compatible OS before making the link to it:
+		        
+		        DeTest = ItemLnk(I).LnkDECompatible
+		        If DeTest <> "" Then 'Only do Items with Values set
+		          If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
+		          If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
+		            DeTest =  ItemLnk(I).LnkPMCompatible
+		            If DeTest <> "" Then 'Only do Items with Values set
+		              If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
+		                'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
+		                 ItemLnk(I).LnkOSCompatible = "T"
+		              Else 'Not Compatible
+		                ItemLnk(I).LnkOSCompatible = "F"
+		              End If
+		            End If
+		          Else 'Not Compatible
+		            ItemLnk(I).LnkOSCompatible = "F"
+		          End If
+		        End If
+		        'Below will only execute if set to F - it;s blank by default for unset items.
+		        If ItemLnk(I).LnkOSCompatible = "F" Then Continue 'Doesn't process Non Compatible links, Need to add Arch Check also (Glenn 2027)
+		        
+		        
+		        
 		        'If ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue 'Skip dual arch shortcuts, just keep 1st one, which is usually x64 anyway
 		        If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#1}") >= 1 Then Continue ' Only skip replacing items if the items isn't the x64 one
 		        If ItemLnk(I).Flags.IndexOf(0, "Is_x64") < 0 And ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue ' Only skip replacing items if the 2nd items isn't the x64 one
@@ -2362,10 +2424,19 @@ Protected Module LLMod
 		        'Next
 		        
 		        
-		        
 		        'Make Desktop Shortcut also if picked
 		        If ItemLnk(I).Desktop = True Then
 		          CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.Desktop.NativePath)))
+		        End If
+		        
+		        'Make SendTo Shortcut for first item also if picked in Main flags and is a ssApp
+		        If I = 1 And BT = "ssApp" And ItemLLItem.Flags.IndexOf ("sendto") >=0 Then
+		          CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.ApplicationData.NativePath))+"Microsoft/Windows/SendTo/")
+		        End If
+		        
+		        'Make SendTo Shortcut also if picked in LNK
+		        If ItemLnk(I).Flags.IndexOf ("sendto") >=0 Then
+		          CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.ApplicationData.NativePath))+"Microsoft/Windows/SendTo/")
 		        End If
 		        
 		      Next I
@@ -3270,6 +3341,11 @@ Protected Module LLMod
 		  Else
 		    DataOut = DataOut + "PMCompatible=All"+Chr(10)
 		  End If
+		  If ItemLLItem.ArchCompatible <> "" Then
+		    DataOut = DataOut + "ArchCompatible=" + ItemLLItem.ArchCompatible+Chr(10)
+		  Else
+		    'DataOut = DataOut + "ArchCompatible=x86 + x64"+Chr(10) 'Just leave it blank, so that if it's an ARM app it'll work for that too
+		  End If
 		  If ItemLLItem.Assembly <> "" Then DataOut = DataOut + "Assembly=" + ItemLLItem.Assembly.ReplaceAll(Chr(13),Chr(30))+Chr(10)
 		  If ItemLLItem.Flags <> "" Then DataOut = DataOut + "Flags=" + ItemLLItem.Flags+Chr(10)
 		  If ItemLLItem.Arch <> "" Then DataOut = DataOut + "Architecture=" + ItemLLItem.Arch+Chr(10) 'This will need to convert x86, x64, arm to numbered, 1 = x86, 2 = x64, will need to check the rest to make it match
@@ -3318,8 +3394,13 @@ Protected Module LLMod
 		        If ItemLnk(I).Desktop = True Then  FlagsOut = FlagsOut + "desktop "
 		        If ItemLnk(I).Panel = True Then  FlagsOut = FlagsOut + "panel "
 		        If ItemLnk(I).Favorite = True Then  FlagsOut = FlagsOut + "favorite "
+		        If ItemLnk(I).LnkSendTo = True Then  FlagsOut = FlagsOut + "sendto "
 		        FlagsOut = FlagsOut.Trim
 		        If FlagsOut <> "" Then DataOut = DataOut + "ShowOn="+FlagsOut+Chr(10)
+		        
+		        If ItemLnk(I).LnkDECompatible <> "" Then DataOut = DataOut + "LnkDECompatible="+ItemLnk(I).LnkDECompatible+Chr(10)
+		        If ItemLnk(I).LnkPMCompatible <> "" Then DataOut = DataOut + "LnkPMCompatible="+ItemLnk(I).LnkPMCompatible+Chr(10)
+		        If ItemLnk(I).LnkArchCompatible <> "" Then DataOut = DataOut + "LnkArchCompatible="+ItemLnk(I).LnkArchCompatible+Chr(10)
 		        
 		      Next
 		    End If
@@ -3549,6 +3630,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		DefaultStartButtonHover As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		EditingLnk As Integer = -1
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

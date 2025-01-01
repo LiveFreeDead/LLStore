@@ -278,7 +278,7 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub RunInstaller()
+		Sub RunInstallerREMOVED()
 		  'This is not used, but leave for reference so can send multiple items from a preset without showing mini installer maybe???
 		  
 		  '########################################################### Run Installer ##################################################
@@ -759,7 +759,7 @@ End
 		      Try
 		        F = GetFolderItem(FileToInstallFrom, FolderItem.PathTypeShell)
 		        If F.Length <=10000 Then '10KB is pretty small
-		          DownloadAnyway = True
+		          If Left(Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("PathINI")), 4) = "http" Then DownloadAnyway = True 'If the File isn't online one then don't download or will cause issues
 		        End If
 		      Catch
 		        DownloadAnyway = True 'If the file has errors then just set it to re-download

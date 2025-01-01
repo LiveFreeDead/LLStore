@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   0
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -3389,7 +3389,7 @@ Begin DesktopWindow Editor
          Underline       =   False
          ValidationMask  =   ""
          Visible         =   True
-         Width           =   327
+         Width           =   328
       End
       Begin DesktopComboBox ComboDE
          AllowAutoComplete=   False
@@ -3544,7 +3544,7 @@ Begin DesktopWindow Editor
          Hint            =   ""
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
-         InitialValue    =   "x86\nx64\nARM"
+         InitialValue    =   "All\nx86 + x64\nx86\nx64\nARM"
          Italic          =   False
          Left            =   50
          LockBottom      =   False
@@ -5186,6 +5186,38 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   149
       End
+      Begin DesktopButton Advanced
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Cancel          =   False
+         Caption         =   "Advanced"
+         Default         =   True
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   26
+         Index           =   -2147483648
+         InitialParent   =   "TabPanel1"
+         Italic          =   False
+         Left            =   11
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         MacButtonStyle  =   0
+         Scope           =   0
+         TabIndex        =   45
+         TabPanelIndex   =   2
+         TabStop         =   True
+         Tooltip         =   "Advanced Options for each link"
+         Top             =   340
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   85
+      End
    End
    Begin DesktopLabel Status
       AllowAutoDeactivate=   True
@@ -5227,6 +5259,8 @@ End
 	#tag Event
 		Function CancelClosing(appQuitting As Boolean) As Boolean
 		  If ForceQuit = True Then Return False ' Always abandon everything if force quitting
+		  
+		  AdvancedLink.Hide
 		  
 		  'Test if changes and ask to save here?
 		  
@@ -5298,31 +5332,40 @@ End
 		  'Load in Combo's
 		  'SysAvailableDesktops
 		  ComboDE.RemoveAllRows
+		  AdvancedLink.ComboDE.RemoveAllRows
 		  For I = 0 To SysAvailableDesktops.Count-1
 		    ComboDE.AddRow(SysAvailableDesktops(I))
+		    AdvancedLink.ComboDE.AddRow(SysAvailableDesktops(I))
 		  Next
 		  ComboDE.SelectedRowIndex = 0 'All Default
+		  AdvancedLink.ComboDE.SelectedRowIndex = 0 'All Default
 		  
 		  'SysAvailablePackageManagers
 		  ComboPM.RemoveAllRows
+		  AdvancedLink.ComboPM.RemoveAllRows
 		  For I = 0 To SysAvailablePackageManagers.Count-1
 		    ComboPM.AddRow(SysAvailablePackageManagers(I))
+		    AdvancedLink.ComboPM.AddRow(SysAvailablePackageManagers(I))
 		  Next
 		  ComboPM.SelectedRowIndex = 0 'All Default
+		  AdvancedLink.ComboPM.SelectedRowIndex = 0 'All Default
 		  
 		  'SysAvailableArchitectures
 		  ComboArch.RemoveAllRows
+		  AdvancedLink.ComboArch.RemoveAllRows
 		  For I = 0 To SysAvailableArchitectures.Count-1
 		    ComboArch.AddRow(SysAvailableArchitectures(I))
+		    AdvancedLink.ComboArch.AddRow(SysAvailableArchitectures(I))
 		  Next
 		  ComboArch.SelectedRowIndex = 0 'All Default
+		  AdvancedLink.ComboArch.SelectedRowIndex = 0 'All Default
 		  
 		  
 		  'Main Window 2 - Links
 		  TextDefaultMenuPath.Text = ""
 		  TextKeepShortcuts.Text = ""
-		  CheckKeepFolder.Value = False
-		  CheckKeepAll.Value = False
+		  CheckKeepFolder.Value = ItemLLItem.KeepInFolder
+		  CheckKeepAll.Value = ItemLLItem.KeepAll
 		  ComboShortcut.Text = ""
 		  TextNewShortcut.Text = ""
 		  TextComment.Text = ""
@@ -5435,9 +5478,11 @@ End
 		    If ItemLLItem.ShowSetupOnly = True Then  FlagsOut = FlagsOut + "showsetuponly "
 		    If ItemLLItem.InternetRequired = True Then  FlagsOut = FlagsOut + "internetrequired "
 		    If ItemLLItem.NoInstall = True Then  FlagsOut = FlagsOut + "noinstall "
+		    If ItemLLItem.KeepAll = True Then  FlagsOut = FlagsOut + "keepall "
+		    If ItemLLItem.KeepInFolder = True Then  FlagsOut = FlagsOut + "keepinfolder "
 		    ItemLLItem.Flags = FlagsOut.Trim
 		    
-		    'Build Link Flags
+		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn 2027
 		    If LnkCount >= 1 Then
 		      For I = 1 To LnkCount
 		        If ItemLnk(I).Title.Trim <> "" Then
@@ -5569,10 +5614,6 @@ End
 		EditingCBLnk As Integer = -1
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
-		EditingLnk As Integer = -1
-	#tag EndProperty
-
 
 #tag EndWindowCode
 
@@ -5594,6 +5635,13 @@ End
 	#tag Event
 		Sub TextChanged()
 		  ItemLLItem.URL = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckInternetRequired
+	#tag Event
+		Sub ValueChanged()
+		  ItemLLItem.InternetRequired = CheckInternetRequired.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -5897,6 +5945,14 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonBrowseShortcut
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Implemented"
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events ButtonAddShortcut
 	#tag Event
 		Sub Pressed()
@@ -6043,6 +6099,20 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonAddCatalog
+	#tag Event
+		Sub Pressed()
+		  Dim AddThis As String
+		  If Not TextMenuCatalog.Text.IndexOf (ComboMenuCatalog.Text) >=0 Then
+		    AddThis = ComboMenuCatalog.Text
+		    If Right (AddThis, 1) <> ";" Then AddThis = AddThis +";"
+		    TextMenuCatalog.Text = TextMenuCatalog.Text.Trim.ReplaceAll(Chr(10)+Chr(10),Chr(10)) 'Remove Duplicated lines/blanks
+		    TextMenuCatalog.Text =  TextMenuCatalog.Text.Trim + Chr(10)+AddThis
+		    TextMenuCatalog.Text = TextMenuCatalog.Text.Trim
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextMenuCatalog
 	#tag Event
 		Sub TextChanged()
@@ -6104,6 +6174,13 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events CheckSendTo
+	#tag Event
+		Sub ValueChanged()
+		  ItemLnk(LnkEditing).LnkSendTo = Me.Value
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextMovieFile
 #tag EndEvents
 #tag Events TextTags
@@ -6162,10 +6239,46 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events CheckNoInstall
+	#tag Event
+		Sub ValueChanged()
+		  ItemLLItem.NoInstall = CheckNoInstall.Value
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonAddPM
+	#tag Event
+		Sub Pressed()
+		  If Not TextPM.Text.IndexOf(ComboPM.Text) >= 0 Then
+		    TextPM.Text = TextPM.Text.Trim + " "+ComboPM.Text
+		    TextPM.Text = TextPM.Text.Trim
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextPM
 	#tag Event
 		Sub TextChanged()
 		  ItemLLItem.PMCompatible = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ComboDE
+	#tag Event
+		Sub Closing()
+		  Debug("-- Editor Closed")
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonAddDE
+	#tag Event
+		Sub Pressed()
+		  If Not TextDE.Text.IndexOf(ComboDE.Text) >= 0 Then
+		    TextDE.Text = TextDE.Text.Trim + " "+ComboDE.Text
+		    TextDE.Text = TextDE.Text.Trim
+		  End If
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6177,6 +6290,13 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ComboArch
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ArchCompatible = ComboArch.Text
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextFlags
 	#tag Event
 		Sub TextChanged()
@@ -6185,6 +6305,13 @@ End
 		      ItemLnk(EditingLnk).Flags = Me.Text.Trim
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckHideInLauncher
+	#tag Event
+		Sub ValueChanged()
+		  ItemLLItem.HideInLauncher = CheckHideInLauncher.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6208,6 +6335,21 @@ End
 		  Dim Success As Boolean
 		  Success = SaveLLFileComplete
 		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Advanced
+	#tag Event
+		Sub Pressed()
+		  'Center
+		  AdvancedLink.Left = (Screen(0).AvailableWidth /2) - (AdvancedLink.Width /2)
+		  AdvancedLink.Top = (Screen(0).AvailableHeight /2) - (AdvancedLink.Height /2)
+		  
+		  AdvancedLink.TextDE.Text = ItemLnk(EditingLnk).LnkDECompatible
+		  AdvancedLink.TextPM.Text = ItemLnk(EditingLnk).LnkPMCompatible
+		  AdvancedLink.ComboArch.Text = ItemLnk(EditingLnk).LnkArchCompatible
+		  
+		  AdvancedLink.Show
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6449,14 +6591,6 @@ End
 	#tag EndViewProperty
 	#tag ViewProperty
 		Name="EditingCBLnk"
-		Visible=false
-		Group="Behavior"
-		InitialValue="-1"
-		Type="Integer"
-		EditorType=""
-	#tag EndViewProperty
-	#tag ViewProperty
-		Name="EditingLnk"
 		Visible=false
 		Group="Behavior"
 		InitialValue="-1"
