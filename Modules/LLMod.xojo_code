@@ -271,6 +271,12 @@ Protected Module LLMod
 		  Dim F As FolderItem
 		  Dim Test As Boolean
 		  
+		  If Not SudoShellLoop.IsRunning Then 'Just a check
+		    SudoEnabled = False
+		  Else 'Already running just get out of here
+		    Return
+		  End If
+		  
 		  If HasLinuxSudo = True Then ' Don't do this unless it's needed
 		    If Not TargetWindows Then 'Only make Sudo in Linux
 		      If SudoEnabled = False Then
@@ -1169,10 +1175,10 @@ Protected Module LLMod
 		    Select Case ItemLLItem.BuildType 
 		    Case "ssApp", "ppApp", "ppGame"
 		    Case Else 'Linux Item, may need script so always run it
-		      EnableSudoScript
+		      If SudoAsNeeded Then EnableSudoScript
 		    End Select
 		  Else 'MiniInstaller method should always run the script in Linux
-		    EnableSudoScript
+		    If SudoAsNeeded Then EnableSudoScript
 		  End If
 		  
 		  
@@ -2212,28 +2218,51 @@ Protected Module LLMod
 		  
 		  'For All
 		  If LnkCount > 0 Then
-		    If TargetLinux Then
+		    If TargetLinux Then 'For Linux Only
 		      For I = 1 To LnkCount
 		        'Check if on Compatible OS before making the link to it:
+		        ItemLnk(I).LnkOSCompatible = "T" 'Default it to enabled
 		        
-		        DeTest = ItemLnk(I).LnkDECompatible
+		        'Do Arch first as that will always be needed
+		        DeTest = ItemLnk(I).LnkArchCompatible
 		        If DeTest <> "" Then 'Only do Items with Values set
-		          If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
-		          If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
-		            DeTest =  ItemLnk(I).LnkPMCompatible
-		            If DeTest <> "" Then 'Only do Items with Values set
-		              If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
-		                'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
-		                 ItemLnk(I).LnkOSCompatible = "T"
-		              Else 'Not Compatible
-		                ItemLnk(I).LnkOSCompatible = "F"
-		              End If
-		            End If
+		          If  DeTest.IndexOf(SysArchitecture) >=0 Or DeTest = "All" Then
+		            ItemLnk(I).LnkOSCompatible = "T"
 		          Else 'Not Compatible
 		            ItemLnk(I).LnkOSCompatible = "F"
 		          End If
 		        End If
+		        
+		        If ItemLnk(I).LnkOSCompatible = "T" Then 'Will only continue if Arch Passed and wont check it if empty
+		          DeTest = ItemLnk(I).LnkDECompatible
+		          If DeTest <> "" Then 'Only do Items with Values set
+		            If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
+		            If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
+		              ItemLnk(I).LnkOSCompatible = "T"
+		            Else 'Not Compatible
+		              ItemLnk(I).LnkOSCompatible = "F"
+		            End If
+		          End If
+		        End If
+		        
+		        If ItemLnk(I).LnkOSCompatible = "T" Then 'Will only continue if Arch Passed, DE Passed or abscent and wont check it if empty
+		          DeTest =ItemLnk(I).LnkPMCompatible
+		          If DeTest <> "" Then 'Only do Items with Values set
+		            If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
+		              'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
+		              ItemLnk(I).LnkOSCompatible = "T"
+		            Else 'Not Compatible
+		              ItemLnk(I).LnkOSCompatible = "F"
+		            End If
+		          End If
+		        End If
 		        'Below will only execute if set to F - it;s blank by default for unset items.
+		        If Debugging Then Debug ("Make Linux Link: "+ItemLnk(I).Title)
+		        If Debugging And ItemLnk(I).LnkArchCompatible <> "" Then Debug ("LnkArchCompatible: "+ItemLnk(I).LnkArchCompatible)
+		        If Debugging And ItemLnk(I).LnkDECompatible <> "" Then Debug ("LnkDECompatible: "+ItemLnk(I).LnkDECompatible)
+		        If Debugging And ItemLnk(I).LnkPMCompatible <> "" Then Debug ("LnkPMCompatible: "+ItemLnk(I).LnkPMCompatible)
+		        If Debugging Then Debug ("LnkOSCompatible: "+ItemLnk(I).LnkOSCompatible)
+		        
 		        If ItemLnk(I).LnkOSCompatible = "F" Then Continue 'Doesn't process Non Compatible links, Need to add Arch Check also (Glenn 2027)
 		        
 		        
@@ -2309,7 +2338,7 @@ Protected Module LLMod
 		      Next I
 		    End If
 		    
-		    If TargetWindows Then 'TargetWindows Glenn 2027 - Change back once tested
+		    If TargetWindows Then 'Windows Only Shortcut Making section
 		      
 		      If AdminEnabled Then 'If Admin apply to All users, else only has access to current user
 		        StartPath = StartPathAll 'All Users
@@ -2402,27 +2431,11 @@ Protected Module LLMod
 		        ''CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.Desktop.NativePath)))
 		        
 		        
-		        'Do Associations? Glenn 2027 'Linux is done above in it's section as it only requires adding it to the .desktop file
-		        ''Do Associations - It's in InstallLLFile for now
-		        
-		        'Windows (Not Wine) Associations Glenn 2030
+		        'Do Associations?  'Linux is done above in it's section as it only requires adding it to the .desktop file
+		        'Windows (Not Wine) Associations
 		        If ItemLnk(I).Associations.Trim <> "" Then
 		          MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, Target, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
 		        End If
-		        
-		        
-		        'If ItemLnk(I).Associations.Trim <> "" Then
-		        ''assoc .txt="C:\Program Files\Windows\System32\notepad.exe"
-		        'End If
-		        
-		        
-		        'From LOSStore -
-		        ''Add ability to Associate Filetypes
-		        'If LnkFileTypes[I] <> "" Then
-		        'MakeFileType(LnkDisplayName[I], LnkFileTypes[I], LnkComment[I], "wine " & LLMod.ExpPath(LnkExec[I]), LLMod.ExpPath(LnkRunInPath[I]), LnkIcon[I])
-		        'End If
-		        'Next
-		        
 		        
 		        'Make Desktop Shortcut also if picked
 		        If ItemLnk(I).Desktop = True Then
@@ -2439,7 +2452,7 @@ Protected Module LLMod
 		          CreateShortcut(ItemLnk(I).Title, Target, Slash(ItemLnk(I).RunPath), Slash(FixPath(SpecialFolder.ApplicationData.NativePath))+"Microsoft/Windows/SendTo/")
 		        End If
 		        
-		      Next I
+		      Next
 		    End If
 		  End If
 		End Sub
@@ -3116,11 +3129,17 @@ Protected Module LLMod
 		  Dim ScriptFile As String
 		  
 		  If Not TargetWindows Then
+		    
+		    if SudoShellLoop.IsRunning = False Then
+		      EnableSudoScript 'if SudoShellLoop.IsRunning = True Then
+		    End If
+		    
 		    if SudoShellLoop.IsRunning = True Then ' Check still running
 		      SudoEnabled = True
 		    Else
 		      SudoEnabled = False
 		    End If
+		    
 		    If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
 		      
 		      SaveDataToFile (Command, "/tmp/Expanded_Script.sh")
@@ -3160,6 +3179,12 @@ Protected Module LLMod
 		  
 		  If Not TargetWindows Then
 		    If Exist(InstallToPath+"LLScript_Sudo.sh") Then
+		      
+		      'Bring it back if it shuts down
+		      if SudoShellLoop.IsRunning = False Then
+		        EnableSudoScript 'if SudoShellLoop.IsRunning = True Then
+		      End If
+		      
 		      if SudoShellLoop.IsRunning = True Then ' Check still running
 		        SudoEnabled = True
 		      Else
@@ -3925,11 +3950,19 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		SudoAsNeeded As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		SudoEnabled As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		SudoShellLoop As Shell
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		SysArchitecture As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -4952,6 +4985,22 @@ Protected Module LLMod
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="MiniInstallerShowing"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="EditingLnk"
+			Visible=false
+			Group="Behavior"
+			InitialValue="-1"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsOnline"
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"

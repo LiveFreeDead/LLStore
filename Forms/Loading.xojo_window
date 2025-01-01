@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -130,23 +134,51 @@ End
 		  
 		  'Check if App Path exists
 		  For I = 0 To Data.Items.RowCount - 1
-		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		    Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T" 'Default to Enabled on current OS, incase any are missing below then it will still set to false and skip the rest
+		    
+		    If TargetWindows Then 'If Windows session, hide linux things that may be in wrong paths
+		      DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) 
+		      If DeTest = "LLApp" Or DeTest = "LLGame" Then
+		        Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
+		        Data.Items.CellTextAt(I, Data.GetDBHeader("Hidden")) = "T" 'Make sure they are NOT shown ever
+		      End If
+		    End If
+		    
+		    'Do Arch first as that will always be needed
+		    DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("ArchCompatible")) 
 		    If DeTest <> "" Then 'Only do Items with Values set
-		      If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
-		      If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
-		        DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
-		        If DeTest <> "" Then 'Only do Items with Values set
-		          If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
-		            'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
-		            Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T"
-		          Else 'Not Compatible
-		            Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
-		          End If
-		        End If
+		      If  DeTest.IndexOf(SysArchitecture) >=0 Or DeTest = "All" Then
+		        Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T"
 		      Else 'Not Compatible
 		        Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
 		      End If
 		    End If
+		    
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T" Then 'Will only continue if Arch Passed and wont check it if empty
+		      DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
+		      If DeTest <> "" Then 'Only do Items with Values set
+		        If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable
+		        If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Or DeTest = "All" Then
+		          Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T"
+		        Else 'Not Compatible
+		          Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
+		        End If
+		      End If
+		    End If
+		    
+		    If Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T" Then 'Will only continue if Arch Passed, DE Passed or abscent and wont check it if empty
+		      DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
+		      If DeTest <> "" Then 'Only do Items with Values set
+		        If  DeTest.IndexOf(SysPackageManager) >=0 Or DeTest = "All" Then
+		          'If DeTest = "All-Linux" And TargetLinux Then DeTest = "All" 'If it's Linux compatible and we are in Linux then just set it to All in Temp Variable 'Not used yet (may not need)
+		          Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "T"
+		        Else 'Not Compatible
+		          Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F"
+		        End If
+		      End If
+		    End If
+		    
+		    
 		  Next
 		  
 		  
@@ -168,7 +200,7 @@ End
 		  If Exist(Slash(AppPath)+"llstoreold") Then Deltree Slash(AppPath)+"llstoreold"
 		  If Exist(Slash(AppPath)+"llstoreold.exe") Then Deltree Slash(AppPath)+"llstoreold.exe"
 		  
-		  'Check Version
+		  'Check Version - Add Timeout as this shouldn't take more than a second - Glenn 2027
 		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
 		  While Downloading = True
 		    App.DoEvents(3)
@@ -1634,6 +1666,10 @@ End
 		      LineData=LineData.Trim
 		    End If
 		    Select Case LineID
+		      
+		    Case"SudoAsNeeded"
+		      If LineData <> "" Then Settings.SetSudoAsNeeded.Value = IsTrue(LineData)
+		      SudoAsNeeded = Settings.SetSudoAsNeeded.Value
 		    Case"hideinstallergamecats"
 		      If LineData <> "" Then Settings.SetHideGameCats.Value = IsTrue(LineData) 'HideInstallerGameCats = IsTrue(LineData)
 		    Case"fontsizedescription"
@@ -2142,6 +2178,7 @@ End
 		  RL = RL + "FontSizeMetaData=" + Str(Main.MetaData.FontSize)+Chr(10)
 		  RL = RL + "HideInstallerGameCats=" + Str(Settings.SetHideGameCats.Value) + Chr(10)
 		  
+		  RL = RL + "SudoAsNeeded=" + Str(Settings.SetSudoAsNeeded.Value) + Chr(10)
 		  RL = RL + "CheckForUpdates=" + Str(Settings.SetCheckForUpdates.Value) + Chr(10)
 		  RL = RL + "QuitOnComplete=" + Str(Settings.SetQuitOnComplete.Value) + Chr(10)
 		  RL = RL + "VideoPlayback=" + Str(Settings.SetVideoPlayback.Value) + Chr(10)
@@ -3154,6 +3191,21 @@ End
 		    End If
 		  Next
 		  
+		  'Get Systems Arch
+		  SysArchitecture = "x64" 'Default
+		  If TargetWindows Then
+		    '%PROCESSOR_ARCHITEW6432% <- If I have issues change to this and if it's empty it's x86, not sure how it works on ARM yet though.
+		    ShellFast.Execute("echo %PROCESSOR_ARCHITECTURE%")
+		    If ShellFast.Result = "x86" Then SysArchitecture = "x86"
+		    If ShellFast.Result.IndexOf("64") >= 0 Then SysArchitecture = "x64"
+		    If Left(ShellFast.Result,3) = "arm" Then SysArchitecture = "ARM"
+		  Else
+		    ShellFast.Execute("uname -m")
+		    If ShellFast.Result = "x86_64" Then SysArchitecture = "x64"
+		    If Right(ShellFast.Result,2) = "86" Then SysArchitecture = "x86"
+		    If Left(ShellFast.Result,3) = "arm" Then SysArchitecture = "ARM"
+		  End If
+		  
 		  'Check if Online
 		  IsOnline = True
 		  ShellFast.Execute("curl -fsS http://google.com > /dev/null")
@@ -3172,6 +3224,7 @@ End
 		  If Debugging Then Debug("ppApps: "+ppApps)
 		  If Debugging Then Debug("ppGames: "+ppGames+ Chr(10))
 		  
+		  If Debugging Then Debug("Architecture: "+SysArchitecture)
 		  If Debugging Then Debug("Desktop Environment: "+SysDesktopEnvironment)
 		  If Debugging Then Debug("Package Manager: "+SysPackageManager)
 		  If Debugging Then Debug("Terminal: "+SysTerminal+ Chr(10))
@@ -3186,6 +3239,7 @@ End
 		  
 		  'Install Mode
 		  If StoreMode = 2 Then
+		    SudoAsNeeded = True 'As your only installing one item, there is no benefit to asking for SUDO if it isn't needed, so don't
 		    InstallOnly = True
 		    If Debugging Then Debug("--- Install From Commandline ---")
 		    #Pragma BreakOnExceptions Off

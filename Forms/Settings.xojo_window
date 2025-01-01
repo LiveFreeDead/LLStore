@@ -704,6 +704,36 @@ Begin DesktopWindow Settings
       Visible         =   True
       Width           =   101
    End
+   Begin DesktopCheckBox SetSudoAsNeeded
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Sudo As Needed"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   27
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   311
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   22
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   "If this is disabled it will Ask for the password at the start of the Mini Install, otherwise you'll have to wait for it to get to the Sudo Scripts before it asks"
+      Top             =   128
+      Transparent     =   False
+      Underline       =   False
+      Value           =   False
+      Visible         =   True
+      VisualState     =   0
+      Width           =   152
+   End
 End
 #tag EndDesktopWindow
 
@@ -778,6 +808,13 @@ End
 		  Settings.Hide
 		  Loading.SaveSettings
 		  Loading.LoadSettings 'Make sure they get applied properly before reloading the GUI
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events SetSudoAsNeeded
+	#tag Event
+		Sub ValueChanged()
+		  SudoAsNeeded = Settings.SetSudoAsNeeded.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
