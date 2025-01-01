@@ -723,11 +723,15 @@ End
 		  End If
 		  
 		  If Not QuitInstaller Then 'If Set to Quit, do nothing
-		    
-		    If SudoShellLoop.IsRunning Then
-		      SudoRunning.Value = True
+		    If TargetWindows Then
+		      SudoRunning.Visible = False
 		    Else
-		      SudoRunning.Value = False
+		      SudoRunning.Visible = True
+		      If SudoShellLoop.IsRunning Then
+		        SudoRunning.Value = True
+		      Else
+		        SudoRunning.Value = False
+		      End If
 		    End If
 		    
 		    Dim P As Integer
