@@ -1175,10 +1175,10 @@ Protected Module LLMod
 		    Select Case ItemLLItem.BuildType 
 		    Case "ssApp", "ppApp", "ppGame"
 		    Case Else 'Linux Item, may need script so always run it
-		      If SudoAsNeeded Then EnableSudoScript
+		      If SudoAsNeeded = False Then EnableSudoScript
 		    End Select
 		  Else 'MiniInstaller method should always run the script in Linux
-		    If SudoAsNeeded Then EnableSudoScript
+		    If SudoAsNeeded = False Then EnableSudoScript
 		  End If
 		  
 		  

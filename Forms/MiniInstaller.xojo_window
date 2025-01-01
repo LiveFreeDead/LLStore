@@ -83,7 +83,7 @@ Begin DesktopWindow MiniInstaller
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   False
-      Left            =   105
+      Left            =   138
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
@@ -119,7 +119,7 @@ Begin DesktopWindow MiniInstaller
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   False
-      Left            =   13
+      Left            =   74
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
@@ -135,7 +135,7 @@ Begin DesktopWindow MiniInstaller
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   80
+      Width           =   52
    End
    Begin DesktopButton Skip
       AllowAutoDeactivate=   True
@@ -150,7 +150,7 @@ Begin DesktopWindow MiniInstaller
       Height          =   26
       Index           =   -2147483648
       Italic          =   False
-      Left            =   268
+      Left            =   292
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   False
@@ -166,10 +166,9 @@ Begin DesktopWindow MiniInstaller
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   80
+      Width           =   56
    End
    Begin Thread InstallItems
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Priority        =   5
@@ -179,13 +178,42 @@ Begin DesktopWindow MiniInstaller
       Type            =   0
    End
    Begin Timer UpdateUI
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
       RunMode         =   0
       Scope           =   0
       TabPanelIndex   =   0
+   End
+   Begin DesktopCheckBox SudoRunning
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Sudo"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   28
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   False
+      Left            =   0
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   4
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   404
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      VisualState     =   0
+      Width           =   71
    End
 End
 #tag EndDesktopWindow
@@ -696,6 +724,12 @@ End
 		  
 		  If Not QuitInstaller Then 'If Set to Quit, do nothing
 		    
+		    If SudoShellLoop.IsRunning Then
+		      SudoRunning.Value = True
+		    Else
+		      SudoRunning.Value = False
+		    End If
+		    
 		    Dim P As Integer
 		    'Position List if off screen
 		    If MiniUpTo + 6 >= Items.ScrollPosition + 12 Then
@@ -720,17 +754,21 @@ End
 		      If MiniUpTo - 1 >=0 Then
 		        If Items.CellTextAt(MiniUpTo-1, 1) = "Installing" Then Items.CellTextAt(MiniUpTo-1, 1) = "Installed" 'Does this work here, will test, Yes works here, except for the last item, but that doesn't matter as the form hides when it's done
 		      End If
-		      
-		      If Items.CellTextAt(MiniUpTo, 1) = "Skip" Then ' If on the Item change to Skipped so can't pick to UnSkip it again (I don't count backwards)
-		        Items.CellTextAt(MiniUpTo, 1) = "Skipped"
-		        
-		        MiniUpTo = MiniUpTo + 1 'This Will proceed to the next Item without trying to install the previously skipped ones, without having to check in the Thread :)
-		        
-		      Else
-		        If Items.CellTextAt(MiniUpTo, 1) = "" Then
-		          Items.CellTextAt(MiniUpTo, 1) = "Installing" 'Change it to Installing if it's where we are up to (Called before it start to install so this should always fire
+		      #Pragma BreakOnExceptions Off
+		      Try
+		        If Items.CellTextAt(MiniUpTo, 1) = "Skip" Then ' If on the Item change to Skipped so can't pick to UnSkip it again (I don't count backwards)
+		          Items.CellTextAt(MiniUpTo, 1) = "Skipped"
+		          
+		          MiniUpTo = MiniUpTo + 1 'This Will proceed to the next Item without trying to install the previously skipped ones, without having to check in the Thread :)
+		          
+		        Else
+		          If Items.CellTextAt(MiniUpTo, 1) = "" Then
+		            Items.CellTextAt(MiniUpTo, 1) = "Installing" 'Change it to Installing if it's where we are up to (Called before it start to install so this should always fire
+		          End If
 		        End If
-		      End If
+		      Catch
+		      End Try
+		      #Pragma BreakOnExceptions On
 		      
 		      If MiniUpTo - 1 >= 0 Then 
 		        If Items.CellTextAt(MiniUpTo-1, 1) = "" Then Items.CellTextAt(MiniUpTo - 1, 1) = "Installed" 'Make the first Item changed to Installed, can add Fail check here too
@@ -801,6 +839,22 @@ End
 		  
 		  
 		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events SudoRunning
+	#tag Event
+		Sub MouseUp(x As Integer, y As Integer)
+		  If SudoShellLoop.IsRunning Then
+		    SudoRunning.Value = True
+		  Else
+		    EnableSudoScript
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Return True
+		End Function
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
