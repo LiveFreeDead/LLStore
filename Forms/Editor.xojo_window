@@ -1757,7 +1757,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   195
+         Left            =   360
          LockBottom      =   True
          LockedInPosition=   False
          LockLeft        =   False
@@ -1768,7 +1768,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   "This is used for Linux items that have no installable files/folders"
-         Top             =   440
+         Top             =   441
          Transparent     =   False
          Underline       =   False
          Value           =   False
@@ -5168,7 +5168,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanel1"
          Italic          =   False
-         Left            =   317
+         Left            =   10
          LockBottom      =   True
          LockedInPosition=   False
          LockLeft        =   False
@@ -5180,7 +5180,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   430
+         Top             =   431
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5343,6 +5343,7 @@ End
 		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
 		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		                If ItemLLItem.NoInstall = False Then 
+		                  Status.Text =  "Compressing Files..."
 		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                  Sh.Execute (Commands)
 		                  While Sh.IsRunning
@@ -5361,6 +5362,7 @@ End
 		          Else 'In Folder is different to build folder so work from in folder instead
 		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		              If  ItemLLItem.NoInstall = False Then 
+		                Status.Text =  "Compressing Files..."
 		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                Sh.Execute (Commands)
 		                While Sh.IsRunning
@@ -5389,6 +5391,7 @@ End
 		                  FC = F.Count
 		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
 		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
+		                    Status.Text =  "Clean Up Files..."
 		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
 		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
 		                    Else 'Not a LLFile type or a script
@@ -5420,6 +5423,7 @@ End
 		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
 		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
 		          Commands = "cd "+Chr(34)+OutFolder+Chr(34)+" && tar -cf " +Chr(34)+CompressedFileOut+Chr(34)+" *"
+		          Status.Text =  "Compressing to " + CompressedFileOut
 		          Sh.Execute (Commands)
 		          While Sh.IsRunning
 		            App.DoEvents(1)
@@ -5472,7 +5476,9 @@ End
 		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		                'If ItemLLItem.NoInstall  = False Then 
 		                If BT <> "ssApp" Then 'ssApp is Windows NoInstall
-		                  Commands = Win7z +" a "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*"
+		                  Status.Text =  "Compressing Files..."
+		                  Status.Text =  "Compressing to " + CompressedFileOut
+		                  Commands = Win7z +" a -m0=lzma2 -mx=2 "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*" ' -m0=lzma2 -mx=2  Faster but less compressed
 		                  If Debugging Then Debug (Commands)
 		                  Res = RunCommandResults(Commands)
 		                  If Debugging Then Debug (Res)
@@ -5491,17 +5497,11 @@ End
 		          Else 'In Folder is different to build folder so work from in folder instead
 		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		              If ItemLLItem.NoInstall = False Then 
-		                
-		                Commands = Win7z +" a "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*"
+		                Status.Text =  "Compressing Files..."
+		                Commands = Win7z +" a -m0=lzma2 -mx=2 "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*" ' -m0=lzma2 -mx=2  Faster but less compressed
 		                If Debugging Then Debug (Commands)
 		                Res = RunCommandResults(Commands)
 		                If Debugging Then Debug (Res)
-		                
-		                'Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
-		                'Sh.Execute (Commands)
-		                'While Sh.IsRunning
-		                'App.DoEvents(1)
-		                'Wend
 		              End If
 		            Else 'Copy Existing Only
 		              If InFile <> OutFile Then 'Don't Copy Self
@@ -5527,6 +5527,7 @@ End
 		                  FC = F.Count
 		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
 		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
+		                    Status.Text =  "Clean Up Files..."
 		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
 		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Then
 		                    Else 'Not a LLFile type or a script
@@ -5569,7 +5570,9 @@ End
 		            CompressedFileOut = CompressedFileOut.ReplaceAll("/","\")
 		          End If
 		          
-		          Commands = Win7z +" a "+Chr(34)+CompressedFileOut+Chr(34)+" "+InputFolder+"*"
+		          Status.Text =  "Compressing to " + CompressedFileOut
+		          
+		          Commands = Win7z +" a -mx0 "+Chr(34)+CompressedFileOut+Chr(34)+" "+InputFolder+"*" '-mx0 is store
 		          If Debugging Then Debug (Commands)
 		          Res = RunCommandResults(Commands)
 		          If Debugging Then Debug (Res)
@@ -5941,44 +5944,6 @@ End
 		  'Message("Built To Path is read Only")                 
 		  'Return
 		  'End If
-		  '
-		  'If LLMod.LLBuildType = "LLApp" Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".lla" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".lla" & Chr(34) Wait      
-		  'Else 'Game
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".llg" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".llg" & Chr(34) Wait
-		  'End If
-		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".png") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".png" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".png" & Chr(34) Wait
-		  'End If
-		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".png") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".jpg" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".jpg" & Chr(34) Wait
-		  'End If
-		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".jpg") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".ico" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".ico" & Chr(34) Wait
-		  'End If
-		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".svg") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".svg" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".svg" & Chr(34) Wait
-		  'End If
-		  'If Exist(LLMod.LLBuildPath & LLMod.LLBuildType & ".mp4") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".mp4" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & LLMod.LLBuildType & ".mp4" & Chr(34) Wait
-		  'End If
-		  '
-		  'If Exist(LLMod.LLBuildPath & "LLScript.sh") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript.sh" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript.sh" & Chr(34) Wait
-		  'End If
-		  '
-		  'If Exist(LLMod.LLBuildPath & "LLScript_Sudo.sh") Then
-		  'Shell "tar --delete -f " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript_Sudo.sh" & Chr(34) Wait
-		  'Shell "cd " & Chr(34) & LLMod.LLBuildPath & Chr(34) & " && " & "tar -uf " & Chr(34) & LLMod.LLFileINI & Chr(34) & " " & Chr(34) & "LLScript_Sudo.sh" & Chr(34) Wait
-		  'End If      
 		  
 		End Function
 	#tag EndMethod

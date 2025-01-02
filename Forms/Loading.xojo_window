@@ -3071,10 +3071,12 @@ End
 		      Continue
 		    End If
 		    If ArgsSP(I).Lowercase = "-edit" Then
+		      EditorOnly = True
 		      StoreMode = 3
 		      Continue
 		    End If
 		    If ArgsSP(I).Lowercase = "-e" Then 
+		      EditorOnly = True
 		      StoreMode = 3
 		      Continue
 		    End If
@@ -3197,6 +3199,15 @@ End
 		    End If
 		  End If
 		  
+		  'Check if CommandLineFile is an actual file and switch to install mode by default
+		  Select Case Right(CommandLineFile, 4)
+		  Case ".apz", ".pgz", ".app",".ppg",".tar",".lla",".llg"
+		    StoreMode = 2 ' This forces it to install ANY viable file regardless of how it's called' I was sick of Nemo etc removing the -i from the command.
+		  End Select
+		  
+		  If EditorOnly = True Then StoreMode = 3 ' Editor mode, even though the file above is a file, I never want the store or launcher to start
+		  
+		  
 		  'Get Package Manager
 		  For I = 0 To SysAvailablePackageManagers.Count -1
 		    ShellFast.Execute("which "+SysAvailablePackageManagers(I))
@@ -3293,7 +3304,6 @@ End
 		  
 		  'Editor Mode
 		  If StoreMode = 3 Then
-		    EditorOnly = True
 		    'MsgBox "Loading: " + CommandLineFile
 		    #Pragma BreakOnExceptions Off
 		    If CommandLineFile = "" Then
