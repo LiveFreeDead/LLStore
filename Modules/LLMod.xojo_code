@@ -1640,6 +1640,9 @@ Protected Module LLMod
 		  
 		  If ItemInn = "" Then Return False 'Nothing given
 		  
+		  'Fix ItemInn to forward slashes, can change later if breaks
+		  ItemInn = ItemInn.ReplaceAll("\","/") 'Glenn 2040
+		  
 		  Dim I As Integer
 		  Dim F As FolderItem
 		  Dim SP() As String
@@ -5216,6 +5219,54 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue="False"
 			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="InstallStore"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="NewFileFader"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="NewFileIcon"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="NewFileScreenshot"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SudoAsNeeded"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SysArchitecture"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

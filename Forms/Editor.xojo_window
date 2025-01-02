@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   4
+      Value           =   6
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -3773,7 +3773,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   1
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   174
+         Top             =   172
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -5294,6 +5294,314 @@ End
 
 
 	#tag Method, Flags = &h0
+		Sub BuildLLFile()
+		  Dim Success As Boolean
+		  Dim BT As String = ItemLLItem.BuildType
+		  Dim OutFile, InFile, RootPath, InFolder, OutFolder As String
+		  Dim CompressedFileOut As String
+		  Dim Commands As String
+		  Dim IsLLFile As String
+		  Dim F As FolderItem
+		  Dim I As Integer
+		  Dim FC As Integer
+		  Dim VersIncl As String
+		  Dim Res As String
+		  
+		  Dim InputFolder As String
+		  Dim OutputFile As String
+		  'Dim Dels() As String
+		  
+		  Dim Sh As New Shell
+		  Sh.TimeOut = -1
+		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
+		  
+		  'Below Remark isn't needed, the Saving of the LLFile detects it's all good and wont return True if it fails the tests
+		  'If Exist (TextBuildToFolder.Text) Then 'Only build if a good output path
+		  
+		  Success = SaveLLFileComplete 'This also updates Compressed Item resources
+		  
+		  If Success = True Then 'Check if saved correctly and build only if required (May need for 7z if can't just update them like the tar files
+		    If ItemLLItem.Compressed = True Then 'Just update it again
+		      'Do Nothing, it's done with the "SaveLLFileComplete" Routine to save repeating code
+		    Else ' If the items wasn't compressed, check to see if we need to compress it (Build)
+		      'Build here and clean up
+		      If Debugging Then Debug (Chr(10)+"Item not compressed, compressing...")
+		      Select Case BT
+		      Case"LLApp", "LLGame"
+		        If Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Or Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Then
+		          'Do Nothing
+		        Else 'Only compress if not already compressed file found
+		          OutFolder = Slash(TextBuildToFolder.Text)
+		          OutFile = OutFolder+BT+".tar.gz"
+		          InFolder = Slash(TextIncludeFolder.Text)
+		          InFile = InFolder+BT+".tar.gz"
+		          RootPath = Slash(Left(NoSlash(OutFolder), InStrRev(NoSlash(OutFolder), "/") - 1)) 'LLFiles use forward Slash
+		          
+		          If Debugging Then Debug ("OutFile: " + OutFile +" Include File To Test: " + InFile+" Root Path: "+ RootPath +" InFolder: "+ InFolder)
+		          If InFolder = OutFolder Then
+		            
+		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
+		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		                If ItemLLItem.NoInstall = False Then 
+		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                  Sh.Execute (Commands)
+		                  While Sh.IsRunning
+		                    App.DoEvents(1)
+		                  Wend
+		                End If
+		                
+		              Else 'Just copy it
+		                If InFile <> OutFile Then 'Don't Copy Self
+		                  If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                  Copy (InFile, OutFile)
+		                End If
+		              End If
+		            Else 'Do Nothing so far as it's already existing
+		            End If
+		          Else 'In Folder is different to build folder so work from in folder instead
+		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		              If  ItemLLItem.NoInstall = False Then 
+		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                Sh.Execute (Commands)
+		                While Sh.IsRunning
+		                  App.DoEvents(1)
+		                Wend
+		              End If
+		            Else 'Copy Existing Only
+		              If InFile <> OutFile Then 'Don't Copy Self
+		                If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                Copy (InFile, OutFile)
+		              End If
+		            End If
+		          End If
+		          
+		          'Check if build path is the same as Source Path and delete original uncompressed files if so
+		          
+		          'STOP * If the user makes a script only build then this will remove important files, need a checkbox for them
+		          
+		          If ItemLLItem.NoInstall = True Then
+		            'No install, do nothing
+		          Else ' Is installer, clean up?
+		            If InFolder = OutFolder Then      
+		              If Exist(OutFile) Then 'Now if compressed file is in tact, remove all other files except BuildType.* Then
+		                F = GetFolderItem(OutFolder, FolderItem.PathTypeShell)
+		                If F <> Nil Then
+		                  FC = F.Count
+		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
+		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
+		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
+		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
+		                    Else 'Not a LLFile type or a script
+		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
+		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
+		                          If Right(F.Item(I).Name, 4) <> ".png" Then
+		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
+		                              If Right(F.Item(I).Name, 4) <> ".ico" Then
+		                                Deltree (F.Item(I).NativePath)
+		                              End If
+		                            End If
+		                          End If
+		                        End If
+		                      End If
+		                    End If
+		                  Next
+		                End If
+		              End If
+		            End If
+		            
+		          End If
+		          
+		        End If
+		        
+		        'Now Compress to a single tar if checked;
+		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it
+		          'Make a single tar Title_Version_BuildType.tar
+		          VersIncl = ""
+		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
+		          Commands = "cd "+Chr(34)+OutFolder+Chr(34)+" && tar -cf " +Chr(34)+CompressedFileOut+Chr(34)+" *"
+		          Sh.Execute (Commands)
+		          While Sh.IsRunning
+		            App.DoEvents(1)
+		          Wend
+		          
+		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
+		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
+		          End If
+		        End If
+		        
+		      Case Else 'ss/pp App/Game ---------------------------------------------------------------- Glenn 2040
+		        
+		        '----------- Always do this as it's empty? -----------------------------
+		        OutFolder = Slash(TextBuildToFolder.Text)
+		        InFolder = Slash(TextIncludeFolder.Text)
+		        
+		        If TargetWindows Then
+		          OutFolder = OutFolder.ReplaceAll("/","\")
+		          InFolder = InFolder.ReplaceAll("/","\")
+		          RootPath = Slash(Left(NoSlash(OutFolder), InStrRev(NoSlash(OutFolder), "\") - 1)) 'LLFiles use back Slash
+		          RootPath = RootPath.ReplaceAll("/","\")
+		        Else
+		          OutFolder = OutFolder.ReplaceAll("\","/")
+		          InFolder = InFolder.ReplaceAll("\","/")
+		          RootPath = Slash(Left(NoSlash(OutFolder), InStrRev(NoSlash(OutFolder), "/") - 1)) 'LLFiles use forward Slash
+		          RootPath = RootPath.ReplaceAll("\","/")
+		        End If
+		        
+		        OutFile = OutFolder+BT+".7z"
+		        InFile = InFolder+BT+".7z"
+		        
+		        InputFolder = InFolder
+		        OutputFile = OutFile
+		        
+		        
+		        If Debugging Then Debug ("OutFile: " + OutFile +" Include File To Test: " + InFile)
+		        If Debugging Then Debug ("Root Path: "+ RootPath +" InFolder: "+ InFolder)
+		        If Debugging Then Debug ("NoInstall: "+ItemLLItem.NoInstall.ToString+ " BT: "+ BT)
+		        '--------------------
+		        
+		        
+		        If Exist (Slash(TextBuildToFolder.Text)+BT+".7z") = True Then
+		          If Debugging Then Debug (Chr(10)+"Found: "+ Slash(TextBuildToFolder.Text)+BT+".7z")
+		          'Do Nothing
+		        Else 'Only compress if not already compressed file found
+		          
+		          If InFolder = OutFolder Then
+		            If Debugging Then Debug ("Infolder = OutFolder")
+		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
+		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		                'If ItemLLItem.NoInstall  = False Then 
+		                If BT <> "ssApp" Then 'ssApp is Windows NoInstall
+		                  Commands = Win7z +" a "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*"
+		                  If Debugging Then Debug (Commands)
+		                  Res = RunCommandResults(Commands)
+		                  If Debugging Then Debug (Res)
+		                End If
+		                
+		              Else 'Just copy it
+		                If InFile <> OutFile Then 'Don't Copy Self
+		                  If Len(OutFile)>=3 Then
+		                    If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                  End If
+		                  Copy (InFile, OutFile)
+		                End If
+		              End If
+		            Else 'Do Nothing so far as it's already existing
+		            End If
+		          Else 'In Folder is different to build folder so work from in folder instead
+		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
+		              If ItemLLItem.NoInstall = False Then 
+		                
+		                Commands = Win7z +" a "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*"
+		                If Debugging Then Debug (Commands)
+		                Res = RunCommandResults(Commands)
+		                If Debugging Then Debug (Res)
+		                
+		                'Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                'Sh.Execute (Commands)
+		                'While Sh.IsRunning
+		                'App.DoEvents(1)
+		                'Wend
+		              End If
+		            Else 'Copy Existing Only
+		              If InFile <> OutFile Then 'Don't Copy Self
+		                If Len(OutFile)>=3 Then
+		                  If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
+		                End If
+		                Copy (InFile, OutFile)
+		              End If
+		            End If
+		          End If
+		          
+		          'Check if build path is the same as Source Path and delete original uncompressed files if so
+		          
+		          'STOP * If the user makes a script only build then this will remove important files, need a checkbox for them
+		          
+		          If BT = "ssApp" Then 'ssApp is Windows NoInstall
+		            'No install, do nothing
+		          Else ' Is installer, clean up?
+		            If InFolder = OutFolder Then      
+		              If Exist(OutFile) Then 'Now if compressed file is in tact, remove all other files except BuildType.* Then
+		                F = GetFolderItem(OutFolder, FolderItem.PathTypeShell)
+		                If F <> Nil Then
+		                  FC = F.Count
+		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
+		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
+		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
+		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Then
+		                    Else 'Not a LLFile type or a script
+		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
+		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
+		                          If Right(F.Item(I).Name, 4) <> ".png" Then
+		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
+		                              If Right(F.Item(I).Name, 4) <> ".ico" Then
+		                                Deltree (F.Item(I).NativePath)
+		                              End If
+		                            End If
+		                          End If
+		                        End If
+		                      End If
+		                    End If
+		                  Next
+		                End If
+		              End If
+		            End If
+		            
+		          End If
+		          
+		        End If
+		        
+		        
+		        'Now Compress to a single 7z if checked;
+		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it, but does 7z?
+		          'MsgBox Chr(34)+OutputFile+Chr(34)+" "+InputFolder+"*"
+		          Dim ExtOut As String
+		          If BT = "ppGame" Then
+		            ExtOut = ".pgz"
+		          Else
+		            ExtOut = ".apz"
+		          End If
+		          'Make a single tar Title_Version_BuildType.tar
+		          VersIncl = ""
+		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ExtOut
+		          If TargetWindows Then
+		            CompressedFileOut = CompressedFileOut.ReplaceAll("/","\")
+		          End If
+		          
+		          Commands = Win7z +" a "+Chr(34)+CompressedFileOut+Chr(34)+" "+InputFolder+"*"
+		          If Debugging Then Debug (Commands)
+		          Res = RunCommandResults(Commands)
+		          If Debugging Then Debug (Res)
+		          
+		          
+		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
+		            'If Debugging Then Debug("Safe To Deltree? "+ OutFolder)
+		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
+		          End If
+		        End If
+		        
+		        
+		        'Status.Text = "Failed to Build LLFile"
+		        'If Debugging Then Debug ("Built Failed")
+		        'If Not AutoBuild Then MsgBox "Not Yet Implemented"
+		        
+		      End Select
+		      
+		      
+		    End If
+		    Status.Text = "Built Successfully"
+		    If Debugging Then Debug ("Built Successfully")
+		    If Not AutoBuild Then MsgBox "Built Successfully"
+		  Else
+		    Status.Text = "Failed to Build LLFile"
+		    If Debugging Then Debug ("Built Failed")
+		    If Not AutoBuild Then MsgBox "Failed to Build LLFile"
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub PopulateData()
 		  Dim BT As String
 		  Dim F As FolderItem
@@ -5450,6 +5758,12 @@ End
 		  TextInstalledSize.Text = ItemLLItem.InstallSize.ToString
 		  
 		  'Main Window 7 - Build Tab
+		  If TargetWindows Then
+		    ItemTempPath = ItemTempPath.ReplaceAll("/","\")
+		  Else
+		    ItemTempPath = ItemTempPath.ReplaceAll("\","/")
+		  End If
+		  
 		  TextIncludeFolder.Text = ItemTempPath 'Fix to use correct path depending on job
 		  TextBuildToFolder.Text = ItemTempPath 'Fix to use correct path depending on job
 		  CheckCompress.Value = ItemLLItem.Compressed 'If already compressed then check it again so you know
@@ -5523,11 +5837,29 @@ End
 		        INIFile = BT+".llg"
 		      End Select
 		      
+		      Dim Res As String
 		      
 		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item (Try adding 7z support as well as doing tar's like normal)
 		        Select Case BT 'I may have to chnage this to use 7z for all of them as tar isn't available in windows properly, will see, Glenn 2030
 		        Case "LLApp", "LLGame" 'Tar's
 		          If TargetWindows Then
+		            Status.Text =  "Failed, LLApps and LLGames can only edit in Linux"
+		            MsgBox "Failed, LLApps and LLGames can only edit in Linux"
+		            Return False
+		            
+		            
+		            ''Tar is built into Windows 10 and above, but can't delete files at all, only Add a 2nd copy, would need to extract and repackage if I want to add that feature
+		            'Res = RunCommandResults ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34))
+		            '
+		            'If Debugging Then Debug(Res)
+		            '
+		            'If Exist(BTF+BT+".jpg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg"  + Chr(34) )
+		            'If Exist(BTF+BT+".png" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png"  + Chr(34) )
+		            'If Exist(BTF+BT+".ico" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico"  + Chr(34) )
+		            'If Exist(BTF+BT+".svg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".svg"  + Chr(34) )
+		            'If Exist(BTF+BT+".mp4" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".mp4"  + Chr(34) )
+		            'If Exist(BTF+"LLScript.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript.sh"  + Chr(34) )
+		            'If Exist(BTF+"LLScript_Sudo.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript_Sudo.sh"  + Chr(34) )
 		          Else 'Linux or mac
 		            'Remove Existing Files from inside the .tar
 		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34)) 'FileINI is the name of the .tar
@@ -5541,6 +5873,8 @@ End
 		            'Add files back to the .tar, if they exist
 		            ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34) )
 		            
+		            If Debugging Then Debug(ShellFast.Result)
+		            
 		            If Exist(BTF+BT+".jpg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg"  + Chr(34) )
 		            If Exist(BTF+BT+".png" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png"  + Chr(34) )
 		            If Exist(BTF+BT+".ico" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico"  + Chr(34) )
@@ -5550,6 +5884,46 @@ End
 		            If Exist(BTF+"LLScript_Sudo.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript_Sudo.sh"  + Chr(34) )
 		          End If
 		        Case Else '7zip not tar
+		          If TargetWindows Then
+		            If Debugging Then Debug("Updating: "+ItemLLItem.FileINI + " With: " + BTF+INIFile)
+		            'ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            'Res = RunCommandResults ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            If Debugging Then Debug(Res)
+		            
+		            If Exist(BTF+BT+".jpg") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".jpg" + Chr(34))
+		            If Debugging Then Debug(Res)
+		            If Exist(BTF+BT+".png") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".png" + Chr(34))
+		            If Exist(BTF+BT+".ico") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".ico" + Chr(34))
+		            If Exist(BTF+BT+".svg") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".svg" + Chr(34))
+		            If Exist(BTF+BT+".mp4") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".mp4" + Chr(34))
+		            If Exist(BTF+BT+".cmd") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".cmd" + Chr(34))
+		            If Exist(BTF+BT+".reg") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".reg" + Chr(34))
+		            
+		          Else 'Linux
+		            If Debugging Then Debug("Updating: "+ItemLLItem.FileINI + " With: " + BTF+INIFile)
+		            'ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            If Debugging Then Debug(ShellFast.Result)
+		            
+		            If Exist(BTF+BT+".jpg") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".jpg" + Chr(34))
+		            If Debugging Then Debug(ShellFast.Result)
+		            If Exist(BTF+BT+".png") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".png" + Chr(34))
+		            If Exist(BTF+BT+".ico") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".ico" + Chr(34))
+		            If Exist(BTF+BT+".svg") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".svg" + Chr(34))
+		            If Exist(BTF+BT+".mp4") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".mp4" + Chr(34))
+		            If Exist(BTF+BT+".cmd") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".cmd" + Chr(34))
+		            If Exist(BTF+BT+".reg") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".reg" + Chr(34))
+		            
+		          End If
+		          
+		          'Status.Text =  "Failed, 7zip not yet implemented into editor"
+		          'MsgBox "Failed, 7zip not yet implemented into editor"
+		          'Return False
+		          
+		          Status.Text =  "Saved Successfully: " + ItemLLItem.FileINI
+		          Return True 'Success
+		          
 		        End Select
 		      End If
 		      Status.Text =  "Saved Successfully: " + ItemLLItem.FileINI
@@ -5724,149 +6098,7 @@ End
 #tag Events ButtonBuild
 	#tag Event
 		Sub Pressed()
-		  Dim Success As Boolean
-		  Dim BT As String = ItemLLItem.BuildType
-		  Dim OutFile, InFile, RootPath, InFolder, OutFolder As String
-		  Dim CompressedFileOut As String
-		  Dim Commands As String
-		  Dim IsLLFile As String
-		  Dim F As FolderItem
-		  Dim I As Integer
-		  Dim FC As Integer
-		  Dim VersIncl As String
-		  'Dim Dels() As String
-		  
-		  Dim Sh As New Shell
-		  Sh.TimeOut = -1
-		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
-		  
-		  'Below Remark isn't needed, the Saving of the LLFile detects it's all good and wont return True if it fails the tests
-		  'If Exist (TextBuildToFolder.Text) Then 'Only build if a good output path
-		  
-		  Success = SaveLLFileComplete 'This also updates Compressed Item resources
-		  
-		  If Success = True Then 'Check if saved correctly and build only if required (May need for 7z if can't just update them like the tar files
-		    If ItemLLItem.Compressed = True Then 'Just update it again
-		      'Do Nothing, it's done with the "SaveLLFileComplete" Routine to save repeating code
-		    Else ' If the items wasn't compressed, check to see if we need to compress it (Build)
-		      'Build here and clean up
-		      Select Case BT
-		      Case"LLApp", "LLGame"
-		        If Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Or Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Then
-		          'Do Nothing
-		        Else 'Only compress if not already compressed file found
-		          OutFolder = Slash(TextBuildToFolder.Text)
-		          OutFile = OutFolder+BT+".tar.gz"
-		          InFolder = Slash(TextIncludeFolder.Text)
-		          InFile = InFolder+BT+".tar.gz"
-		          RootPath = Slash(Left(NoSlash(OutFolder), InStrRev(NoSlash(OutFolder), "/") - 1)) 'LLFiles use forward Slash
-		          
-		          'MsgBox "OutFile: " + OutFile +" Include File To Test: " + InFile+" Root Path: "+ RootPath +" InFolder: "+ InFolder
-		          If InFolder = OutFolder Then
-		            
-		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
-		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
-		                If  ItemLLItem.NoInstall  = False Then 
-		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
-		                  Sh.Execute (Commands)
-		                  While Sh.IsRunning
-		                    App.DoEvents(1)
-		                  Wend
-		                End If
-		                
-		              Else 'Just copy it
-		                If InFile <> OutFile Then 'Don't Copy Self
-		                  If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
-		                  Copy (InFile, OutFile)
-		                End If
-		              End If
-		            Else 'Do Nothing so far as it's already existing
-		            End If
-		          Else 'In Folder is different to build folder so work from in folder instead
-		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
-		              If  ItemLLItem.NoInstall = False Then 
-		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
-		                Sh.Execute (Commands)
-		                While Sh.IsRunning
-		                  App.DoEvents(1)
-		                Wend
-		              End If
-		            Else 'Copy Existing Only
-		              If InFile <> OutFile Then 'Don't Copy Self
-		                If OutFile <> "/" And Exist(OutFile) Then Deltree(OutFile)
-		                Copy (InFile, OutFile)
-		              End If
-		            End If
-		          End If
-		          
-		          'Check if build path is the same as Source Path and delete original uncompressed files if so
-		          
-		          'STOP * If the user makes a script only build then this will remove important files, need a checkbox for them
-		          
-		          If ItemLLItem.NoInstall = True Then
-		            'No install, do nothing
-		          Else ' Is installer, clean up?
-		            If InFolder = OutFolder Then      
-		              If Exist(OutFile) Then 'Now if compressed file is in tact, remove all other files except BuildType.* Then
-		                F = GetFolderItem(OutFolder, FolderItem.PathTypeShell)
-		                If F <> Nil Then
-		                  FC = F.Count
-		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
-		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
-		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
-		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
-		                    Else 'Not a LLFile type or a script
-		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
-		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
-		                          If Right(F.Item(I).Name, 4) <> ".png" Then
-		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
-		                              If Right(F.Item(I).Name, 4) <> ".ico" Then
-		                                Deltree (F.Item(I).NativePath)
-		                              End If
-		                            End If
-		                          End If
-		                        End If
-		                      End If
-		                    End If
-		                  Next
-		                End If
-		              End If
-		            End If
-		            
-		          End If
-		          
-		        End If
-		        
-		        'Now Compress to a single tar if checked;
-		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it
-		          'Make a single tar Title_Version_BuildType.tar
-		          VersIncl = ""
-		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
-		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
-		          Commands = "cd "+Chr(34)+OutFolder+Chr(34)+" && tar -cf " +Chr(34)+CompressedFileOut+Chr(34)+" *"
-		          Sh.Execute (Commands)
-		          While Sh.IsRunning
-		            App.DoEvents(1)
-		          Wend
-		          
-		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
-		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
-		          End If
-		        End If
-		        
-		        
-		      End Select
-		      
-		      
-		    End If
-		    Status.Text = "Built Successfully"
-		    If Debugging Then Debug ("Built Successfully")
-		    If Not AutoBuild Then MsgBox "Built Successfully"
-		  Else
-		    Status.Text = "Failed to Build LLFile"
-		    If Debugging Then Debug ("Built Failed")
-		    If Not AutoBuild Then MsgBox "Failed to Build LLFile"
-		  End If
+		  BuildLLFile()
 		End Sub
 	#tag EndEvent
 #tag EndEvents
