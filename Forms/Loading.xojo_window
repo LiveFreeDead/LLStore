@@ -3054,7 +3054,7 @@ End
 		  Dim ArgsSP(-1) As String
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
-		  For I = 0 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
+		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
 		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
 		    If ArgsSP(I).Lowercase = "-l" Then
 		      StoreMode = 1
@@ -3302,6 +3302,15 @@ End
 		      Editor.PopulateData
 		      Editor.Show
 		    Else
+		      'F = GetFolderItem(CommandLineFile, FolderItem.PathTypeShell)
+		      'If  F.IsFolder Then
+		      'If Exist (Slash(CommandLineFile)+"LLApp.lla") Then CommandLineFile = CommandLineFile+"LLApp.lla"
+		      'If Exist (Slash(CommandLineFile)+"LLGame.llg") Then CommandLineFile = CommandLineFile+"LLGame.llg"
+		      'If Exist (Slash(CommandLineFile)+"ssApp.app") Then CommandLineFile = CommandLineFile+"ssApp.app"
+		      'If Exist (Slash(CommandLineFile)+"ppApp.app") Then CommandLineFile = CommandLineFile+"ppApp.app"
+		      'If Exist (Slash(CommandLineFile)+"ppGame.ppg") Then CommandLineFile = CommandLineFile+"ppGame.ppg"
+		      'End If
+		      'F = Nil
 		      Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
 		      If Success Then 
 		        'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString

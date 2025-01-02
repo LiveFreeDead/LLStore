@@ -2069,6 +2069,7 @@ Protected Module LLMod
 		  ItemLLItem.FileScreenshot =  MediaPath+ItemLLItem.BuildType+".jpg"
 		  F = GetFolderItem(ItemLLItem.FileScreenshot, FolderItem.PathTypeNative)
 		  If Not F.Exists Then ItemLLItem.FileScreenshot =  "" 'None
+		  NewFileScreenshot = ItemLLItem.FileScreenshot
 		  
 		  'Fader
 		  ItemLLItem.FileFader =  MediaPath +ItemLLItem.BuildType+".png"
@@ -2085,22 +2086,29 @@ Protected Module LLMod
 		      End If
 		    End If
 		  End If
+		  NewFileFader = ItemLLItem.FileFader
 		  
 		  'Icon
 		  ItemLLItem.FileIcon =  MediaPath +ItemLLItem.BuildType+".svg"
 		  F = GetFolderItem(ItemLLItem.FileIcon, FolderItem.PathTypeNative)
 		  If Not F.Exists Then
-		    'Disabled .ico because Linux doesn't always display them right
-		    'ItemLLItem.FileIcon =  MediaPath +ItemLLItem.BuildType+".ico"
-		    'F = GetFolderItem(ItemLLItem.FileIcon, FolderItem.PathTypeNative)
-		    'If Not F.Exists Then 
 		    ItemLLItem.FileIcon =  MediaPath +ItemLLItem.BuildType+".png"
 		    F = GetFolderItem(ItemLLItem.FileIcon, FolderItem.PathTypeNative)
 		    If Not F.Exists Then
-		      ItemLLItem.FileIcon =  "" 'None
-		      ItemIcon = Nil
+		      'Disabled .ico because Linux doesn't always display them right, Re-enabled as you can build on Windows
+		      ItemLLItem.FileIcon =  MediaPath +ItemLLItem.BuildType+".ico"
+		      F = GetFolderItem(ItemLLItem.FileIcon, FolderItem.PathTypeNative)
+		      If Not F.Exists Then 
+		        
+		        ItemLLItem.FileIcon =  "" 'None
+		        ItemIcon = Nil
+		      End If
 		    End If
 		    'End If
+		  End If
+		  NewFileIcon = ""
+		  If Right(ItemLLItem.FileIcon,4) = ".ico" Then 'Don't allow png or svg Icons, they dont work with windows purposes and Linux doesn't need the Icon
+		    NewFileIcon = ItemLLItem.FileIcon
 		  End If
 		  
 		  'Add Item to Cache if found
@@ -3473,6 +3481,8 @@ Protected Module LLMod
 		  Dim FlagsOut As String
 		  Dim LLFileOut, OutFile As String
 		  Dim BType As String
+		  Dim PicInFile As String
+		  Dim PicOutFile As String
 		  
 		  Select Case ItemLLItem.BuildType
 		  Case "ppGame"
@@ -3496,6 +3506,30 @@ Protected Module LLMod
 		    BType = "LL"
 		    OutFile = ItemLLItem.BuildType+".llg"
 		  End Select
+		  
+		  'Copy Images from wherever they are set to the Build Path
+		  PicInFile = FixPath(NewFileScreenshot) 'FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".jpg")
+		  PicOutFile = FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".jpg")
+		  If PicInFile <> PicOutFile Then
+		    Copy(PicInFile,PicOutFile)
+		  End If
+		  
+		  PicInFile = FixPath(NewFileFader) 'FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".png")
+		  PicOutFile = FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".png")
+		  If PicInFile <> PicOutFile Then
+		    Copy(PicInFile,PicOutFile)
+		  End If
+		  
+		  PicInFile = FixPath(NewFileIcon) 'FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".ico")
+		  If Right(NewFileIcon,4) = ".svg" Then
+		    PicOutFile = FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".svg")
+		  Else
+		    PicOutFile = FixPath(Slash(SaveToPath)+ItemLLItem.BuildType+".ico")
+		  End If
+		  If PicInFile <> PicOutFile Then
+		    Copy(PicInFile,PicOutFile)
+		  End If
+		  
 		  
 		  'Prepare LLFile output
 		  LLFileOut = FixPath(Slash(SaveToPath)+OutFile)
@@ -3984,6 +4018,18 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		MovieVolume As Integer = 20
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		NewFileFader As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		NewFileIcon As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		NewFileScreenshot As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

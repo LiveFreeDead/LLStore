@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   4
       Visible         =   True
       Width           =   630
       Begin DesktopLabel Label1
@@ -6181,7 +6181,134 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events TextMovieFile
+#tag Events CanvasFader
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Return True
+		  
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub MouseUp(x As Integer, y As Integer)
+		  'MsgBox "Load Fader"
+		  Dim ImageIn As String
+		  Dim F As FolderItem
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "image/png"
+		  iniType.MacType = "PNG"
+		  iniType.Extensions = "png"
+		  
+		  ImageIn = NewFileFader
+		  If ImageIn = "" Then ImageIn = ItemLLItem.FileFader
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
+		  
+		  
+		  'MsgBox ImageIn
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Fader PNG File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    NewFileFader = ImageIn
+		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
+		    CanvasFader.Backdrop = Picture.Open(F)
+		    'MsgBox ImageIn
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CanvasScreenshot
+	#tag Event
+		Sub MouseUp(x As Integer, y As Integer)
+		  'MsgBox "Load Fader"
+		  Dim ImageIn As String
+		  Dim F As FolderItem
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "image/jpg"
+		  iniType.MacType = "JPG"
+		  iniType.Extensions = "jpg"
+		  
+		  ImageIn = NewFileScreenshot
+		  If ImageIn = "" Then ImageIn = ItemLLItem.FileFader
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
+		  
+		  
+		  'MsgBox ImageIn
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Screenshot File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    NewFileScreenshot = ImageIn
+		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
+		    CanvasScreenshot.Backdrop = Picture.Open(F)
+		    'MsgBox ImageIn
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Return True
+		  
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events CanvasIcon
+	#tag Event
+		Sub MouseUp(x As Integer, y As Integer)
+		  'MsgBox "Load Fader"
+		  Dim ImageIn As String
+		  Dim F As FolderItem
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "image/ico"
+		  iniType.MacType = "ICO"
+		  iniType.Extensions = "ico"
+		  
+		  ImageIn = NewFileFader
+		  If ImageIn = "" Then ImageIn = ItemLLItem.FileIcon
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
+		  
+		  
+		  'MsgBox ImageIn
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Icon File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    NewFileIcon = ImageIn
+		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
+		    CanvasIcon.Backdrop = Picture.Open(F)
+		    'MsgBox ImageIn
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Return True
+		  
+		End Function
+	#tag EndEvent
 #tag EndEvents
 #tag Events TextTags
 	#tag Event
