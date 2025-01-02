@@ -1,5 +1,5 @@
 #tag Class
-Protected Class App
+Protected Class LLStore
 Inherits DesktopApplication
 	#tag Event
 		Function CancelClosing() As Boolean

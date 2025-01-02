@@ -24,7 +24,7 @@ Begin DesktopWindow AdvancedLink
    Type            =   0
    Visible         =   False
    Width           =   600
-   Begin DesktopLabel Label36
+   Begin DesktopLabel LabelPM
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True
@@ -264,7 +264,7 @@ Begin DesktopWindow AdvancedLink
       Visible         =   True
       Width           =   296
    End
-   Begin DesktopLabel Label38
+   Begin DesktopLabel LabelArch
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True
@@ -328,7 +328,7 @@ Begin DesktopWindow AdvancedLink
       Visible         =   True
       Width           =   200
    End
-   Begin DesktopLabel Label37
+   Begin DesktopLabel LabelDEPMHardware
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True
@@ -360,7 +360,7 @@ Begin DesktopWindow AdvancedLink
       Visible         =   True
       Width           =   329
    End
-   Begin DesktopLabel Label58
+   Begin DesktopLabel LabelDE
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True

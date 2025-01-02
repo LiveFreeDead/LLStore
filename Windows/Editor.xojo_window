@@ -24,7 +24,7 @@ Begin DesktopWindow Editor
    Type            =   0
    Visible         =   False
    Width           =   630
-   Begin DesktopTabPanel TabPanel1
+   Begin DesktopTabPanel TabPanelEditor
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True
@@ -51,10 +51,10 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   6
+      Value           =   4
       Visible         =   True
       Width           =   630
-      Begin DesktopLabel Label1
+      Begin DesktopLabel LabelTitle
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -63,7 +63,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   6
          LockBottom      =   False
@@ -103,7 +103,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   55
          LockBottom      =   False
@@ -129,7 +129,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   274
       End
-      Begin DesktopLabel Label2
+      Begin DesktopLabel LabelVersion
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -138,7 +138,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   332
          LockBottom      =   False
@@ -178,7 +178,7 @@ Begin DesktopWindow Editor
          Height          =   28
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   389
          LockBottom      =   False
@@ -204,7 +204,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   235
       End
-      Begin DesktopLabel Label3
+      Begin DesktopLabel LabelURL
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -213,7 +213,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   6
          LockBottom      =   False
@@ -256,7 +256,7 @@ Begin DesktopWindow Editor
          Height          =   43
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   55
          LineHeight      =   0.0
@@ -285,7 +285,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   568
       End
-      Begin DesktopLabel Label4
+      Begin DesktopLabel LabelCategory
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -294,7 +294,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   4
          LockBottom      =   False
@@ -330,7 +330,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboCategory"
          Italic          =   False
          Left            =   74
@@ -361,7 +361,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   299
          LockBottom      =   False
@@ -382,7 +382,7 @@ Begin DesktopWindow Editor
          VisualState     =   0
          Width           =   175
       End
-      Begin DesktopLabel Label5
+      Begin DesktopLabel LabelDescription
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -391,7 +391,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   6
          LockBottom      =   False
@@ -434,7 +434,7 @@ Begin DesktopWindow Editor
          Height          =   165
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   6
          LineHeight      =   0.0
@@ -463,7 +463,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   618
       End
-      Begin DesktopLabel Label6
+      Begin DesktopLabel LabelPriority
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -472,7 +472,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   437
          LockBottom      =   False
@@ -512,7 +512,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   547
          LockBottom      =   False
@@ -538,7 +538,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   76
       End
-      Begin DesktopLabel Label7
+      Begin DesktopLabel LabelIncludeFolder
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -547,7 +547,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -587,7 +587,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -625,7 +625,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   591
          LockBottom      =   False
@@ -645,7 +645,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   30
       End
-      Begin DesktopLabel Label8
+      Begin DesktopLabel LabelBuildToFolder
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -654,7 +654,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   True
@@ -694,7 +694,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   True
@@ -732,7 +732,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   591
          LockBottom      =   True
@@ -764,7 +764,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   44
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   472
          LockBottom      =   True
@@ -784,7 +784,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   149
       End
-      Begin DesktopLabel Label10
+      Begin DesktopLabel LabelShortcuts
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -793,7 +793,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   29
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -817,7 +817,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   98
       End
-      Begin DesktopLabel Label11
+      Begin DesktopLabel LabelDisplayName
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -826,7 +826,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -866,7 +866,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -904,7 +904,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   529
          LockBottom      =   False
@@ -936,7 +936,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   560
          LockBottom      =   False
@@ -968,7 +968,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   591
          LockBottom      =   False
@@ -1000,7 +1000,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboShortcut"
          Italic          =   False
          Left            =   106
@@ -1021,7 +1021,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   419
       End
-      Begin DesktopLabel Label12
+      Begin DesktopLabel LabelComment
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1030,7 +1030,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1070,7 +1070,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -1096,7 +1096,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label13
+      Begin DesktopLabel LabelExecute
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1105,7 +1105,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1145,7 +1145,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -1171,7 +1171,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label14
+      Begin DesktopLabel LabelRunInPath
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1180,7 +1180,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1220,7 +1220,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -1246,7 +1246,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label15
+      Begin DesktopLabel LabelIcon
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1255,7 +1255,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1295,7 +1295,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -1321,7 +1321,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label16
+      Begin DesktopLabel LabelFileTypes
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1330,7 +1330,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1370,7 +1370,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -1396,7 +1396,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label17
+      Begin DesktopLabel LabelDescriptionLnk
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1405,7 +1405,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -1448,7 +1448,7 @@ Begin DesktopWindow Editor
          Height          =   66
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LineHeight      =   0.0
@@ -1489,7 +1489,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   579
          LockBottom      =   True
@@ -1521,7 +1521,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboMenuCatalog"
          Italic          =   False
          Left            =   316
@@ -1561,7 +1561,7 @@ Begin DesktopWindow Editor
          Height          =   77
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   316
          LineHeight      =   0.0
@@ -1600,7 +1600,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   11
          LockBottom      =   True
@@ -1631,7 +1631,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   11
          LockBottom      =   True
@@ -1662,7 +1662,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   11
          LockBottom      =   True
@@ -1693,7 +1693,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   166
          LockBottom      =   True
@@ -1724,7 +1724,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   166
          LockBottom      =   True
@@ -1755,7 +1755,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   360
          LockBottom      =   True
@@ -1795,7 +1795,7 @@ Begin DesktopWindow Editor
          Height          =   95
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LineHeight      =   0.0
@@ -1824,7 +1824,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   614
       End
-      Begin DesktopLabel Label20
+      Begin DesktopLabel LabelUserScript
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1833,7 +1833,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   False
@@ -1857,7 +1857,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label21
+      Begin DesktopLabel LabelSudoReg
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -1866,7 +1866,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   30
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   True
@@ -1909,7 +1909,7 @@ Begin DesktopWindow Editor
          Height          =   175
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LineHeight      =   0.0
@@ -1950,7 +1950,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   523
          LockBottom      =   True
@@ -1982,7 +1982,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   523
          LockBottom      =   True
@@ -2002,7 +2002,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   98
       End
-      Begin DesktopLabel Label22
+      Begin DesktopLabel LabelMovieFile
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2011,7 +2011,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   153
          LockBottom      =   True
@@ -2051,7 +2051,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   218
          LockBottom      =   True
@@ -2089,7 +2089,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   595
          LockBottom      =   True
@@ -2118,7 +2118,7 @@ Begin DesktopWindow Editor
          Enabled         =   True
          Height          =   256
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Left            =   3
          LockBottom      =   False
          LockedInPosition=   False
@@ -2144,7 +2144,7 @@ Begin DesktopWindow Editor
          Enabled         =   True
          Height          =   256
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Left            =   261
          LockBottom      =   True
          LockedInPosition=   False
@@ -2170,7 +2170,7 @@ Begin DesktopWindow Editor
          Enabled         =   True
          Height          =   128
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Left            =   5
          LockBottom      =   True
          LockedInPosition=   False
@@ -2187,7 +2187,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   128
       End
-      Begin DesktopLabel Label23
+      Begin DesktopLabel LabelIconTitle
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2196,7 +2196,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   5
          LockBottom      =   True
@@ -2220,7 +2220,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label24
+      Begin DesktopLabel LabelFaderTitle
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2229,7 +2229,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   3
          LockBottom      =   False
@@ -2253,7 +2253,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label25
+      Begin DesktopLabel LabelScreenShotTitle
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2262,7 +2262,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   261
          LockBottom      =   False
@@ -2295,7 +2295,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   422
          LockBottom      =   False
@@ -2319,7 +2319,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   43
       End
-      Begin DesktopButton Button1
+      Begin DesktopButton ButtonPrevScreenshot
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -2331,7 +2331,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   17
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   382
          LockBottom      =   False
@@ -2351,7 +2351,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   37
       End
-      Begin DesktopButton Button2
+      Begin DesktopButton ButtonNextScreenshot
          AllowAutoDeactivate=   True
          Bold            =   False
          Cancel          =   False
@@ -2363,7 +2363,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   17
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   468
          LockBottom      =   False
@@ -2395,7 +2395,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   166
          LockBottom      =   True
@@ -2427,7 +2427,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboTags"
          Italic          =   False
          Left            =   2
@@ -2460,7 +2460,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   205
          LockBottom      =   False
@@ -2496,7 +2496,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   248
          LockBottom      =   False
@@ -2538,7 +2538,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   416
          LockBottom      =   False
@@ -2564,7 +2564,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   208
       End
-      Begin DesktopLabel Label26
+      Begin DesktopLabel LabelPublisher
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2573,7 +2573,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   334
          LockBottom      =   False
@@ -2613,7 +2613,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   416
          LockBottom      =   False
@@ -2639,7 +2639,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   208
       End
-      Begin DesktopLabel Label27
+      Begin DesktopLabel LabelReleaseVersion
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2648,7 +2648,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   308
          LockBottom      =   False
@@ -2672,7 +2672,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label28
+      Begin DesktopLabel LabelReleaseDate
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2681,7 +2681,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   308
          LockBottom      =   False
@@ -2721,7 +2721,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   416
          LockBottom      =   False
@@ -2747,7 +2747,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   208
       End
-      Begin DesktopLabel Label29
+      Begin DesktopLabel LabelBuilder
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2756,7 +2756,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   308
          LockBottom      =   False
@@ -2796,7 +2796,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   416
          LockBottom      =   False
@@ -2822,7 +2822,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   208
       End
-      Begin DesktopLabel Label30
+      Begin DesktopLabel LabelInstallSize
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2831,7 +2831,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   308
          LockBottom      =   False
@@ -2871,7 +2871,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   416
          LockBottom      =   False
@@ -2909,7 +2909,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   571
          LockBottom      =   False
@@ -2945,7 +2945,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   85
          LockBottom      =   False
@@ -2971,7 +2971,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   211
       End
-      Begin DesktopLabel Label31
+      Begin DesktopLabel LabelLanguage
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -2980,7 +2980,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   False
@@ -3020,7 +3020,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   85
          LockBottom      =   False
@@ -3046,7 +3046,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   211
       End
-      Begin DesktopLabel Label32
+      Begin DesktopLabel LabelRating
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3055,7 +3055,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   False
@@ -3095,7 +3095,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   85
          LockBottom      =   False
@@ -3121,7 +3121,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   211
       End
-      Begin DesktopLabel Label33
+      Begin DesktopLabel LabelPlayers
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3130,7 +3130,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   False
@@ -3166,7 +3166,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboLicense"
          Italic          =   False
          Left            =   85
@@ -3187,7 +3187,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   211
       End
-      Begin DesktopLabel Label34
+      Begin DesktopLabel LabelLicense
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3196,7 +3196,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   False
@@ -3230,7 +3230,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   454
          LockBottom      =   False
@@ -3251,7 +3251,7 @@ Begin DesktopWindow Editor
          VisualState     =   0
          Width           =   162
       End
-      Begin DesktopLabel Label36
+      Begin DesktopLabel LabelPM
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3260,7 +3260,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   20
          LockBottom      =   False
@@ -3296,7 +3296,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboPM"
          Italic          =   False
          Left            =   50
@@ -3329,7 +3329,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   251
          LockBottom      =   False
@@ -3365,7 +3365,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   295
          LockBottom      =   False
@@ -3403,7 +3403,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboDE"
          Italic          =   False
          Left            =   50
@@ -3436,7 +3436,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   252
          LockBottom      =   False
@@ -3472,7 +3472,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   296
          LockBottom      =   False
@@ -3498,7 +3498,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   327
       End
-      Begin DesktopLabel Label38
+      Begin DesktopLabel LabelArch
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3507,7 +3507,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   16
          LockBottom      =   False
@@ -3543,7 +3543,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "All\nx86 + x64\nx86\nx64\nARM"
          Italic          =   False
          Left            =   50
@@ -3564,7 +3564,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   200
       End
-      Begin DesktopLabel Label39
+      Begin DesktopLabel LabelFlagsLnk
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3573,7 +3573,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   10
          LockBottom      =   True
@@ -3613,7 +3613,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   45
          LockBottom      =   True
@@ -3655,7 +3655,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   74
          LockBottom      =   False
@@ -3681,7 +3681,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label35
+      Begin DesktopLabel LabelInstallTo
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3690,7 +3690,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -3726,7 +3726,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   592
          LockBottom      =   False
@@ -3746,7 +3746,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   30
       End
-      Begin DesktopLabel Label37
+      Begin DesktopLabel LabelDEPMHardware
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3755,7 +3755,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   6
          LockBottom      =   False
@@ -3795,7 +3795,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   74
          LockBottom      =   False
@@ -3821,7 +3821,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   515
       End
-      Begin DesktopLabel Label40
+      Begin DesktopLabel LabelInstaller
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3830,7 +3830,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -3866,7 +3866,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   592
          LockBottom      =   False
@@ -3902,7 +3902,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   74
          LockBottom      =   False
@@ -3928,7 +3928,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   495
       End
-      Begin DesktopLabel Label41
+      Begin DesktopLabel LabelUsage
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -3937,7 +3937,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -3980,7 +3980,7 @@ Begin DesktopWindow Editor
          Height          =   175
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LineHeight      =   0.0
@@ -4021,7 +4021,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   572
          LockBottom      =   False
@@ -4041,7 +4041,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   49
       End
-      Begin DesktopLabel Label42
+      Begin DesktopLabel LabelDirectives
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4050,7 +4050,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4083,7 +4083,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4116,7 +4116,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4149,7 +4149,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4182,7 +4182,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4215,7 +4215,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -4248,7 +4248,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   81
          LockBottom      =   True
@@ -4281,7 +4281,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   81
          LockBottom      =   True
@@ -4314,7 +4314,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   81
          LockBottom      =   True
@@ -4347,7 +4347,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   81
          LockBottom      =   True
@@ -4380,7 +4380,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   81
          LockBottom      =   True
@@ -4413,7 +4413,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   468
          LockBottom      =   True
@@ -4446,7 +4446,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   468
          LockBottom      =   True
@@ -4479,7 +4479,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   468
          LockBottom      =   True
@@ -4503,7 +4503,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   116
       End
-      Begin DesktopLabel Label53
+      Begin DesktopLabel LabelComponents
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4512,7 +4512,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   465
          LockBottom      =   True
@@ -4536,7 +4536,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   155
       End
-      Begin DesktopLabel Label57
+      Begin DesktopLabel LabelBuildType
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4545,7 +4545,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   4
          LockBottom      =   False
@@ -4581,7 +4581,7 @@ Begin DesktopWindow Editor
          Height          =   26
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboBuildType"
          Italic          =   False
          Left            =   74
@@ -4612,7 +4612,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   474
          LockBottom      =   False
@@ -4633,7 +4633,7 @@ Begin DesktopWindow Editor
          VisualState     =   0
          Width           =   145
       End
-      Begin DesktopLabel Label58
+      Begin DesktopLabel LabelDE
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4642,7 +4642,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   20
          LockBottom      =   False
@@ -4666,7 +4666,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   28
       End
-      Begin DesktopLabel Label18
+      Begin DesktopLabel Label1DefaultMenu
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4675,7 +4675,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -4699,7 +4699,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   98
       End
-      Begin DesktopLabel Label19
+      Begin DesktopLabel LabelKeepShortcuts
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -4708,7 +4708,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   27
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
          LockBottom      =   False
@@ -4748,7 +4748,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -4784,7 +4784,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   504
          LockBottom      =   False
@@ -4815,7 +4815,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   504
          LockBottom      =   False
@@ -4852,7 +4852,7 @@ Begin DesktopWindow Editor
          Height          =   27
          Hint            =   ""
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
          LockBottom      =   False
@@ -4897,7 +4897,7 @@ Begin DesktopWindow Editor
          Height          =   96
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LineHeight      =   0.0
@@ -4945,7 +4945,7 @@ Begin DesktopWindow Editor
          Height          =   96
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   112
          LineHeight      =   0.0
@@ -4993,7 +4993,7 @@ Begin DesktopWindow Editor
          Height          =   96
          HideSelection   =   True
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   314
          LineHeight      =   0.0
@@ -5022,7 +5022,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   197
       End
-      Begin DesktopLabel Label59
+      Begin DesktopLabel LabelAppExtensions
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -5031,7 +5031,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   7
          LockBottom      =   True
@@ -5055,7 +5055,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label60
+      Begin DesktopLabel LabelInstallFonts
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -5064,7 +5064,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   112
          LockBottom      =   True
@@ -5088,7 +5088,7 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   100
       End
-      Begin DesktopLabel Label61
+      Begin DesktopLabel LabelRegisterDLL
          AllowAutoDeactivate=   True
          Bold            =   False
          Enabled         =   True
@@ -5097,7 +5097,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   20
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   314
          LockBottom      =   True
@@ -5130,7 +5130,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   24
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   8
          LockBottom      =   True
@@ -5166,7 +5166,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   44
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   10
          LockBottom      =   True
@@ -5198,7 +5198,7 @@ Begin DesktopWindow Editor
          FontUnit        =   0
          Height          =   26
          Index           =   -2147483648
-         InitialParent   =   "TabPanel1"
+         InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   11
          LockBottom      =   False
@@ -6378,6 +6378,20 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonLoadUserScript
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Integrated"
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonLoadSudoOrReg
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Integrated"
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events CanvasFader
 	#tag Event
 		Function MouseDown(x As Integer, y As Integer) As Boolean
@@ -6542,6 +6556,14 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonImportSize
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Implemented"
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextLanguage
 	#tag Event
 		Sub TextChanged()
@@ -6629,6 +6651,24 @@ End
 		      ItemLnk(EditingLnk).Flags = Me.Text.Trim
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBrowseInstallToFolder
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not yet Integrated"
+		  
+		  'TextInstallToFolder.Text = ""
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBrowseInstaller
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not yet Integrated"
+		  
+		  'TextInstaller.Text = ""
 		End Sub
 	#tag EndEvent
 #tag EndEvents
