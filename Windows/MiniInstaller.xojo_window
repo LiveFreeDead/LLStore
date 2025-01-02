@@ -94,7 +94,7 @@ Begin DesktopWindow MiniInstaller
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Installing 0/0"
       TextAlignment   =   2
       TextColor       =   &c000000
@@ -204,7 +204,7 @@ Begin DesktopWindow MiniInstaller
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   4
+      TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""

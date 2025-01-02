@@ -355,7 +355,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   11
+      TabIndex        =   15
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -399,7 +399,7 @@ Begin DesktopWindow Settings
       Multiline       =   True
       ReadOnly        =   False
       Scope           =   0
-      TabIndex        =   12
+      TabIndex        =   18
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   "/home/glenn/Documents/GitHub/LastOSLinux_Repository\n/media/glenn/My Linux Backups/LastOS-Linux-Repository"
@@ -432,7 +432,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   13
+      TabIndex        =   19
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -476,7 +476,7 @@ Begin DesktopWindow Settings
       Multiline       =   True
       ReadOnly        =   False
       Scope           =   0
-      TabIndex        =   14
+      TabIndex        =   21
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   "https://raw.githubusercontent.com/LiveFreeDead/LastOSLinux_Repository/main/.lldb/lldb.ini\r\nhttps://www.lastos.org/linuxrepo/.lldb/lldb.ini"
@@ -512,7 +512,7 @@ Begin DesktopWindow Settings
       LockTop         =   True
       MacButtonStyle  =   0
       Scope           =   0
-      TabIndex        =   15
+      TabIndex        =   20
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -543,7 +543,7 @@ Begin DesktopWindow Settings
       LockTop         =   True
       MacButtonStyle  =   0
       Scope           =   0
-      TabIndex        =   16
+      TabIndex        =   17
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -571,7 +571,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   17
+      TabIndex        =   14
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -601,7 +601,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   18
+      TabIndex        =   10
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   "This will hide installed items on startup"
@@ -631,7 +631,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   19
+      TabIndex        =   11
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -661,7 +661,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   20
+      TabIndex        =   12
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -694,7 +694,7 @@ Begin DesktopWindow Settings
       LockTop         =   True
       MacButtonStyle  =   0
       Scope           =   0
-      TabIndex        =   21
+      TabIndex        =   16
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -722,7 +722,7 @@ Begin DesktopWindow Settings
       LockRight       =   False
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   22
+      TabIndex        =   13
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   "If this is disabled it will Ask for the password at the start of the Mini Install, otherwise you'll have to wait for it to get to the Sudo Scripts before it asks"

@@ -76,7 +76,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   0
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Title:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -115,7 +115,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   1
+         TabIndex        =   0
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextTitle"
@@ -151,7 +151,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   2
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Version:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -190,7 +190,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   1
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextVersion"
@@ -226,7 +226,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   4
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "URL(s):"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -270,7 +270,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   2
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "https://\n"
@@ -307,7 +307,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   6
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Category:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -341,7 +341,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   7
+         TabIndex        =   5
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
@@ -370,7 +370,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   9
+         TabIndex        =   12
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   "If your installation requires an interconnection to install this should be checked"
@@ -404,7 +404,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   11
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Description:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -448,7 +448,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   12
+         TabIndex        =   14
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextDescription"
@@ -485,7 +485,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   14
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Install Priority:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -524,7 +524,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   15
+         TabIndex        =   4
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextPriority"
@@ -560,7 +560,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   0
          TabPanelIndex   =   7
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Include Folder:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -599,7 +599,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   1
+         TabIndex        =   74
          TabPanelIndex   =   7
          TabStop         =   True
          Text            =   "TextIncludeFolder"
@@ -635,7 +635,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   2
+         TabIndex        =   75
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   ""
@@ -667,7 +667,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   3
          TabPanelIndex   =   7
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Build To Folder:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -706,7 +706,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   4
+         TabIndex        =   76
          TabPanelIndex   =   7
          TabStop         =   True
          Text            =   "TextBuildToFolder"
@@ -742,7 +742,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   77
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   ""
@@ -774,7 +774,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   6
+         TabIndex        =   80
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   ""
@@ -806,7 +806,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   3
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Shortcuts: -"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -839,7 +839,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   4
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Display Name:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -878,7 +878,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   19
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextNewShortcut"
@@ -914,7 +914,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   6
+         TabIndex        =   21
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -946,7 +946,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   7
+         TabIndex        =   22
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -978,7 +978,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   8
+         TabIndex        =   23
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1011,7 +1011,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   9
+         TabIndex        =   20
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1043,7 +1043,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   10
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Comment:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1082,7 +1082,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   11
+         TabIndex        =   24
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextComment"
@@ -1118,7 +1118,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   12
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Execute:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1157,7 +1157,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   13
+         TabIndex        =   25
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextExecute"
@@ -1193,7 +1193,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   14
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Run In Path:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1232,7 +1232,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   15
+         TabIndex        =   26
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextRunInPath"
@@ -1268,7 +1268,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   16
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Icon:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1307,7 +1307,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   17
+         TabIndex        =   27
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextIcon"
@@ -1343,7 +1343,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   18
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "File Types:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1382,7 +1382,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   19
+         TabIndex        =   28
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextFileTypes"
@@ -1418,7 +1418,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   20
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Description:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -1462,7 +1462,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   21
+         TabIndex        =   29
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextDescriptionLink"
@@ -1499,7 +1499,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   22
+         TabIndex        =   38
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1532,7 +1532,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   23
+         TabIndex        =   37
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1575,7 +1575,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   24
+         TabIndex        =   39
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextMenuCatalog"
@@ -1609,7 +1609,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   25
+         TabIndex        =   32
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1640,7 +1640,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   26
+         TabIndex        =   34
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1671,7 +1671,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   27
+         TabIndex        =   35
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1733,7 +1733,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   35
+         TabIndex        =   33
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -1764,7 +1764,7 @@ Begin DesktopWindow Editor
          LockRight       =   True
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   7
+         TabIndex        =   79
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   "This is used for Linux items that have no installable files/folders"
@@ -1809,7 +1809,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   0
+         TabIndex        =   47
          TabPanelIndex   =   4
          TabStop         =   True
          Text            =   ""
@@ -1846,7 +1846,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   1
          TabPanelIndex   =   4
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "User Script:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -1879,7 +1879,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   2
          TabPanelIndex   =   4
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Sudo Script / Registry:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -1923,7 +1923,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   49
          TabPanelIndex   =   4
          TabStop         =   True
          Text            =   ""
@@ -1960,7 +1960,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   4
+         TabIndex        =   48
          TabPanelIndex   =   4
          TabStop         =   True
          Tooltip         =   ""
@@ -1992,7 +1992,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   50
          TabPanelIndex   =   4
          TabStop         =   True
          Tooltip         =   ""
@@ -2024,7 +2024,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   0
          TabPanelIndex   =   5
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Movie File:"
          TextAlignment   =   1
          TextColor       =   &c000000
@@ -2063,7 +2063,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   1
+         TabIndex        =   57
          TabPanelIndex   =   5
          TabStop         =   True
          Text            =   "TextIncludeFolder"
@@ -2099,7 +2099,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   2
+         TabIndex        =   58
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2126,7 +2126,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   54
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2152,7 +2152,7 @@ Begin DesktopWindow Editor
          LockRight       =   True
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   4
+         TabIndex        =   55
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2178,7 +2178,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   False
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   56
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2209,7 +2209,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   6
          TabPanelIndex   =   5
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Icon (Windows):"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -2242,7 +2242,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   7
          TabPanelIndex   =   5
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Fader:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -2275,7 +2275,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   8
          TabPanelIndex   =   5
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Screenshots:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -2341,7 +2341,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   10
+         TabIndex        =   59
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2373,7 +2373,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   11
+         TabIndex        =   60
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
@@ -2409,7 +2409,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   453
+         Top             =   455
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2438,7 +2438,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   0
+         TabIndex        =   61
          TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
@@ -2470,7 +2470,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   2
+         TabIndex        =   62
          TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
@@ -2508,7 +2508,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   63
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextTags"
@@ -2550,7 +2550,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   68
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextPublisher"
@@ -2586,7 +2586,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   8
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Publisher:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -2625,7 +2625,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   9
+         TabIndex        =   69
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextReleaseVersion"
@@ -2661,7 +2661,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   10
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Release Version:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -2694,7 +2694,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   11
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Release Date:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -2733,7 +2733,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   12
+         TabIndex        =   70
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextReleaseDate"
@@ -2769,7 +2769,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   13
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Builder:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -2808,7 +2808,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   14
+         TabIndex        =   71
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextBuilder"
@@ -2844,7 +2844,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   15
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Installed Size:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -2883,7 +2883,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   16
+         TabIndex        =   72
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextInstalledSize"
@@ -2919,7 +2919,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   17
+         TabIndex        =   73
          TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
@@ -2957,7 +2957,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   18
+         TabIndex        =   64
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextLanguage"
@@ -2993,7 +2993,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   19
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Language:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3032,7 +3032,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   20
+         TabIndex        =   65
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextRating"
@@ -3068,7 +3068,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   21
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Rating:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3107,7 +3107,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   22
+         TabIndex        =   66
          TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextPlayers"
@@ -3143,7 +3143,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   23
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Players:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3177,7 +3177,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   24
+         TabIndex        =   67
          TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
@@ -3209,7 +3209,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   25
          TabPanelIndex   =   6
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "License:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3239,7 +3239,7 @@ Begin DesktopWindow Editor
          LockRight       =   True
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   20
+         TabIndex        =   6
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   "This is used for Linux items that have no installable files/folders And will be a replacement for Windows NoneThing items"
@@ -3273,7 +3273,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   21
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "PM:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3307,7 +3307,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   25
+         TabIndex        =   9
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
@@ -3331,7 +3331,7 @@ Begin DesktopWindow Editor
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
-         Left            =   251
+         Left            =   252
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -3377,7 +3377,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   27
+         TabIndex        =   10
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextPM"
@@ -3414,7 +3414,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   28
+         TabIndex        =   7
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
@@ -3484,7 +3484,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   30
+         TabIndex        =   8
          TabPanelIndex   =   1
          TabStop         =   True
          Text            =   "TextDE"
@@ -3520,7 +3520,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   31
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Arch:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3554,7 +3554,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   32
+         TabIndex        =   11
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
@@ -3586,7 +3586,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   37
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Flags:"
          TextAlignment   =   1
          TextColor       =   &c000000
@@ -3625,7 +3625,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   38
+         TabIndex        =   31
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextFlags"
@@ -3667,7 +3667,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   0
+         TabIndex        =   40
          TabPanelIndex   =   3
          TabStop         =   True
          Text            =   "TextInstallToFolder"
@@ -3703,7 +3703,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   1
          TabPanelIndex   =   3
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Install-To:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3736,7 +3736,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   2
+         TabIndex        =   41
          TabPanelIndex   =   3
          TabStop         =   True
          Tooltip         =   ""
@@ -3768,7 +3768,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   33
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Desktop Environment, Package Manager, Hardware:-"
          TextAlignment   =   1
          TextColor       =   &c000000
@@ -3807,7 +3807,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   42
          TabPanelIndex   =   3
          TabStop         =   True
          Text            =   "TextInstaller"
@@ -3843,7 +3843,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   4
          TabPanelIndex   =   3
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Installer:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3876,7 +3876,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   43
          TabPanelIndex   =   3
          TabStop         =   True
          Tooltip         =   ""
@@ -3914,7 +3914,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   6
+         TabIndex        =   44
          TabPanelIndex   =   3
          TabStop         =   True
          Text            =   "TextUsage"
@@ -3950,7 +3950,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   7
          TabPanelIndex   =   3
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Usage:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -3994,7 +3994,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   8
+         TabIndex        =   46
          TabPanelIndex   =   3
          TabStop         =   True
          Text            =   ""
@@ -4031,7 +4031,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   9
+         TabIndex        =   45
          TabPanelIndex   =   3
          TabStop         =   True
          Tooltip         =   ""
@@ -4063,7 +4063,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   10
          TabPanelIndex   =   3
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Directives (click to add):"
          TextAlignment   =   1
          TextColor       =   &c000000
@@ -4558,7 +4558,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   34
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Build Type:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -4592,7 +4592,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          Scope           =   0
          SelectedRowIndex=   0
-         TabIndex        =   35
+         TabIndex        =   3
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   ""
@@ -4621,7 +4621,7 @@ Begin DesktopWindow Editor
          LockRight       =   False
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   36
+         TabIndex        =   13
          TabPanelIndex   =   1
          TabStop         =   True
          Tooltip         =   "This is used for Linux items that have no installable files/folders"
@@ -4655,7 +4655,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   37
          TabPanelIndex   =   1
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "DE:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -4688,7 +4688,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   39
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Default Menu:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -4721,7 +4721,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   40
          TabPanelIndex   =   2
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Keep Shortcuts:"
          TextAlignment   =   3
          TextColor       =   &c000000
@@ -4760,7 +4760,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   41
+         TabIndex        =   18
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextKeepShortcuts"
@@ -4793,7 +4793,7 @@ Begin DesktopWindow Editor
          LockRight       =   True
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   42
+         TabIndex        =   16
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -4824,7 +4824,7 @@ Begin DesktopWindow Editor
          LockRight       =   True
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   43
+         TabIndex        =   17
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   ""
@@ -4864,7 +4864,7 @@ Begin DesktopWindow Editor
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   44
+         TabIndex        =   15
          TabPanelIndex   =   2
          TabStop         =   True
          Text            =   "TextDefaultMenuPath"
@@ -4911,7 +4911,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   6
+         TabIndex        =   51
          TabPanelIndex   =   4
          TabStop         =   True
          Text            =   ""
@@ -4959,7 +4959,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   7
+         TabIndex        =   52
          TabPanelIndex   =   4
          TabStop         =   True
          Text            =   ""
@@ -5007,7 +5007,7 @@ Begin DesktopWindow Editor
          Multiline       =   True
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   8
+         TabIndex        =   53
          TabPanelIndex   =   4
          TabStop         =   True
          Text            =   ""
@@ -5044,7 +5044,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   9
          TabPanelIndex   =   4
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "App. Extensions:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -5077,7 +5077,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   10
          TabPanelIndex   =   4
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Install Fonts:"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -5110,7 +5110,7 @@ Begin DesktopWindow Editor
          Selectable      =   False
          TabIndex        =   11
          TabPanelIndex   =   4
-         TabStop         =   True
+         TabStop         =   False
          Text            =   "Register Server (DLL/OCX):"
          TextAlignment   =   0
          TextColor       =   &c000000
@@ -5176,7 +5176,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   8
+         TabIndex        =   78
          TabPanelIndex   =   7
          TabStop         =   True
          Tooltip         =   ""
@@ -5208,7 +5208,7 @@ Begin DesktopWindow Editor
          LockTop         =   True
          MacButtonStyle  =   0
          Scope           =   0
-         TabIndex        =   45
+         TabIndex        =   30
          TabPanelIndex   =   2
          TabStop         =   True
          Tooltip         =   "Advanced Options for each link"
@@ -5241,7 +5241,7 @@ Begin DesktopWindow Editor
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Status"
       TextAlignment   =   2
       TextColor       =   &c000000

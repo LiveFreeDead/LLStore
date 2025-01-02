@@ -108,7 +108,7 @@ Begin DesktopWindow Data
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   1
+      TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -156,7 +156,7 @@ Begin DesktopWindow Data
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   2
+      TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -204,7 +204,7 @@ Begin DesktopWindow Data
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   3
+      TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -252,7 +252,7 @@ Begin DesktopWindow Data
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   4
+      TabIndex        =   3
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -302,7 +302,7 @@ Begin DesktopWindow Data
       Scope           =   0
       TabIndex        =   5
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Tooltip         =   ""
       Top             =   -177
       Transparent     =   False

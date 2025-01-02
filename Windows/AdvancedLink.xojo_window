@@ -45,7 +45,7 @@ Begin DesktopWindow AdvancedLink
       Selectable      =   False
       TabIndex        =   0
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "PM:"
       TextAlignment   =   3
       TextColor       =   &c000000
@@ -146,7 +146,7 @@ Begin DesktopWindow AdvancedLink
       Password        =   False
       ReadOnly        =   False
       Scope           =   0
-      TabIndex        =   3
+      TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   "TextPM"
@@ -182,7 +182,7 @@ Begin DesktopWindow AdvancedLink
       LockTop         =   True
       Scope           =   0
       SelectedRowIndex=   0
-      TabIndex        =   4
+      TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -250,7 +250,7 @@ Begin DesktopWindow AdvancedLink
       Password        =   False
       ReadOnly        =   False
       Scope           =   0
-      TabIndex        =   6
+      TabIndex        =   3
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   "TextDE"
@@ -285,7 +285,7 @@ Begin DesktopWindow AdvancedLink
       Selectable      =   False
       TabIndex        =   7
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Arch:"
       TextAlignment   =   3
       TextColor       =   &c000000
@@ -318,7 +318,7 @@ Begin DesktopWindow AdvancedLink
       LockTop         =   True
       Scope           =   0
       SelectedRowIndex=   0
-      TabIndex        =   8
+      TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -349,7 +349,7 @@ Begin DesktopWindow AdvancedLink
       Selectable      =   False
       TabIndex        =   9
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Desktop Environment, Package Manager, Hardware:-"
       TextAlignment   =   1
       TextColor       =   &c000000
@@ -381,7 +381,7 @@ Begin DesktopWindow AdvancedLink
       Selectable      =   False
       TabIndex        =   10
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "DE:"
       TextAlignment   =   3
       TextColor       =   &c000000

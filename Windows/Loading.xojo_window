@@ -53,7 +53,7 @@ Begin DesktopWindow Loading
       Selectable      =   False
       TabIndex        =   0
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Loading..."
       TextAlignment   =   2
       TextColor       =   &cFFFFFF00
