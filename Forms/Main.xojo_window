@@ -40,9 +40,9 @@ Begin DesktopWindow Main
       LockRight       =   True
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   1
+      TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Tooltip         =   ""
       Top             =   29
       Transparent     =   False
@@ -85,7 +85,7 @@ Begin DesktopWindow Main
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   2
+      TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -131,7 +131,7 @@ Begin DesktopWindow Main
       Scope           =   0
       TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Welcome To LLStore."
       TextAlignment   =   0
       TextColor       =   &cFFFFFF00
@@ -180,7 +180,7 @@ Begin DesktopWindow Main
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   4
+      TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -212,9 +212,9 @@ Begin DesktopWindow Main
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   5
+      TabIndex        =   4
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Categories"
       TextAlignment   =   2
       TextColor       =   &cFFFFFF00
@@ -244,9 +244,9 @@ Begin DesktopWindow Main
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   6
+      TabIndex        =   5
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Items"
       TextAlignment   =   2
       TextColor       =   &cFFFFFF00
@@ -276,9 +276,9 @@ Begin DesktopWindow Main
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   7
+      TabIndex        =   6
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Title"
       TextAlignment   =   2
       TextColor       =   &cFFFFFF00
@@ -308,9 +308,9 @@ Begin DesktopWindow Main
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   8
+      TabIndex        =   7
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Text            =   "Stats"
       TextAlignment   =   2
       TextColor       =   &cFFFFFF00
@@ -337,9 +337,9 @@ Begin DesktopWindow Main
       LockRight       =   True
       LockTop         =   False
       Scope           =   0
-      TabIndex        =   9
+      TabIndex        =   8
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Tooltip         =   ""
       Top             =   558
       Transparent     =   True
@@ -362,7 +362,7 @@ Begin DesktopWindow Main
       LockRight       =   True
       LockTop         =   False
       Scope           =   0
-      TabIndex        =   10
+      TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -415,9 +415,9 @@ Begin DesktopWindow Main
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   12
+      TabIndex        =   10
       TabPanelIndex   =   0
-      TabStop         =   True
+      TabStop         =   False
       Tooltip         =   ""
       Top             =   558
       Transparent     =   False
@@ -434,6 +434,38 @@ Begin DesktopWindow Main
       RunMode         =   0
       Scope           =   0
       TabPanelIndex   =   0
+   End
+   Begin DesktopButton StartTabStop
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   ""
+      Default         =   True
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   26
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   False
+      Left            =   1180
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   False
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   11
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   689
+      Transparent     =   True
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
    End
 End
 #tag EndDesktopWindow
@@ -461,9 +493,9 @@ End
 
 	#tag Event
 		Function KeyDown(key As String) As Boolean
-		  ''MsgBox Str(asc(Key))
+		  'MsgBox Str(asc(Key))
 		  'if Keyboard.ControlKey then MessageBox "Control key was pressed."
-		  If Keyboard.ControlKey Then
+		  If Keyboard.ControlKey And 1 = 2 Then 'Disabled as it doesn't work in Windows, but having it in the KeyUp in The Items List works on both.
 		    Dim Successed As Boolean
 		    If Asc(Key) = 65 Or Asc(Key) = 97 Then SelectItems ("Select All") 'Ctrl + A or a
 		    If Asc(Key) = 78 Or Asc(Key) = 110 Then SelectItems ("Select None") 'Ctrl + N or n
@@ -473,8 +505,13 @@ End
 		    If Asc(Key) = 83 Or Asc(Key) = 115 Then SaveToPreset() 'Ctrl + S or s
 		    If Asc(Key) = 76 Or Asc(Key) = 108 Then SaveCurrentList() 'Ctrl + L or l
 		    
-		    If Asc(Key) = 84 Or Asc(Key) = 116 Then Tools.Show 'Ctrl + T or t
+		    If Asc(Key) = 84 Or Asc(Key) = 116 Or Asc(Key) = 20 Then Tools.Show 'Ctrl + T or t '20 is T in Windows
 		    
+		    Return True
+		  End If
+		  
+		  'Added Below to ignore all Ctrl presses so it doen't jump to the letters
+		  If Keyboard.ControlKey Then
 		    Return True
 		  End If
 		  
@@ -1613,6 +1650,11 @@ End
 		  'StartButton.Width = 128
 		  'StartButton.Height= 128
 		  
+		  StartTabStop.Left = StartButton.Left
+		  StartTabStop.Top = StartButton.Top
+		  StartTabStop.Width = StartButton.Width
+		  StartTabStop.Height = StartButton.Height
+		  
 		  Description.Left = ScreenShot.Left
 		  Description.Top= ScreenShot.Top + ScreenShot.Height + Padding
 		  Description.Width = ScreenShot.Width
@@ -2062,6 +2104,34 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub StartPushed()
+		  Dim ColSelected As Integer = Data.GetDBHeader("Selected")
+		  
+		  
+		  Installing = False 'Clear the flag to make sure it only enabled if all is corect to.
+		  
+		  If StoreMode = 0 Then 'Installer
+		    If SelectsCount >= 1 Then ' Must have selected one item
+		      MiniInstallerShowing = True
+		      MiniInstaller.StartInstaller()
+		    Else
+		      If CurrentItemID >=0 Then
+		        SelectsCount = 1 'Install current item
+		        Data.Items.CellTextAt(CurrentItemID, ColSelected) = "T" ' Select it
+		        MiniInstallerShowing = True
+		        MiniInstaller.StartInstaller()
+		      End If
+		    End If
+		  End If
+		  If StoreMode = 1 Then 'Launcher
+		    If CurrentItemID >=0 Then 'If nothing picked, do nothing
+		      RunGame(CurrentItemID)
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub UpdateStats()
 		  Dim I as Integer
 		  SelectsCount = 0
@@ -2278,6 +2348,39 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub KeyUp(key As String)
+		  Dim Successed As Boolean
+		  If Keyboard.ControlKey Then
+		    'MsgBox Str(asc(Key))
+		    Select Case Asc(Key)
+		    Case 97
+		      SelectItems("Select All")
+		    Case 110
+		      SelectItems("Select None")
+		    Case 105
+		      SelectItems("Select Invert")
+		    Case 111
+		      Successed = LoadFromPreset()
+		    Case 115
+		      SaveToPreset()
+		    Case 108
+		      SaveCurrentList()
+		    Case 116
+		      Tools.Show
+		      
+		      'If Asc(Key) = 65 Or Asc(Key) = 97 Then SelectItems ("Select All") 'Ctrl + A or a
+		      'If Asc(Key) = 78 Or Asc(Key) = 110 Then SelectItems ("Select None") 'Ctrl + N or n
+		      'If Asc(Key) = 73 Or Asc(Key) = 105 Then SelectItems ("Select Invert") 'Ctrl + I or i
+		      '
+		      'If Asc(Key) = 79 Or Asc(Key) = 111 Then Successed = LoadFromPreset() 'Ctrl + O or o
+		      'If Asc(Key) = 83 Or Asc(Key) = 115 Then SaveToPreset() 'Ctrl + S or s
+		      'If Asc(Key) = 76 Or Asc(Key) = 108 Then SaveCurrentList() 'Ctrl + L or l
+		      '
+		      'If Asc(Key) = 84 Or Asc(Key) = 116 Or Asc(Key) = 20 Then Tools.Show 'Ctrl + T or t '20 is T in Windows
+		      
+		    End Select
+		  End If
+		  
+		  
 		  #Pragma BreakOnExceptions False
 		  Try 
 		    CurrentItemID = Items.CellTagAt (Items.SelectedRowIndex, 0)
@@ -2355,6 +2458,11 @@ End
 		  End If
 		End Function
 	#tag EndEvent
+	#tag Event
+		Sub FocusReceived()
+		  Items.SetFocus 'Don't allow focus on the Description at all
+		End Sub
+	#tag EndEvent
 #tag EndEvents
 #tag Events Categories
 	#tag Event
@@ -2377,6 +2485,7 @@ End
 	#tag EndEvent
 	#tag Event
 		Function CellPressed(row As Integer, column As Integer, x As Integer, y As Integer) As Boolean
+		  
 		  Try
 		    CurrentCat = Categories.CellTextAt(Row, 0)
 		    CurrentCatID = Row
@@ -2392,6 +2501,7 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub KeyUp(key As String)
+		  If Asc(Key) = 9 Then Return 'If tabbed in, don't do update
 		  Try 
 		    CurrentCatID = Categories.CellTagAt (Categories.SelectedRowIndex, 0)
 		    CurrentCat = Categories.CellTextAt (Categories.SelectedRowIndex, 0)
@@ -2431,6 +2541,11 @@ End
 		    Return True 'Stops Listbox Scrolling when zooming it
 		  End If
 		End Function
+	#tag EndEvent
+	#tag Event
+		Sub SelectionChanged()
+		  
+		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ItemFaderPic
@@ -2503,29 +2618,7 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  Dim ColSelected As Integer = Data.GetDBHeader("Selected")
-		  
-		  
-		  Installing = False 'Clear the flag to make sure it only enabled if all is corect to.
-		  
-		  If StoreMode = 0 Then 'Installer
-		    If SelectsCount >= 1 Then ' Must have selected one item
-		      MiniInstallerShowing = True
-		      MiniInstaller.StartInstaller()
-		    Else
-		      If CurrentItemID >=0 Then
-		        SelectsCount = 1 'Install current item
-		        Data.Items.CellTextAt(CurrentItemID, ColSelected) = "T" ' Select it
-		        MiniInstallerShowing = True
-		        MiniInstaller.StartInstaller()
-		      End If
-		    End If
-		  End If
-		  If StoreMode = 1 Then 'Launcher
-		    If CurrentItemID >=0 Then 'If nothing picked, do nothing
-		      RunGame(CurrentItemID)
-		    End If
-		  End If
+		  StartPushed()
 		  
 		  
 		End Sub
@@ -2618,6 +2711,29 @@ End
 		  Typing = False
 		  Typed = ""
 		  KeyTimer.Mode = 0
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events StartTabStop
+	#tag Event
+		Function KeyDown(key As String) As Boolean
+		  If Asc(Key) = 9 Then Return False ' Allow Tabbing
+		  
+		  'MsgBox Asc(Key).ToString
+		  Select Case Asc(Key)
+		  Case 3, 13, 32
+		    StartPushed
+		  Case Else
+		    Items.SetFocus
+		    Return True
+		  End Select
+		  
+		  Return True 'Take Event
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub Pressed()
+		  StartPushed
 		End Sub
 	#tag EndEvent
 #tag EndEvents

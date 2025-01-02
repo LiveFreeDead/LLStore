@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -1328,7 +1324,6 @@ End
 		      inputStream.Close
 		      ThemePath = AppPath+"Themes/"+RL+"/"
 		      LoadTheme (RL)
-		      Loading.Visible = True 'Show the loading form here
 		    ElseIf StoreMode = 1 Then
 		      ThemePath = AppPath+"Themes/ThemeLauncher.ini"
 		      F = GetFolderItem(ThemePath,FolderItem.PathTypeNative)
@@ -3172,6 +3167,13 @@ End
 		    StoreMode = 0
 		  End If
 		  
+		  'Not Needed move out of GetTheme to here
+		  ''Check if CommandLineFile is an actual file and switch to install mode by default, Need to do this here to reduce the occurance of Loading form being shown before it's time
+		  'Select Case Right(CommandLineFile, 4)
+		  'Case ".apz", ".pgz", ".app",".ppg",".tar",".lla",".llg"
+		  'StoreMode = 2 ' This forces it to install ANY viable file regardless of how it's called' I was sick of Nemo etc removing the -i from the command.
+		  'End Select
+		  
 		  Dim RL As String
 		  
 		  'Get theme
@@ -3207,6 +3209,8 @@ End
 		  
 		  If EditorOnly = True Then StoreMode = 3 ' Editor mode, even though the file above is a file, I never want the store or launcher to start
 		  
+		  'Show Loading Screen here if the Store Mode is 0
+		  If StoreMode = 0 Then Loading.Visible = True 'Show the loading form here
 		  
 		  'Get Package Manager
 		  For I = 0 To SysAvailablePackageManagers.Count -1
