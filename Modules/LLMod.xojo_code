@@ -3542,10 +3542,20 @@ Protected Module LLMod
 		  If ItemLLItem.Version <> "" Then DataOut = DataOut + "Version="+ ItemLLItem.Version+Chr(10)
 		  If ItemLLItem.Descriptions <> "" Then DataOut = DataOut + "Description=" + ItemLLItem.Descriptions.ReplaceAll(Chr(13),Chr(30))+Chr(10)
 		  If ItemLLItem.URL <> "" Then DataOut = DataOut + "URL=" + ItemLLItem.URL.ReplaceAll(Chr(13),"|")+Chr(10)
+		  
+		  If ItemLLItem.Categories <> "" And Len(ItemLLItem.Categories) >= 2 Then
+		    If Right(ItemLLItem.Categories, 1) <> ";" Then ItemLLItem.Categories = ItemLLItem.Categories +";" 'Make Sure it's got the SemiColon
+		  End If
+		  
 		  If ItemLLItem.Categories <> "" Then DataOut = DataOut + "Category=" + ItemLLItem.Categories+Chr(10)
 		  DataOut = DataOut + "BuildType=" + ItemLLItem.BuildType+Chr(10)
 		  If ItemLLItem.PathApp <> "" Then DataOut = DataOut + "AppPath=" + CompPath(ItemLLItem.PathApp, True)+Chr(10)
 		  If ItemLLItem.StartMenuSourcePath <> "" Then DataOut = DataOut + "StartMenuSourcePath=" + ItemLLItem.StartMenuSourcePath+Chr(10)
+		  
+		  If ItemLLItem.Catalog <> "" And Len(ItemLLItem.Catalog) >= 2 Then
+		    If Right(ItemLLItem.Catalog, 1) <> ";" Then ItemLLItem.Catalog = ItemLLItem.Catalog +";" 'Make Sure it's got the SemiColon
+		  End If
+		  
 		  If ItemLLItem.Catalog <> "" Then DataOut = DataOut + "Catalog="+ ItemLLItem.Catalog+Chr(10)
 		  If ItemLLItem.StartMenuLegacyPrimary <> "" Then DataOut = DataOut + "StartMenuLegacyPrimary=" + ItemLLItem.StartMenuLegacyPrimary+Chr(10)
 		  If ItemLLItem.ShortCutNamesKeep <> "" Then DataOut = DataOut + "ShortCutNamesKeep=" + ItemLLItem.ShortCutNamesKeep+Chr(10)

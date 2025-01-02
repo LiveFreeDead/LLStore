@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   4
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5288,6 +5288,7 @@ End
 	#tag Event
 		Sub Opening()
 		  If Debugging Then Debug("--- Starting Editor Opening ---")
+		  LoadCatalogs() 'This will populate the Data so the Catalogs work
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
 	#tag EndEvent
@@ -5605,6 +5606,20 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub LoadCatalogs()
+		  Dim FileIn As String
+		  FileIn = Slash(ToolPath) + "MenuCatalogApps.ini"
+		  If Exist(FileIn) = True Then
+		    LLCatalogApps = LoadDataFromFile(FileIn).Split(Chr(10))
+		  End If
+		  FileIn = Slash(ToolPath) + "MenuCatalogGames.ini"
+		  If Exist(FileIn) = True Then
+		    LLCatalogGames = LoadDataFromFile(FileIn).Split(Chr(10))
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub PopulateData()
 		  Dim BT As String
 		  Dim F As FolderItem
@@ -5641,6 +5656,8 @@ End
 		  If TextPriority.Text = "" Or TextPriority.Text = "0" Then TextPriority.Text = "5" 'Default
 		  
 		  'Load in Combo's
+		  'Categories are in the BuildType Combo Selection Action
+		  
 		  'SysAvailableDesktops
 		  ComboDE.RemoveAllRows
 		  AdvancedLink.ComboDE.RemoveAllRows
@@ -5953,6 +5970,14 @@ End
 		EditingCBLnk As Integer = -1
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		LLCatalogApps(2048) As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		LLCatalogGames(2048) As String
+	#tag EndProperty
+
 
 #tag EndWindowCode
 
@@ -6072,7 +6097,7 @@ End
 		Sub KeyUp(key As String)
 		  Dim NewShortName As String
 		  Select Case Asc(key)
-		  Case 13 ' Enter Pressed
+		  Case 3, 13 ' Enter Pressed
 		    'Add new shortcut
 		    NewShortName = TextNewShortcut.Text
 		    If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
@@ -6106,6 +6131,8 @@ End
 		    CheckShowPanel.Value  = False
 		    
 		  End Select
+		  
+		  Return  'Make sure the keypress doesn't go to another control
 		  
 		  
 		  
@@ -6141,11 +6168,19 @@ End
 		  
 		End Sub
 	#tag EndEvent
+	#tag Event
+		Function KeyDown(key As String) As Boolean
+		  Select Case Asc(key)
+		  Case 3, 13 ' Enter Pressed
+		    Return True 'Take Keypress from the main form
+		  End Select
+		End Function
+	#tag EndEvent
 #tag EndEvents
 #tag Events ButtonBrowseShortcut
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not Yet Implemented"
+		  MsgBox "Not Yet Implemented Browse Shortcut"
 		  
 		End Sub
 	#tag EndEvent
@@ -6559,7 +6594,7 @@ End
 #tag Events ButtonImportSize
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not Yet Implemented"
+		  MsgBox "Not Yet Implemented Import Size"
 		  
 		End Sub
 	#tag EndEvent
@@ -6669,6 +6704,27 @@ End
 		  MsgBox "Not yet Integrated"
 		  
 		  'TextInstaller.Text = ""
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ComboBuildType
+	#tag Event
+		Sub SelectionChanged(item As DesktopMenuItem)
+		  'Glenn 2040
+		  Dim CatFileToUse As String
+		  
+		  ComboCategory.RemoveAllRows
+		  ComboMenuCatalog.RemoveAllRows
+		  If Item.Text = "ppGame" Or Item.Text = "LLGame" Then
+		    ComboCategory.AddAllRows(LLCatalogGames())
+		    ComboMenuCatalog.AddAllRows(LLCatalogGames())
+		  Else 'It's a App
+		    ComboCategory.AddAllRows(LLCatalogApps())
+		    ComboMenuCatalog.AddAllRows(LLCatalogGames())
+		  End If
+		  
+		  'Load in Cats and populate the Categories
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
