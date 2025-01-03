@@ -3961,6 +3961,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		OnlineDBs As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		OutputStream As TextOutputStream
 	#tag EndProperty
 

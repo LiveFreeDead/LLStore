@@ -1040,11 +1040,8 @@ End
 		Sub GetOnlineDBs()
 		  ForceQuit = False 'To allow quitting while loading, this is set, it breaks the downloader though as it aborts if your quitting, to make it cleaner.
 		  Dim I As Integer
-		  Dim OnlineDBs As String
 		  Dim Sp() As String
 		  Dim UniqueName As String
-		  
-		  OnlineDBs = LoadDataFromFile(Slash(AppPath)+"LLL_Repos.ini").ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
 		  
 		  If OnlineDBs.Trim = "" Then OnlineDBs = Settings.SetOnlineRepos.Text.ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
 		  
@@ -2345,15 +2342,17 @@ End
 		    ForceRefreshDBs = False
 		    
 		    'Get online Databases
-		    If Settings.SetUseOnlineRepos.Value = True Then
-		      If StoreMode = 0 Then 
+		    If StoreMode = 0 Then
+		      OnlineDBs = LoadDataFromFile(Slash(AppPath)+"LLL_Repos.ini").ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
+		      If OnlineDBs.Trim <> "" Then Settings.SetOnlineRepos.Text = OnlineDBs.Trim
+		      
+		      If Settings.SetUseOnlineRepos.Value = True Then
 		        Loading.Status.Text = "Downloading Online Databases..."
 		        Loading.Refresh
 		        App.DoEvents(1)
 		        GetOnlineDBs 'Only do this when in Installation mode
 		      End If
 		    End If
-		    
 		    'Disabled Weblinks for now while I find an alternative as google API is blocked by wget for non logged in users.
 		    'If StoreMode = 0 Then
 		    ''Get Weblinks to use Google etcx to host large files
