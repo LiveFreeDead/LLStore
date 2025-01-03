@@ -1364,6 +1364,15 @@ Protected Module LLMod
 		    XCopyFile(MainPath+"LLL_Repos.ini", InstallPath)
 		    XCopyFile(MainPath+"llstore.exe", InstallPath)
 		    XCopyFile(MainPath+"llstore", InstallPath)
+		    
+		    
+		    XCopyFile(MainPath+"LLLauncher.cmd", InstallPath)
+		    XCopyFile(MainPath+"LLLauncher.sh", InstallPath)
+		    XCopyFile(MainPath+"LLStore.sh", InstallPath)
+		    XCopyFile(MainPath+"setup.cmd", InstallPath)
+		    XCopyFile(MainPath+"setup.sh", InstallPath)
+		    
+		    
 		    Res = RunCommandResults ("icacls "+Chr(34)+ NoSlash(InstallPath)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
 		    
 		    'Make Shortcuts to SendTo and Start Menu
@@ -1413,6 +1422,12 @@ Protected Module LLMod
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLL_Repos.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLLauncher.cmd"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLLauncher.sh"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLStore.sh"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"setup.cmd"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"setup.sh"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
 		    RunSudo("chmod -R 777 "+Chr(34)+InstallPath+Chr(34)) 'Make all executable
 		    
