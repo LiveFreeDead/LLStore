@@ -1323,6 +1323,13 @@ Protected Module LLMod
 		    
 		  End If
 		  
+		  If TargetWindows Then 'Remove the outdated DB's if install any new items.
+		    If ItemLLItem.BuildType = "ppGame" Then Deltree (ppGames+"\.lldb")
+		  Else
+		    If ItemLLItem.BuildType = "LLGame" Then Deltree (Slash(HomePath)+"LLGames/.lldb")
+		    If ItemLLItem.BuildType = "ppGame" Then Deltree (ppGames+"/.lldb")
+		  End If
+		  
 		  Return True ' Successfully Installed
 		End Function
 	#tag EndMethod
@@ -5216,6 +5223,14 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue="0"
 			Type="Double"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="OnlineDBs"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
