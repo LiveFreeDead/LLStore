@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -2992,81 +2996,34 @@ End
 		  ArgsSP=System.CommandLine.ToArray(" ")
 		  CommandLineFile = ""
 		  For I = 1 To ArgsSP().Count -1 'Start At 1 as 0 is the Command line calling LLStore, Nope drop back to 0 as it doesn't work from IDE without it
-		    If ArgsSP(I).Lowercase = "-launcher" Then StoreMode = 1
-		    If ArgsSP(I).Lowercase = "-l" Then
+		    
+		    Select Case ArgsSP(I).Lowercase.Trim
+		      
+		      
+		    Case "-launcher" , "-l"
 		      StoreMode = 1
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-install" Then
+		    Case "-install", "-i"
 		      StoreMode = 2
 		      InstallArg = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-i" Then
-		      StoreMode = 2
-		      InstallArg = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-edit" Then
+		    Case "-edit", "-e"
 		      EditorOnly = True
 		      StoreMode = 3
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-e" Then 
-		      EditorOnly = True
-		      StoreMode = 3
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-build" Then
+		    Case "-build", "-b"
 		      StoreMode = 3
 		      Build = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-b" Then
-		      StoreMode = 3
-		      Build = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-compress" Then
+		    Case "-compress", "-c"
 		      StoreMode = 3
 		      Build = True
 		      Compress = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-c" Then
-		      StoreMode = 3
-		      Build = True
-		      Compress = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-preset" Then
+		    Case "-preset", "-p"
 		      StoreMode = 0
 		      LoadPresetFile = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-p" Then
-		      StoreMode = 0
-		      LoadPresetFile = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-setup" Then
+		    Case "-setup", "-s"
 		      StoreMode = 4
 		      InstallStore = True
-		      Continue
-		    End If
-		    If ArgsSP(I).Lowercase = "-s" Then
-		      StoreMode = 4
-		      InstallStore = True
-		      Continue
-		    End If
-		    
-		    'If ArgsSP(I).Lowercase = "llstore.exe" Then 'This will skip items that have llstore.exe in it, helpful for Spaced paths
-		    'CommandLineFile = "" 'Start Again if it's found this
-		    'Continue
-		    'End If
-		    
-		    CommandLineFile = CommandLineFile + ArgsSP(I) + " "
-		    
+		    Case Else
+		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
+		    End Select
 		  Next
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)

@@ -467,6 +467,14 @@ Begin DesktopWindow Main
       Visible         =   True
       Width           =   80
    End
+   Begin Timer DoContextTimer
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Period          =   200
+      RunMode         =   0
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
 End
 #tag EndDesktopWindow
 
@@ -1133,7 +1141,7 @@ End
 		  
 		  '-------------------------------------------------------------------- Do Actions Below ----------------------------------------------------------------------
 		  
-		  
+		  'MsgBox"Here"
 		  hitItem = base.Popup '**** Waits here for response
 		  
 		  If hitItem = Nil Then Return  'Nothing Picked
@@ -2356,17 +2364,16 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  If WasContext = True Then
-		    WasContext = False
-		    DoContextMenu
-		  End If
+		  
 		End Sub
 	#tag EndEvent
 	#tag Event
 		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  'If WasContext = True Then Return True
 		  If IsContextualClick Then
-		    WasContext = True
-		    Return True
+		    'WasContext = True
+		    DoContextTimer.RunMode = Timer.RunModes.Single
+		    Return False
 		  End If
 		End Function
 	#tag EndEvent
@@ -2683,6 +2690,17 @@ End
 	#tag Event
 		Sub Pressed()
 		  StartPushed
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events DoContextTimer
+	#tag Event
+		Sub Action()
+		  'App.DoEvents(1) 'Hopefully change items before context menu when you right click?
+		  'If WasContext = True Then
+		  'WasContext = False
+		  DoContextMenu
+		  'End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

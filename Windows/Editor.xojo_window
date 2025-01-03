@@ -43,7 +43,7 @@ Begin DesktopWindow Editor
       Panels          =   ""
       Scope           =   0
       SmallTabs       =   False
-      TabDefinition   =   "General\rLinks\rAssembly\rPost-Processing\rGraphics\rMetadata\rBuild"
+      TabDefinition   =   "General\rLinks\rAssembly\rPost-Processing\rGraphics\rMetadata\rBuild/Save"
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   3
+      Value           =   5
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -917,7 +917,7 @@ Begin DesktopWindow Editor
          TabIndex        =   21
          TabPanelIndex   =   2
          TabStop         =   True
-         Tooltip         =   ""
+         Tooltip         =   "This will replace the current Item with loaded data, so start with an Empty item"
          Top             =   125
          Transparent     =   False
          Underline       =   False
@@ -2329,7 +2329,7 @@ Begin DesktopWindow Editor
          FontName        =   "System"
          FontSize        =   0.0
          FontUnit        =   0
-         Height          =   17
+         Height          =   15
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
@@ -2345,7 +2345,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   26
+         Top             =   28
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2361,7 +2361,7 @@ Begin DesktopWindow Editor
          FontName        =   "System"
          FontSize        =   0.0
          FontUnit        =   0
-         Height          =   17
+         Height          =   15
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
@@ -2377,7 +2377,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   5
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   26
+         Top             =   28
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2430,7 +2430,7 @@ Begin DesktopWindow Editor
          InitialParent   =   "TabPanelEditor"
          InitialValue    =   "ComboTags"
          Italic          =   False
-         Left            =   2
+         Left            =   7
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -2446,7 +2446,7 @@ Begin DesktopWindow Editor
          Transparent     =   False
          Underline       =   False
          Visible         =   True
-         Width           =   201
+         Width           =   196
       End
       Begin DesktopButton ButtonAddTag
          AllowAutoDeactivate=   True
@@ -3926,7 +3926,7 @@ Begin DesktopWindow Editor
          Underline       =   False
          ValidationMask  =   ""
          Visible         =   True
-         Width           =   495
+         Width           =   462
       End
       Begin DesktopLabel LabelUsage
          AllowAutoDeactivate=   True
@@ -5218,6 +5218,38 @@ Begin DesktopWindow Editor
          Visible         =   True
          Width           =   85
       End
+      Begin DesktopButton ButtonBrowseInstaller1
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Cancel          =   False
+         Caption         =   "[ ]"
+         Default         =   True
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   29
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   539
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   False
+         LockRight       =   True
+         LockTop         =   True
+         MacButtonStyle  =   0
+         Scope           =   0
+         TabIndex        =   47
+         TabPanelIndex   =   3
+         TabStop         =   True
+         Tooltip         =   "Press to get Arguments for the installer"
+         Top             =   121
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   30
+      End
    End
    Begin DesktopLabel Status
       AllowAutoDeactivate=   True
@@ -5289,6 +5321,8 @@ End
 		Sub Opening()
 		  If Debugging Then Debug("--- Starting Editor Opening ---")
 		  LoadCatalogs() 'This will populate the Data so the Catalogs work
+		  ComboTags.RemoveAllRows 'Remove them, need to Add a list file sooner or later or use all the ones loaded into existing apps/games? Glenn 2040
+		  
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
 	#tag EndEvent
@@ -5787,6 +5821,7 @@ End
 		  
 		  Dim BTF As String = Slash(TextBuildToFolder.Text)
 		  Dim BT As String = ItemLLItem.BuildType
+		  Dim SF, SSF As String
 		  Dim Res As String
 		  
 		  Dim FlagsOut As String
@@ -5831,15 +5866,33 @@ End
 		      Select Case BT
 		      Case "ppGame"
 		        INIFile = BT+".ppg"
+		        SF = BT+".cmd"
+		        SSF = BT+".reg"
 		      Case "ssApp"
 		        INIFile = BT+".app"
+		        SF = BT+".cmd"
+		        SSF = BT+".reg"
 		      Case  "ppApp"
 		        INIFile = BT+".app"
+		        SF = BT+".cmd"
+		        SSF = BT+".reg"
 		      Case "LLApp"
 		        INIFile = BT+".lla"
+		        SF = "LLScript.sh"
+		        SSF = "LLScript_Sudo.sh"
 		      Case "LLGame"
-		        INIFile = BT+".llg"
+		        SF = "LLScript.sh"
+		        SSF = "LLScript_Sudo.sh"
 		      End Select
+		      
+		      'Save Scripts
+		      If TextUserScript.Text.Trim <> "" Then 'Normal
+		        SaveDataToFile(TextUserScript.Text.Trim, BTF+SF)
+		      End If
+		      
+		      If TextSudoScript.Text.Trim <> "" Then 'Sudo or reg
+		        SaveDataToFile(TextSudoScript.Text.Trim, BTF+SSF)
+		      End If
 		      
 		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item
 		        Select Case BT
@@ -5950,6 +6003,29 @@ End
 
 #tag EndWindowCode
 
+#tag Events TabPanelEditor
+	#tag Event
+		Sub PanelChanged()
+		  Select Case TabPanelEditor.SelectedPanelIndex
+		  Case 2 'Assembly
+		    If TextInstallToFolder.Text = "" Then
+		      If TextTitle.Text <> "" Then
+		        Select Case ComboBuildType.Text
+		        Case "ppApp"
+		          TextInstallToFolder.Text = "%ppApps%/"+TextTitle.Text.ReplaceAll(" ",".")
+		        Case "LLApp"
+		          TextInstallToFolder.Text = "%LLApps%/"+TextTitle.Text.ReplaceAll(" ",".")
+		        Case "ppGame"
+		          TextInstallToFolder.Text = "%ppGames%/"+TextTitle.Text.ReplaceAll(" ",".")
+		        Case "LLGame"
+		          TextInstallToFolder.Text = "%LLGames%/"+TextTitle.Text.ReplaceAll(" ",".")
+		        End Select
+		      End If
+		    End If
+		  End Select
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextTitle
 	#tag Event
 		Sub TextChanged()
@@ -6149,7 +6225,120 @@ End
 #tag Events ButtonBrowseShortcut
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not Yet Implemented Browse Shortcut"
+		  Dim ImageIn As String
+		  Dim RL As String
+		  Dim Sp() As String
+		  Dim I As Integer
+		  'Dim F As FolderItem
+		  
+		  Dim NewShortName As String
+		  Dim Name As String
+		  Dim Exec As String
+		  Dim Icon As String
+		  Dim Comment As String
+		  Dim Path As String
+		  Dim Categories As String
+		  Dim FileTypes As String
+		  Dim Term As Boolean
+		  
+		  
+		  If TargetWindows Then
+		    'List All start menu items to pick one - just copy the .lnk files from all users and current user then follow the lnk to the actual EXE etc, but use lnk for Title name, icon etc
+		    
+		    MsgBox "Not Yet Implemented Browsing Shortcuts in windows"
+		    
+		  Else 'Linux
+		    'List All .desktop file and let user pick on to populate the fields on the form (has it all written in itself)
+		    'For now you can browse for a .desktop file in the usual places or even the desktop
+		    
+		    Dim iniType As New FileType
+		    iniType.Name = "link/desktop"
+		    iniType.MacType = "DESKTOP"
+		    iniType.Extensions = "desktop"
+		    
+		    ImageIn = SpecialFolder.Desktop.NativePath
+		    
+		    If TargetWindows = True Then
+		      ImageIn = ImageIn.ReplaceAll("/","\")
+		    Else
+		      ImageIn = ImageIn.ReplaceAll("\","/")
+		    End If
+		    
+		    ImageIn = OpenDialog(iniType, "Select Desktop File to Use as Shortcut", ImageIn) ' browse for one 
+		    If ImageIn <> "" Then
+		      If Debugging Then Debug("Load shortcut Data from: "+ ImageIn)
+		      RL = LoadDataFromFile(ImageIn)
+		      Sp = RL.Split(Chr(10))
+		      For I = 0 To Sp.Count - 1
+		        If Left (Sp(I),5) = "Name=" Then
+		          Name = Right(Sp(I), Len(Sp(I))-5)
+		          Name = Name.Trim
+		        End If
+		        If Left (Sp(I),5) = "Exec=" Then Exec = Right(Sp(I), Len(Sp(I))-5)
+		        If Left (Sp(I),8) = "Comment=" Then Comment = Right(Sp(I), Len(Sp(I))-8)
+		        If Left (Sp(I),5) = "Icon=" Then Icon = Right(Sp(I), Len(Sp(I))-5)
+		        If Left (Sp(I),5) = "Path=" Then Path = Right(Sp(I), Len(Sp(I))-5)
+		        If Left (Sp(I),11) = "Categories=" Then
+		          Categories = Right(Sp(I), Len(Sp(I))-11)
+		          
+		        End If
+		        If Left (Sp(I),9) = "Terminal=" Then
+		          If IsTrue(Right(Sp(I), Len(Sp(I))-9)) Then
+		            Term = True
+		          Else
+		            Term = False
+		          End If
+		        End If
+		      Next
+		    End If
+		    
+		    If Name <> "" Then 'Add item, select it and fill data
+		      
+		      'Add new shortcut
+		      TextNewShortcut.Text = Name 'Set from .desktop file
+		      NewShortName = TextNewShortcut.Text
+		      If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
+		        LnkCount = LnkCount + 1 'Add one
+		        ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
+		        ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
+		        EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		        ComboShortcut.SelectedRowIndex = EditingCBLnk 'Jumps to newly added item
+		        ComboShortcut.RowTagAt(EditingCBLnk) = LnkCount
+		        EditingLnk = LnkCount
+		      End If
+		      
+		      'Clear Text Field and hide it again
+		      TextNewShortcut.Text = ""
+		      TextNewShortcut.Visible = False
+		      
+		      
+		      TextComment.Text = ""
+		      TextExecute.Text = ""
+		      TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
+		      TextIcon.Text = ""
+		      TextFileTypes.Text = ""
+		      TextDescriptionLink.Text = ""
+		      TextFlags.Text = ""
+		      TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
+		      CheckRunInTerminal.Value = False
+		      CheckSendTo.Value = False
+		      CheckShowDesktop.Value  = False
+		      CheckShowFavorites.Value  = False
+		      CheckSendTo.Value = False
+		      CheckShowPanel.Value  = False
+		      
+		      'Add Data from loaded .desktop file
+		      TextExecute.Text = Exec
+		      TextComment.Text  = Comment
+		       TextIcon.Text = Icon
+		      TextRunInPath.Text = Path
+		      Categories = Categories.ReplaceAll(";", ";"+Chr(10))
+		      TextMenuCatalog.Text = Categories
+		      CheckRunInTerminal.Value = Term
+		    End If
+		  End If
+		  
+		  
 		  
 		End Sub
 	#tag EndEvent
@@ -6358,14 +6547,85 @@ End
 #tag Events ButtonLoadUserScript
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not Yet Integrated"
+		  Dim ImageIn As String
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "text/script"
+		  iniType.MacType = "SH;CMD"
+		  iniType.Extensions = "sh;cmd"
+		  
+		  ImageIn = Slash(TextIncludeFolder.Text)
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Script File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    TextUserScript.Text = LoadDataFromFile(ImageIn)
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ButtonLoadSudoOrReg
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not Yet Integrated"
+		  Dim ImageIn As String
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "text/script"
+		  iniType.MacType = "SH;CMD;REG"
+		  iniType.Extensions = "sh;cmd;reg"
+		  
+		  ImageIn = Slash(TextIncludeFolder.Text)
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Sudo Script Or Registry File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    TextSudoScript.Text = LoadDataFromFile(ImageIn)
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBrowseMovieFile
+	#tag Event
+		Sub Pressed()
+		  Dim ImageIn As String
+		  Dim F As FolderItem
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "movie/mp4"
+		  iniType.MacType = "MP4"
+		  iniType.Extensions = "mp4"
+		  
+		  ImageIn = TextMovieFile.Text
+		  If ImageIn = "" Then ImageIn = ItemLLItem.FileMovie
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Movie mp4 File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    TextMovieFile.Text = ImageIn
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6483,6 +6743,20 @@ End
 		End Function
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonAddTag
+	#tag Event
+		Sub Pressed()
+		  Dim TXT As String
+		  
+		  TXT = TextTags.Text  +"; "+ComboTags.Text
+		  If Left(TXT, 1) = ";" Then TXT = Right(TXT, Len(TXT)-1).Trim
+		  TXT = TXT.ReplaceAll("; ;",";")
+		  TXT = TXT.ReplaceAll(";;",";")
+		  
+		  TextTags.Text = TXT
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events TextTags
 	#tag Event
 		Sub TextChanged()
@@ -6521,6 +6795,13 @@ End
 #tag Events ButtonImportSize
 	#tag Event
 		Sub Pressed()
+		  'Get the install size from either the archive if compressed or calculate based on existing files provided (not good for ssApps or NoInstall items as these grab from the net and need to manually be written)
+		  
+		  'TextInstalledSize.Text = 
+		  
+		  If ItemLLItem.Compressed = True Then 'Grab Size from inside the Archive
+		  End If
+		  
 		  MsgBox "Not Yet Implemented Import Size"
 		  
 		End Sub
@@ -6572,8 +6853,6 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events ComboDE
-#tag EndEvents
 #tag Events ButtonAddDE
 	#tag Event
 		Sub Pressed()
@@ -6614,24 +6893,208 @@ End
 #tag Events ButtonBrowseInstallToFolder
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not yet Integrated"
+		  Dim G As FolderItem
 		  
-		  'TextInstallToFolder.Text = ""
+		  Dim Pat As String
+		  
+		  Pat = ExpPath(TextInstallToFolder.Text)
+		  
+		  If Pat <>"" Then
+		    If Exist(Pat) Then
+		      G = GetFolderItem(Pat,FolderItem.PathTypeShell)
+		    Else
+		      G = SpecialFolder.Desktop
+		    End If
+		  End If
+		  
+		  Var dlg As New SelectFolderDialog
+		  dlg.ActionButtonCaption = "Select"
+		  dlg.Title = "Select the Path your Item will install to"
+		  dlg.PromptText = "Make sure it's a valid path"
+		  dlg.InitialFolder = G
+		  
+		  Var F As FolderItem
+		  F = dlg.ShowModal
+		  If F <> Nil Then
+		    ' Use the folderitem here
+		    TextInstallToFolder.Text = Slash(F.NativePath)
+		    TextInstallToFolder.Text = CompPath(TextInstallToFolder.Text, True)
+		    ItemLLItem.PathApp = TextInstallToFolder.Text
+		  Else
+		    ' User cancelled, do nothing
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ButtonBrowseInstaller
 	#tag Event
 		Sub Pressed()
-		  MsgBox "Not yet Integrated"
+		  Dim ImageIn As String
 		  
-		  'TextInstaller.Text = ""
+		  Dim iniType As New FileType
+		  iniType.Name = "exe/executable"
+		  iniType.MacType = "EXE;MSI"
+		  iniType.Extensions = "exe;msi"
+		  
+		  ImageIn = Slash(TextInstaller.Text)
+		  ImageIn = ImageIn.ReplaceAll("\","/")
+		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent (no exe file)
+		  
+		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
+		  If TargetWindows = True Then
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		  Else
+		    ImageIn = ImageIn.ReplaceAll("\","/")
+		  End If
+		  
+		  ImageIn = OpenDialog(iniType, "Select Installer EXE/MSI File", ImageIn) ' browse for one 
+		  If ImageIn <> "" Then
+		    TextInstaller.Text = ImageIn
+		  End If
 		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonAddInstaller
+	#tag Event
+		Sub Pressed()
+		  Dim Installer As String
+		  
+		  Installer = TextInstaller.Text.Trim +" "+ TextUsage.Text.Trim
+		  Installer = Installer.Trim
+		  
+		  Installer = TextAssembly.Text.Trim + Chr(10)+ Installer
+		  
+		  If Installer <> "" Then TextAssembly.Text = Installer.Trim
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Is_x86
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events Is_x64
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events Is_ARM
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events Is_NT5
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events Is_NT6
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events RunScripts
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events ApplyRegistry
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events RegisterDLL
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events ApplyPatch
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events ShortcutS
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events ProcessKill
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events AddToHosts
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events Extract
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
 	#tag EndEvent
 #tag EndEvents
 #tag Events ComboBuildType
 	#tag Event
 		Sub SelectionChanged(item As DesktopMenuItem)
+		  If Item.Text = "ComboBuildType" Then
+		    ButtonSaveLLFile.Caption = "Save LLFile"
+		  Else
+		    ButtonSaveLLFile.Caption = "Save "+ Item.Text+" File"
+		  End If
+		  
 		  Dim CatFileToUse As String
 		  
 		  ComboCategory.RemoveAllRows
@@ -6641,7 +7104,7 @@ End
 		    ComboMenuCatalog.AddAllRows(LLCatalogGames())
 		  Else 'It's a App
 		    ComboCategory.AddAllRows(LLCatalogApps())
-		    ComboMenuCatalog.AddAllRows(LLCatalogGames())
+		    ComboMenuCatalog.AddAllRows(LLCatalogApps())
 		  End If
 		  
 		End Sub
@@ -6668,6 +7131,15 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events Is_NT10
+	#tag Event
+		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  Dim M As New Clipboard
+		  M.Text = Me.Text
+		  TextAssembly.Paste
+		End Function
+	#tag EndEvent
+#tag EndEvents
 #tag Events ButtonSaveLLFile
 	#tag Event
 		Sub Pressed()
@@ -6689,6 +7161,13 @@ End
 		  AdvancedLink.ComboArch.Text = ItemLnk(EditingLnk).LnkArchCompatible
 		  
 		  AdvancedLink.Show
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonBrowseInstaller1
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Implemented"
 		End Sub
 	#tag EndEvent
 #tag EndEvents
