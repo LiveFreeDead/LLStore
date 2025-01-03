@@ -1354,6 +1354,7 @@ Protected Module LLMod
 		    XCopyFile(MainPath+"*.dll", InstallPath)
 		    XCopyFile(MainPath+"version.ini", InstallPath)
 		    XCopyFile(MainPath+"LLL_Settings.ini", InstallPath)
+		    XCopyFile(MainPath+"LLL_Repos.ini", InstallPath)
 		    XCopyFile(MainPath+"llstore.exe", InstallPath)
 		    XCopyFile(MainPath+"llstore", InstallPath)
 		    Res = RunCommandResults ("icacls "+Chr(34)+ NoSlash(InstallPath)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
@@ -1402,6 +1403,7 @@ Protected Module LLMod
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"version.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLL_Settings.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp "+Chr(34)+MainPath+"LLL_Repos.ini"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore.exe"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+"llstore"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
@@ -5195,6 +5197,22 @@ Protected Module LLMod
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HideInternetInstaller"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="TimeOut"
+			Visible=false
+			Group="Behavior"
+			InitialValue="0"
+			Type="Double"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

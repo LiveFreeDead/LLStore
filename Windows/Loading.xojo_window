@@ -1044,7 +1044,9 @@ End
 		  Dim Sp() As String
 		  Dim UniqueName As String
 		  
-		  OnlineDBs = Settings.SetOnlineRepos.Text.ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
+		  OnlineDBs = LoadDataFromFile(Slash(AppPath)+"LLL_Repos.ini").ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
+		  
+		  If OnlineDBs.Trim = "" Then OnlineDBs = Settings.SetOnlineRepos.Text.ReplaceAll(Chr(10), Chr(13)) ' Convert to standard format so it works in Windows and Linux
 		  
 		  Sp() = OnlineDBs.Split(Chr(13)) 'Text Areas use Chr (13) In Windows
 		  
@@ -1063,6 +1065,7 @@ End
 		      
 		      If Exist(Slash(RepositoryPathLocal)+UniqueName) Then Deltree(Slash(RepositoryPathLocal)+UniqueName) 'Remove Cached download (Might add a check/setting for doing this, ignore if exists? seem pointless as if your not online, it's gonna skip it anyway
 		      CurrentDBURL = Sp(I).ReplaceAll(".lldb/lldb.ini", "") 'Only want the parent, not the sub path and file
+		      If Left (Sp(I).Trim,1) = "#" Then Continue 'Skip remarked Repo's
 		      GetOnlineFile (Sp(I), Slash(RepositoryPathLocal)+UniqueName)
 		      While Downloading
 		        App.DoEvents(1)
@@ -2191,6 +2194,11 @@ End
 		    End If
 		  End If
 		  SaveDataToFile(Settings.SetManualLocations.Text, IniFile)
+		  
+		  'Save Repo's
+		  SaveDataToFile(Settings.SetOnlineRepos.Text.ReplaceAll(Chr(13), Chr(10)),Slash(AppPath)+"LLL_Repos.ini")
+		  
+		  
 		End Sub
 	#tag EndMethod
 
