@@ -386,7 +386,7 @@ End
 		    Data.Items.CellTextAt(I, Data.GetDBHeader("Selected")) = "F" ' Un-Select Items
 		  Next I
 		  
-		  'Make sure Sudo is closed (not added ability to echo to /tmp/LLSudo to close it yet, so disabled) Glenn 2029
+		  'Make sure Sudo Window is closed
 		  If Not TargetWindows Then 'Only make Sudo in Linux
 		    If SudoEnabled = True Then
 		      SudoEnabled = False
@@ -816,6 +816,7 @@ End
 		          GetOnlineFile(Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("PathINI")), FileToInstallFrom)
 		        Else
 		          Items.CellTextAt(MiniUpTo, 1) = "Failed" 'Usually due to unreadable USB or DVD
+		          If Debugging Then Debug("* Error Accessing: "+Data.Items.CellTextAt(MiniInstaller.Items.CellTagAt(MiniUpTo, 0), Data.GetDBHeader("PathINI")))
 		          MiniUpTo = MiniUpTo + 1 'Skip the item if not able to download from internet
 		          Return
 		        End If

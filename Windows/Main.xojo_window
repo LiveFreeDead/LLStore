@@ -990,12 +990,14 @@ End
 		    base.Item(MC).Append New MenuItem("Select ssApps")
 		    base.Item(MC).Append New MenuItem("Select ppApps")
 		    base.Item(MC).Append New MenuItem("Select ppGames")
+		    base.Item(MC).Append New MenuItem("Select Internet Installer")
 		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator)
 		    If Not TargetWindows Then base.Item(MC).Append New MenuItem("Un-Select LLApps")
 		    If Not TargetWindows Then base.Item(MC).Append New MenuItem("Un-Select LLGames")
 		    base.Item(MC).Append New MenuItem("Un-Select ssApps")
 		    base.Item(MC).Append New MenuItem("Un-Select ppApps")
 		    base.Item(MC).Append New MenuItem("Un-Select ppGames")
+		    base.Item(MC).Append New MenuItem("Un-Select Internet Installer")
 		    
 		    'MC = MC + 1
 		    
@@ -1017,6 +1019,10 @@ End
 		    M.Checked =  HideLocal
 		    base.Item(MC).Append M
 		    
+		    M = New MenuItem
+		    M.Text = "Internet Installer"
+		    M.Checked =  HideInternetInstaller
+		    base.Item(MC).Append M
 		    
 		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		    
@@ -1202,8 +1208,11 @@ End
 		  Case "Online" ' Hide Online Items
 		    HideOnline = Not HideOnline
 		    GenerateItems()
-		  Case "Local" ' Hide Online Items
+		  Case "Local" ' Hide Local Items
 		    HideLocal = Not HideLocal
+		    GenerateItems()
+		  Case "Interne" ' Hide Internet Installer Items
+		    HideInternetInstaller = Not HideInternetInstaller
 		    GenerateItems()
 		  Case "Paid" ' Hide Paid Items
 		    HidePaid = Not HidePaid
@@ -1359,6 +1368,8 @@ End
 		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) = "ht" And HideOnline = True Then Hidden = True 'Hide Online
 		      
 		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) <> "ht" And HideLocal = True Then Hidden = True 'Hide Local items
+		      
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("Flags")).IndexOf("internetrequired") >=0 And HideInternetInstaller = True Then Hidden = True 'Hide Internet Installer items
 		      
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "LLApp" And HideLLApps = True Then Hidden = True ' Hide types
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "LLGame" And HideLLGames = True Then Hidden = True ' Hide
@@ -1833,17 +1844,17 @@ End
 		    Wend
 		    'End If
 		  Else 'Is Linux
-		    'If ScreenRes <> "" Then
-		    If Wid <> "" Then ' Put Orig Res back if changed
-		      While ShWait.Result.Trim <> Wid ' Wait for Screen Width to be the original res
-		        ShWait.Execute ("xrandr -s " + Wid + "x" + Hit) 'Keep Trying until it's set
-		        App.DoEvents(1)
-		        ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'") ' Get current Width
-		        App.DoEvents(1)
-		      Wend
-		      ShWait.Execute (ToolPath+"RestoreWineDPI.sh")
+		    If Settings.SetRecoverScreenRes.Value = True Then
+		      If Wid <> "" Then ' Put Orig Res back if changed
+		        While ShWait.Result.Trim <> Wid ' Wait for Screen Width to be the original res
+		          ShWait.Execute ("xrandr -s " + Wid + "x" + Hit) 'Keep Trying until it's set
+		          App.DoEvents(1)
+		          ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'") ' Get current Width
+		          App.DoEvents(1)
+		        Wend
+		      End If
 		    End If
-		    'End If
+		    ShWait.Execute (ToolPath+"RestoreWineDPI.sh")
 		  End If
 		  
 		  App.DoEvents(40) 'Wait .04 of a second
@@ -2023,6 +2034,15 @@ End
 		      If Data.Items.CellTextAt(Items.CellTagAt(I,0),Data.GetDBHeader("BuildType")) = "ppGame" Then
 		        Data.Items.CellTextAt(Items.CellTagAt(I,0),Data.GetDBHeader("Selected")) = "F"
 		      End If
+		    Case "Select Internet Installer"
+		      If Data.Items.CellTextAt(Items.CellTagAt(I,0), Data.GetDBHeader("Flags")).IndexOf("internetrequired") >=0  Then
+		        Data.Items.CellTextAt(Items.CellTagAt(I,0),Data.GetDBHeader("Selected")) = "T"
+		      End If
+		    Case "Un-Select Internet Installer"
+		      If Data.Items.CellTextAt(Items.CellTagAt(I,0), Data.GetDBHeader("Flags")).IndexOf("internetrequired") >=0  Then
+		        Data.Items.CellTextAt(Items.CellTagAt(I,0),Data.GetDBHeader("Selected")) = "F"
+		      End If
+		      
 		    End Select
 		  Next I
 		  

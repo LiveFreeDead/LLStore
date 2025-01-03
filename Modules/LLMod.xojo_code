@@ -1607,8 +1607,8 @@ Protected Module LLMod
 		  
 		  If ItemInn = "" Then Return False 'Nothing given
 		  
-		  'Fix ItemInn to forward slashes, can change later if breaks
-		  ItemInn = ItemInn.ReplaceAll("\","/") 'Glenn 2040
+		  'Fix ItemInn to forward slashes, Hasn't caused a problem yet
+		  ItemInn = ItemInn.ReplaceAll("\","/")
 		  
 		  Dim I As Integer
 		  Dim F As FolderItem
@@ -1799,7 +1799,7 @@ Protected Module LLMod
 		          ItemLLItem.PathApp = ExpPath(LineData)
 		          If TargetWindows Then
 		            ItemLLItem.PathApp = ItemLLItem.PathApp.ReplaceAll("/","\")
-		            If StoreMode = 1 And Not Exist(ItemLLItem.PathApp) Then ItemLLItem.PathApp = ItemLLItem.PathINI ' make sure it's valid (Especially for Launcher, Glenn 2027 - will need to confirm installer works)
+		            If StoreMode = 1 And Not Exist(ItemLLItem.PathApp) Then ItemLLItem.PathApp = ItemLLItem.PathINI ' make sure it's valid
 		          Else
 		            ItemLLItem.PathApp = ItemLLItem.PathApp.ReplaceAll("\","/")
 		          End If
@@ -2296,7 +2296,7 @@ Protected Module LLMod
 		    'Make SentTo for first item if Main flag set
 		    If BT ="ssApp" Then 'Do Send To if Set in
 		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
-		        'Glenn 2027 - not done ssApp Processing yet, only the cleanup
+		        'Glenn 2027 - not done ssApp Links Processing yet, only the cleanup
 		      End If
 		    End If
 		    
@@ -2459,7 +2459,7 @@ Protected Module LLMod
 		        DesktopContent = DesktopContent + "Categories=" + ItemLnk(I).Categories + Chr(10)
 		        DesktopContent = DesktopContent + "Terminal=" + Str(ItemLnk(I).Terminal) + Chr(10)
 		        
-		        'Linux Associations Glenn 2030
+		        'Linux Associations
 		        If ItemLnk(I).Associations.Trim <> "" Then
 		          MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, ExecName, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
 		        End If
@@ -3156,7 +3156,7 @@ Protected Module LLMod
 		      
 		      ScriptFile = ExpScript (InstallToPath + "LLScript.sh")
 		      F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
-		      Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; bash " + Chr(34) + FixPath(F.NativePath) + Chr(34)) 'Glenn 2027 - Check bash is suitable over sh. I think it is ' Use && Here because if path fails, then script will anyway
+		      Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; bash " + Chr(34) + FixPath(F.NativePath) + Chr(34)) 'Glenn 2027 - Check bash is suitable over sh. I think it is
 		      While Shelly.IsRunning
 		        App.DoEvents(7)
 		      Wend
@@ -3188,7 +3188,7 @@ Protected Module LLMod
 		        If TargetWindows Then
 		          Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
 		        Else
-		          Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34)) ' Use && Here because if path fails, then script will anyway
+		          Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34))
 		        End If
 		        While Shelly.IsRunning
 		          App.DoEvents(7)
@@ -3840,6 +3840,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		HideInstallerGameCats As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideInternetInstaller As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

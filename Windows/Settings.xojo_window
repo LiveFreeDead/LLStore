@@ -402,7 +402,7 @@ Begin DesktopWindow Settings
       TabIndex        =   18
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "/home/glenn/Documents/GitHub/LastOSLinux_Repository\n/media/glenn/My Linux Backups/LastOS-Linux-Repository"
+      Text            =   ""
       TextAlignment   =   1
       TextColor       =   &c000000
       Tooltip         =   ""
@@ -727,6 +727,36 @@ Begin DesktopWindow Settings
       TabStop         =   True
       Tooltip         =   "If this is disabled it will Ask for the password at the start of the Mini Install, otherwise you'll have to wait for it to get to the Sudo Scripts before it asks"
       Top             =   128
+      Transparent     =   False
+      Underline       =   False
+      Value           =   False
+      Visible         =   True
+      VisualState     =   0
+      Width           =   152
+   End
+   Begin DesktopCheckBox SetRecoverScreenRes
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Recover Screen Res"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   27
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   311
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   22
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   "This will try to get the screen back to how it was prior to launching a game"
+      Top             =   89
       Transparent     =   False
       Underline       =   False
       Value           =   False

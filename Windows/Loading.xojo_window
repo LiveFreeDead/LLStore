@@ -194,7 +194,7 @@ End
 		  If Exist(Slash(AppPath)+"llstoreold") Then Deltree Slash(AppPath)+"llstoreold"
 		  If Exist(Slash(AppPath)+"llstoreold.exe") Then Deltree Slash(AppPath)+"llstoreold.exe"
 		  
-		  'Check Version - Add Timeout as this shouldn't take more than a second - Glenn 2027
+		  'Check Version
 		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
 		  
 		  TimeOut = System.Microseconds + (5 *1000000) 'Set Timeout after 5 seconds
@@ -1711,6 +1711,8 @@ End
 		      End If
 		    Case "alwaysshowres"
 		      If LineData <> "" Then Settings.SetAlwaysShowRes.Value = IsTrue(LineData)
+		    Case "recoverscreenres"
+		      If LineData <> "" Then Settings.SetRecoverScreenRes.Value = IsTrue(LineData)
 		    End Select
 		  Next
 		  App.DoEvents(1)' Update the Settings Form with the new Check values before we do anything, might fix it, else I'll need to use Variables
@@ -2163,6 +2165,8 @@ End
 		  RL = RL + "DebugEnabled=" + Str(Settings.SetDebugEnabled.Value) + Chr(10)
 		  
 		  RL = RL + "AlwaysShowRes=" + Str(Settings.SetAlwaysShowRes.Value) + Chr(10)
+		  
+		  RL = RL + "RecoverScreenRes=" + Str(Settings.SetRecoverScreenRes.Value) + Chr(10)
 		  
 		  'Save to actual Settings File
 		  SaveDataToFile(RL, SettingsFile)

@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   3
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5392,7 +5392,7 @@ End
 		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
 		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
 		                    Else 'Not a LLFile type or a script
-		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
+		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept
 		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
 		                          If Right(F.Item(I).Name, 4) <> ".png" Then
 		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
@@ -5431,7 +5431,7 @@ End
 		          End If
 		        End If
 		        
-		      Case Else 'ss/pp App/Game ---------------------------------------------------------------- Glenn 2040
+		      Case Else 'ss/pp App/Game ----------------------------------------------------------------
 		        
 		        '----------- Always do this as it's empty? -----------------------------
 		        OutFolder = Slash(TextBuildToFolder.Text)
@@ -5469,7 +5469,6 @@ End
 		            If Debugging Then Debug ("Infolder = OutFolder")
 		            If Not Exist(OutFile) Then 'If doesn't have the compressed file make it still
 		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
-		                'If ItemLLItem.NoInstall  = False Then 
 		                If BT <> "ssApp" Then 'ssApp is Windows NoInstall
 		                  Status.Text =  "Compressing Files..."
 		                  Status.Text =  "Compressing to " + CompressedFileOut
@@ -5572,7 +5571,6 @@ End
 		          If Debugging Then Debug (Res)
 		          
 		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
-		            'If Debugging Then Debug("Safe To Deltree? "+ OutFolder)
 		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
 		          End If
 		        End If
@@ -5843,14 +5841,13 @@ End
 		        INIFile = BT+".llg"
 		      End Select
 		      
-		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item (Try adding 7z support as well as doing tar's like normal)
-		        Select Case BT 'I may have to chnage this to use 7z for all of them as tar isn't available in windows properly, will see, Glenn 2030
+		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item
+		        Select Case BT
 		        Case "LLApp", "LLGame" 'Tar's
 		          If TargetWindows Then
 		            Status.Text =  "Failed, LLApps and LLGames can only be edited in Linux"
 		            MsgBox "Failed, LLApps and LLGames can only be edited in Linux"
 		            Return False
-		            
 		            
 		            ''Tar is built into Windows 10 and above, but can't delete files at all, only Add a 2nd copy, would need to extract and repackage if I want to add that feature
 		            'Res = RunCommandResults ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34))
@@ -5864,6 +5861,7 @@ End
 		            'If Exist(BTF+BT+".mp4" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".mp4"  + Chr(34) )
 		            'If Exist(BTF+"LLScript.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript.sh"  + Chr(34) )
 		            'If Exist(BTF+"LLScript_Sudo.sh" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + "LLScript_Sudo.sh"  + Chr(34) )
+		            
 		          Else 'Linux or mac
 		            'Remove Existing Files from inside the .tar
 		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34)) 'FileINI is the name of the .tar
