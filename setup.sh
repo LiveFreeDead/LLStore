@@ -1,5 +1,9 @@
 #!/bin/bash
 
+IS_GNOMETERMINAL=$(which gnome-terminal)
+
+if [[ -z $IS_GNOMETERMINAL ]]; then
+
 PACKAGES=gnome-terminal
 
 APT_CMD=$(which apt)
@@ -28,8 +32,13 @@ else
     echo "error can't install package $PACKAGES"
 fi
 
+fi  #Top gnome check
+
+
+
 #Run LLStore to install the rest (requires gnome terminal to get sudo)
 env GDK_BACKEND=x11 ./llstore -setup
+
 
 
 #Notes
