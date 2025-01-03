@@ -347,8 +347,8 @@ Begin DesktopWindow Main
       Width           =   128
    End
    Begin DesktopCanvas StartButton
-      AllowAutoDeactivate=   True
-      AllowFocus      =   False
+      AllowAutoDeactivate=   False
+      AllowFocus      =   True
       AllowFocusRing  =   True
       AllowTabs       =   False
       Backdrop        =   0
@@ -434,38 +434,6 @@ Begin DesktopWindow Main
       RunMode         =   0
       Scope           =   0
       TabPanelIndex   =   0
-   End
-   Begin DesktopButton StartTabStop
-      AllowAutoDeactivate=   True
-      Bold            =   False
-      Cancel          =   False
-      Caption         =   ""
-      Default         =   True
-      Enabled         =   True
-      FontName        =   "System"
-      FontSize        =   0.0
-      FontUnit        =   0
-      Height          =   26
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   False
-      Left            =   1180
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   False
-      LockRight       =   True
-      LockTop         =   False
-      MacButtonStyle  =   0
-      Scope           =   0
-      TabIndex        =   11
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Tooltip         =   ""
-      Top             =   689
-      Transparent     =   True
-      Underline       =   False
-      Visible         =   True
-      Width           =   80
    End
    Begin Timer DoContextTimer
       Index           =   -2147483648
@@ -1617,10 +1585,10 @@ End
 		  'StartButton.Width = 128
 		  'StartButton.Height= 128
 		  
-		  StartTabStop.Left = StartButton.Left
-		  StartTabStop.Top = StartButton.Top
-		  StartTabStop.Width = StartButton.Width
-		  StartTabStop.Height = StartButton.Height
+		  'StartTabStop.Left = StartButton.Left
+		  'StartTabStop.Top = StartButton.Top
+		  'StartTabStop.Width = StartButton.Width
+		  'StartTabStop.Height = StartButton.Height
 		  
 		  Description.Left = ScreenShot.Left
 		  Description.Top= ScreenShot.Top + ScreenShot.Height + Padding
@@ -2318,6 +2286,16 @@ End
 		  If Keyboard.ControlKey Then
 		    'MsgBox Str(asc(Key))
 		    Select Case Asc(Key)
+		    Case 45 '-
+		      Items.FontSize = Items.FontSize - 1
+		      If Items.FontSize <= 4 Then Items.FontSize = 4
+		      Categories.FontSize = Items.FontSize
+		      Description.FontSize = Items.FontSize
+		    Case 61 '+
+		      Items.FontSize = Items.FontSize + 1
+		      If Items.FontSize >= 32 Then Items.FontSize = 32
+		      Categories.FontSize = Items.FontSize
+		      Description.FontSize = Items.FontSize
 		    Case 97
 		      SelectItems("Select All")
 		    Case 110
@@ -2577,6 +2555,50 @@ End
 		  
 		End Sub
 	#tag EndEvent
+	#tag Event
+		Function KeyDown(key As String) As Boolean
+		  If Asc(Key) = 9 Then Return False ' Allow Tabbing
+		  
+		  'MsgBox Asc(Key).ToString
+		  Select Case Asc(Key)
+		  Case 3, 13, 32
+		    StartPushed
+		  Case Else
+		    Items.SetFocus
+		    Return True
+		  End Select
+		  
+		  Return True 'Take Event
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub FocusReceived()
+		  'Make fader and Start Button Black so the non transparent description doesn't feel out of place
+		  If StartButton.Backdrop = Nil Then
+		    StartButton.Backdrop = New Picture(StartButton.Width,StartButton.Height, 32)
+		  End If
+		  
+		  'Clone From Wallpaper to Icon BG
+		  StartButton.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,StartButton.Width, StartButton.Height, StartButton.Left, StartButton.Top, StartButton.Width, StartButton.Height)
+		  
+		  StartButton.Backdrop.Graphics.DrawPicture(DefaultStartButtonHover,0,0,StartButton.Width, StartButton.Height,0,0,DefaultStartButtonHover.Width, DefaultStartButtonHover.Height)
+		  StartButton.Refresh
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub FocusLost()
+		  'Make fader and Start Button Black so the non transparent description doesn't feel out of place
+		  If StartButton.Backdrop = Nil Then
+		    StartButton.Backdrop = New Picture(StartButton.Width,StartButton.Height, 32)
+		  End If
+		  
+		  'Clone From Wallpaper to Icon BG
+		  StartButton.Backdrop.Graphics.DrawPicture(Main.Backdrop,0,0,StartButton.Width, StartButton.Height, StartButton.Left, StartButton.Top, StartButton.Width, StartButton.Height)
+		  
+		  StartButton.Backdrop.Graphics.DrawPicture(DefaultStartButton,0,0,StartButton.Width, StartButton.Height,0,0,DefaultStartButton.Width, DefaultStartButton.Height)
+		  StartButton.Refresh
+		End Sub
+	#tag EndEvent
 #tag EndEvents
 #tag Events FirstShown
 	#tag Event
@@ -2667,29 +2689,6 @@ End
 		  Typing = False
 		  Typed = ""
 		  KeyTimer.Mode = 0
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events StartTabStop
-	#tag Event
-		Function KeyDown(key As String) As Boolean
-		  If Asc(Key) = 9 Then Return False ' Allow Tabbing
-		  
-		  'MsgBox Asc(Key).ToString
-		  Select Case Asc(Key)
-		  Case 3, 13, 32
-		    StartPushed
-		  Case Else
-		    Items.SetFocus
-		    Return True
-		  End Select
-		  
-		  Return True 'Take Event
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub Pressed()
-		  StartPushed
 		End Sub
 	#tag EndEvent
 #tag EndEvents
