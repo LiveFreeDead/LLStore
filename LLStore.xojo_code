@@ -2,13 +2,6 @@
 Protected Class LLStore
 Inherits DesktopApplication
 	#tag Event
-		Function CancelClosing() As Boolean
-		  'MsgBox "Main App Closing?"
-		  'Return True
-		End Function
-	#tag EndEvent
-
-	#tag Event
 		Sub Closing()
 		  Debug("-- LLStore Closed")
 		End Sub

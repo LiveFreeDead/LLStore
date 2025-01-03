@@ -732,7 +732,6 @@ End
 		      If Favorites(I).Lowercase = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName")).Lowercase Then Return 'Don't add Existing
 		    End If
 		  Next  
-		  'MsgBox "Add Fav " + Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName"))
 		  Favorites(FavCount) = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("TitleName"))
 		  FavCount = FavCount + 1
 		  Loading.SaveFavorites
@@ -791,7 +790,6 @@ End
 		Sub ChangeItem(CurrentItemIn As Integer)
 		  If FirstRun = False Then Return  'Ignore doing this until the main form is shown and the Default text is set
 		  
-		  
 		  Dim WebWall As String
 		  Dim F, G As FolderItem
 		  
@@ -802,7 +800,6 @@ End
 		  Data.Items.SortingColumn = 0
 		  Data.Items.ColumnSortDirectionAt(0) = DesktopListBox.SortDirections.Ascending
 		  Data.Items.Sort ()
-		  
 		  
 		  If StoreMode = 0 Then
 		    TitleLabel.Text = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("TitleName")) +" "+Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("Version"))
@@ -816,13 +813,10 @@ End
 		    
 		  End If
 		  
-		  
 		  'Get URL from PathIni
 		  Dim ItemURL As String
 		  ItemURL = Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("PathINI"))
 		  ItemURL = Left(ItemURL, InStrRev(ItemURL, "/")) ' Drop the Archive and just keep the path to use with Screenshots and Faders
-		  
-		  'MsgBox ItemURL
 		  
 		  'Get UN Name (Universal Name)
 		  Dim UN As String
@@ -938,7 +932,6 @@ End
 		  MetaData.RemoveAllRows
 		  MetaData.AddRow ("URL:            " + Chr(9) + Data.Items.CellTextAt(CurrentItemIn, Data.GetDBHeader("URL")))
 		  MetaData.AddRow ("Category:" + Chr(9) + Categories)
-		  'MetaData.AddRow ("License:" + Chr(9) + License +", "+ Chr(9) + "Installed: "+ Chr(9) + Installed)
 		  MetaData.AddRow ("License:   " + Chr(9) + License)
 		  MetaData.AddRow ("Installed: " + Chr(9) + Installed)
 		  MetaData.AddRow ("Size:            " + Chr(9) + InstSizeText)
@@ -1069,8 +1062,6 @@ End
 		    M.Checked =  HideppGames
 		    base.Item(MC).Append M
 		    
-		    
-		    
 		    'Presets
 		    base.Append New MenuItem("Load From Preset") '0
 		    MC = MC + 1
@@ -1078,7 +1069,6 @@ End
 		    base.Append New MenuItem("Save To Preset") '0
 		    MC = MC + 1
 		    base.Item(MC).Shortcut  = "S"
-		    
 		    
 		  End If
 		  
@@ -1098,11 +1088,9 @@ End
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F6"
 		  
-		  
 		  base.Append New MenuItem("&Change Mode (Store/Launcher)") '0
 		  MC = MC + 1
 		  base.Item(MC).Shortcut  = "F7"
-		  
 		  
 		  base.Append New MenuItem(MenuItem.TextSeparator) 'Sep
 		  MC = MC + 1
@@ -1182,17 +1170,14 @@ End
 		    Main.Visible = False
 		    Loading.LoadSettings() 'Due to changing store mode, we need to change the scan paths
 		    Loading.FirstRunTime.RunMode = Timer.RunModes.Single
-		    ''''Loading.VeryFirstRunTimer.RunMode = Timer.RunModes.Single 'Need to use VeryFirst so it can load the theme again - NO - crashes due to double Debug file and Checking Admin etc
 		    Return 'Quit Main Loop and start it again
 		  Case "Add Fav"
 		    AddFavorite()
 		  Case "Remove "
 		    RemoveFavorite()
 		  Case "Load Fr"
-		    'MsgBox "Load From Preset"
 		    Success = LoadFromPreset()
 		  Case "Save To"
-		    'MsgBox "Save To Preset"
 		    SaveToPreset()
 		  Case "Select "
 		    SelectItems (ContextText)
@@ -1200,14 +1185,12 @@ End
 		    SelectItems (ContextText)
 		  Case "&Run Wi"
 		    RunGame(CurrentItemID, True)
-		    
 		  Case "&Debug"
 		    Data.Width = Main.Width
 		    Data.Height = Main.Height
 		    Data.Left = (screen(0).AvailableWidth - Data.Width) / 2 'Center Form
 		    Data.top = (screen(0).AvailableHeight - Data.Height) / 2
 		    Data.Show
-		    
 		  Case "&Settin"
 		    If Settings.Visible = False Then Loading.LoadSettings 'Always reload settings when switching to it, just to make sure they match with whats stored, user has to press Save to update it
 		    Settings.Left = (Screen(0).AvailableWidth/2)-(Settings.Width/2)
@@ -1246,7 +1229,6 @@ End
 		  Case "ppGames" ' Hide
 		    HideppGames= Not HideppGames
 		    GenerateItems()
-		    
 		  Case "Add &Ma"
 		    AddManualLocation()
 		  Case "Re(Scan"
@@ -1255,7 +1237,6 @@ End
 		    Loading.RefreshDBs
 		  Case "&Edit I"
 		    'Load in Item fully
-		    'MsgBox CurrentItemID.ToString
 		    #Pragma BreakOnExceptions Off
 		    Try
 		      Success = LoadLLFile(Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI"))) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
@@ -1391,37 +1372,8 @@ End
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "2" And HideFree = True Then Hidden = True 'Hide Free
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("License")) = "3" And HideOpen = True Then Hidden = True 'Hide Open
 		    
-		    'Moved to it's own Function
-		    'SysDesktopEnvironment Checks
-		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) 
-		    '
-		    'If DeTest <> "" Then 'Only do Items with Values set
-		    'MsgBox "Allowed: "+ DeTest + " Detected: "+ SysDesktopEnvironment
-		    'If  DeTest.IndexOf(SysDesktopEnvironment) >=0 Then
-		    'Else
-		    'Hidden = True ' Hide if the DE isn't found in supported list
-		    'End If
-		    'End If
-		    '
-		    ''SysPackageManager Checks
-		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("PMCompatible")) 
-		    'If DeTest <> "" Then 'Only do Items with Values set
-		    'If  DeTest.IndexOf(SysPackageManager) >=0 Then
-		    'Else
-		    'Hidden = True ' Hide if the PM isn't found in supported list
-		    'End If
-		    'End If
+		    'Check Compatibility on Loading now, so no need to check each time it generates the Items List
 		    If Data.Items.CellTextAt(I, Data.GetDBHeader("OSCompatible")) = "F" Then Hidden = True 'Hide if not Compatible DE or PM used
-		    
-		    
-		    ''Arch Checks 'Not available yet, I don't set SysArch Glenn 2027
-		    'DeTest = Data.Items.CellTextAt(I, Data.GetDBHeader("ArchCompatible")) 
-		    'If DeTest <> "" Then 'Only do Items with Values set
-		    'If  DeTest.IndexOf(SysArch) >=0 Then
-		    'Else
-		    'Hidden = True ' Hide if the PM isn't found in supported list
-		    'End If
-		    'End If
 		    
 		    If CurrentCat = "Favorites" Then
 		      If StoreMode = 1 Then 'Launcher - Do Favorites
@@ -1445,9 +1397,7 @@ End
 		    End If
 		    
 		    
-		    
-		    If Hidden = False Then
-		      
+		    If Hidden = False Then 'If not set as Hidden add to the List (Show it)
 		      Main.Items.AddRow(ItemToAdd)
 		      If FirstItem = -1 Then FirstItem = Main.Items.LastAddedRowIndex
 		      Main.Items.CellTagAt(Main.Items.LastAddedRowIndex, 0) = I 'This makes The Added Item have the Correct RefID for the main DB
@@ -1509,7 +1459,6 @@ End
 		      PreviousPresetPath = Left(PresetIn, InStrRev(PresetIn,"/")) ' Get Parent
 		    End If
 		    
-		    
 		    RL = LoadDataFromFile(PresetIn)
 		    RL = RL.ReplaceAll(Chr(10),Chr(13)) 'Make able to Load Windows ones
 		    RL = RL.ReplaceAll(Chr(13),Chr(10)) 'Make able to Load Windows ones, does it twice as to not make duplicates
@@ -1518,7 +1467,6 @@ End
 		      For J = 0 To Data.Items.RowCount - 1 'Unselect all items first
 		        Data.Items.CellTextAt(J, Data.GetDBHeader("Selected")) = "F"
 		      Next
-		      
 		      
 		      For I = 0 To Sp.Count -1
 		        If Left(Sp(I),2) = "1|" Then Sp(I) = Right (Sp(I),Len(Sp(I))-2)+"ssapp"
@@ -1678,8 +1626,7 @@ End
 		    ScaledWallpaper = New Picture(Screen(0).AvailableWidth,Screen(0).AvailableHeight, 32)
 		    AvailableWidth = Screen(0).AvailableWidth
 		  End If
-		  'ScaledWallpaper.Graphics.DrawingColor = &C000000
-		  'ScaledWallpaper.Graphics.FillRectangle(0,0,Main.Width,Main.Height)
+		  
 		  #Pragma BreakOnExceptions Off
 		  Try
 		    ScaledWallpaper.Graphics.DrawPicture(DefaultMainWallpaper,0, 0, Main.Width, Main.Height, 0, 0, DefaultMainWallpaper.Width, DefaultMainWallpaper.Height)
@@ -1746,7 +1693,7 @@ End
 		Sub RunGame(GameIDIn As Integer, PickScreenRes As Boolean = False)
 		  If Debugging Then Debug("--- Starting Run Game ---")
 		  
-		  'MsgBox "Starting: " + Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("TitleName"))
+		  If Debugging Then Debug("Starting: " + Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("TitleName")))
 		  
 		  RunningGame = True
 		  If GameIDIn = -1 Then Return 'No Item given
@@ -1796,29 +1743,20 @@ End
 		  Main.Hide 'Hide main form
 		  App.DoEvents(4) 'Wait .004 of a second
 		  
-		  
 		  WinWid = Screen(0).AvailableWidth.ToString
 		  
 		  RunPath = ExpPath(Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("LnkRunPath"))).Trim
 		  If RunPath = "" Then RunPath = ExpPath(Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("PathApp")))
 		  
-		  'MsgBox RunPath
-		  
 		  Exec = ExpPath(Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("LnkExec")))
 		  Exe = Exec
-		  'If Left(Exe,1) <>Chr(34) Then
-		  'Exe = RunPath + Exe
-		  'Exe = Chr(34)+Exe+Chr(34) 'Add Quotes, makes it work with Spaces etc, works in Windows and Linux, but not doubled up
-		  'End If
-		  '
+		  
 		  'Best for Windows -------------------------------
 		  If Left(Exe,1) <>Chr(34) Then ' This helps sometimes, it's all a mess and need a routine to build the command, save it to a script file to run instead
 		    'Exe = Chr(34)+Slash(RunPath)+Exe+Chr(34) ' Try adding RunPath in
 		    Exe = Chr(34)+Exe+Chr(34)
-		  Else
-		    
 		  End If
-		  'End If
+		  
 		  If TargetWindows Then ' Best Way for Windows
 		    SaveDataToFile (Left(RunPath,2)+Chr(10)+"cd "+ Chr(34)+RunPath+Chr(34)+Chr(10)+Exe, Slash(TmpPath)+"LLRun.cmd")
 		  End If
@@ -1838,13 +1776,6 @@ End
 		    If TargetWindows Then
 		      'BELOW line WORKS PERFECT!
 		      Sh.Execute("cmd.exe /c",Slash(TmpPath)+"LLRun.cmd")
-		      Try
-		        'F = GetFolderItem(Slash(TmpPath)+"LLRun.cmd", FolderItem.PathTypeShell)
-		        'F.Remove
-		      Catch
-		      End Try
-		      'MsgBox Sh.Result
-		      
 		    Else 'Running ppGame in Linux
 		      
 		      If ScreenRes <> "" Then 'Change to Picked Res
@@ -1987,7 +1918,6 @@ End
 		      Else
 		        PreviousPresetPath = Left(PresetFileName, InStrRev(PresetFileName,"/"))
 		      End If
-		      'MsgBox PresetFileName
 		      SaveDataToFile(OutPut, PresetFileName)
 		    End If
 		  End If
@@ -2031,7 +1961,6 @@ End
 		  
 		  'Grab Background of main form
 		  ScaledScreenShot.Graphics.DrawPicture(Main.BackDrop,0, 0, ScreenShot.Width+1, ScreenShot.Height+1, ScreenShot.Left, ScreenShot.Top, ScreenShot.Width+1, ScreenShot.Height)
-		  
 		  
 		  ScaledScreenShot.Graphics.DrawPicture(ScreenShotCurrent,X,Y,RealSSWidth, RealSSHeight,0,0,ScreenShotCurrent.Width, ScreenShotCurrent.Height)
 		  
@@ -2106,7 +2035,6 @@ End
 	#tag Method, Flags = &h0
 		Sub StartPushed()
 		  Dim ColSelected As Integer = Data.GetDBHeader("Selected")
-		  
 		  
 		  Installing = False 'Clear the flag to make sure it only enabled if all is corect to.
 		  
@@ -2217,13 +2145,11 @@ End
 #tag Events Items
 	#tag Event
 		Function PaintCellText(g as Graphics, row as Integer, column as Integer, x as Integer, y as Integer) As Boolean
-		  If Main.Visible = False Then Return False ' Don't redraw if not seen
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
 		  #Pragma BreakOnExceptions False
 		  
 		  #PRAGMA unused x
 		  #PRAGMA unused y
-		  
-		  If Main.Visible = False Then Return True 'Not Seen, don't bother drawing it yet
 		  
 		  Var icon As Picture
 		  
@@ -2240,29 +2166,38 @@ End
 		  End Try
 		  
 		  'Draw Text
-		  g.DrawingColor = ColList
-		  g.FontName = FontList
-		  g.Bold = BoldList
+		  Try
+		    g.DrawingColor = ColList
+		    g.FontName = FontList
+		    g.Bold = BoldList
+		  Catch
+		  End Try
 		  
-		  If IsTrue(Data.Items.CellTextAt(CLI,Data.GetDBHeader("Selected"))) Then g.Bold = Not BoldList 'Make Selected Items Bold oppsite to default items
+		  Try
+		    If IsTrue(Data.Items.CellTextAt(CLI,Data.GetDBHeader("Selected"))) Then g.Bold = Not BoldList 'Make Selected Items Bold oppsite to default items
+		  Catch
+		  End Try
 		  
-		  If StoreMode = 0 Then 'Only color when in Installer mode
-		    If CLI >=0 Then 
-		      Select Case Data.Items.CellTextAt(CLI,Data.GetDBHeader("BuildType"))
-		      Case "LLApp"
-		        g.DrawingColor = ColLLApp
-		      Case "LLGame"
-		        g.DrawingColor = ColLLGame
-		      Case "ssApp"
-		        g.DrawingColor = ColssApp
-		      Case "ppApp"
-		        g.DrawingColor = ColppApp
-		      Case "ppGame"
-		        g.DrawingColor = ColppGame
-		      End Select
+		  Try
+		    If StoreMode = 0 Then 'Only color when in Installer mode
+		      If CLI >=0 Then 
+		        Select Case Data.Items.CellTextAt(CLI,Data.GetDBHeader("BuildType"))
+		        Case "LLApp"
+		          g.DrawingColor = ColLLApp
+		        Case "LLGame"
+		          g.DrawingColor = ColLLGame
+		        Case "ssApp"
+		          g.DrawingColor = ColssApp
+		        Case "ppApp"
+		          g.DrawingColor = ColppApp
+		        Case "ppGame"
+		          g.DrawingColor = ColppGame
+		        End Select
+		      End If
 		    End If
-		  End If
-		  g.DrawText(Items.CellTextAt(row, column), g.Height+2, g.Height-Pos)
+		    g.DrawText(Items.CellTextAt(row, column), g.Height+2, g.Height-Pos)
+		  Catch
+		  End Try
 		  
 		  'Draw Icon
 		  Try
@@ -2280,7 +2215,7 @@ End
 	#tag EndEvent
 	#tag Event
 		Function PaintCellBackground(g As Graphics, row As Integer, column As Integer) As Boolean
-		  If Main.Visible = False Then Return False' Don't redraw if not seen
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
 		  
 		  'Can Do Solid Color
 		  'g.DrawingColor =  &C000000
@@ -2317,11 +2252,14 @@ End
 		    End If
 		  End If
 		  
-		  If Me.SelectedRowIndex = Row Then 'Highlight
-		    g.ForeColor = ColHiLite
-		    g.FillRect 0,0,g.Width, g.Height
-		    Return True 'Take away drawing default Highlight
-		  End If
+		  Try
+		    If Me.SelectedRowIndex = Row Then 'Highlight
+		      g.ForeColor = ColHiLite
+		      g.FillRect 0,0,g.Width, g.Height
+		      Return True 'Take away drawing default Highlight
+		    End If
+		  Catch
+		  End Try
 		  
 		  If CLI = -1 Then Return True ' Not an item, just skip it (Drawn BG above)
 		  
@@ -2366,20 +2304,8 @@ End
 		      SaveCurrentList()
 		    Case 116
 		      Tools.Show
-		      
-		      'If Asc(Key) = 65 Or Asc(Key) = 97 Then SelectItems ("Select All") 'Ctrl + A or a
-		      'If Asc(Key) = 78 Or Asc(Key) = 110 Then SelectItems ("Select None") 'Ctrl + N or n
-		      'If Asc(Key) = 73 Or Asc(Key) = 105 Then SelectItems ("Select Invert") 'Ctrl + I or i
-		      '
-		      'If Asc(Key) = 79 Or Asc(Key) = 111 Then Successed = LoadFromPreset() 'Ctrl + O or o
-		      'If Asc(Key) = 83 Or Asc(Key) = 115 Then SaveToPreset() 'Ctrl + S or s
-		      'If Asc(Key) = 76 Or Asc(Key) = 108 Then SaveCurrentList() 'Ctrl + L or l
-		      '
-		      'If Asc(Key) = 84 Or Asc(Key) = 116 Or Asc(Key) = 20 Then Tools.Show 'Ctrl + T or t '20 is T in Windows
-		      
 		    End Select
 		  End If
-		  
 		  
 		  #Pragma BreakOnExceptions False
 		  Try 
@@ -2467,25 +2393,27 @@ End
 #tag Events Categories
 	#tag Event
 		Function PaintCellBackground(g As Graphics, row As Integer, column As Integer) As Boolean
-		  If Main.Visible = False Then Return False ' Don't redraw if not seen
-		  'Can Do Solid Color
-		  'g.DrawingColor =  &C000000
-		  'g.FillRectangle(0,0,g.Width, g.Height)
-		  
-		  'Draw Wallpaper (Transparent)
-		  g.DrawPicture ScaledWallpaper, -Categories.Left, (-Categories.Top)-(row*me.RowHeight) +(Me.ScrollPosition*me.RowHeight)
-		  
-		  'Color HiLite
-		  If Me.SelectedRowIndex = Row Then 'Highlight
-		    g.ForeColor = ColHiLite
-		    g.FillRect 0,0,g.Width, g.Height
-		    Return True 'Take away drawing default Highlight
-		  End If
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
+		  Try
+		    'Can Do Solid Color
+		    'g.DrawingColor =  &C000000
+		    'g.FillRectangle(0,0,g.Width, g.Height)
+		    
+		    'Draw Wallpaper (Transparent)
+		    g.DrawPicture ScaledWallpaper, -Categories.Left, (-Categories.Top)-(row*me.RowHeight) +(Me.ScrollPosition*me.RowHeight)
+		    
+		    'Color HiLite
+		    If Me.SelectedRowIndex = Row Then 'Highlight
+		      g.ForeColor = ColHiLite
+		      g.FillRect 0,0,g.Width, g.Height
+		      Return True 'Take away drawing default Highlight
+		    End If
+		  Catch
+		  End Try
 		End Function
 	#tag EndEvent
 	#tag Event
 		Function CellPressed(row As Integer, column As Integer, x As Integer, y As Integer) As Boolean
-		  
 		  Try
 		    CurrentCat = Categories.CellTextAt(Row, 0)
 		    CurrentCatID = Row
@@ -2513,17 +2441,21 @@ End
 	#tag EndEvent
 	#tag Event
 		Function PaintCellText(g as Graphics, row as Integer, column as Integer, x as Integer, y as Integer) As Boolean
-		  If Main.Visible = False Then Return False' Don't redraw if not seen
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
 		  Dim Pos As Integer
 		  
-		  Pos = 2 + (g.Height / 6)
-		  
-		  g.DrawingColor = ColCategory
-		  g.FontName = FontList
-		  g.Bold = BoldList
-		  g.DrawText(Categories.CellTextAt(row, column), 0, g.Height-Pos)
-		  
-		  Return True 'Disables Drawing original text too
+		  Try
+		    Pos = 2 + (g.Height / 6)
+		    
+		    g.DrawingColor = ColCategory
+		    g.FontName = FontList
+		    g.Bold = BoldList
+		    g.DrawText(Categories.CellTextAt(row, column), 0, g.Height-Pos)
+		    
+		    Return True 'Disables Drawing original text too
+		    
+		  Catch
+		  End Try
 		End Function
 	#tag EndEvent
 	#tag Event
@@ -2541,11 +2473,6 @@ End
 		    Return True 'Stops Listbox Scrolling when zooming it
 		  End If
 		End Function
-	#tag EndEvent
-	#tag Event
-		Sub SelectionChanged()
-		  
-		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ItemFaderPic
@@ -2634,29 +2561,36 @@ End
 #tag Events MetaData
 	#tag Event
 		Function PaintCellBackground(g As Graphics, row As Integer, column As Integer) As Boolean
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
+		  
 		  'Can Do Solid Color
 		  'g.DrawingColor =  &C000000
 		  'g.FillRectangle(0,0,g.Width, g.Height)
 		  
 		  'Draw Wallpaper (Transparent)
-		  g.DrawPicture Main.Backdrop, -MetaData.Left, (-MetaData.Top)-(row*me.RowHeight) +(Me.ScrollPosition*me.RowHeight)
+		  Try
+		    g.DrawPicture Main.Backdrop, -MetaData.Left, (-MetaData.Top)-(row*me.RowHeight) +(Me.ScrollPosition*me.RowHeight)
+		  Catch
+		  End Try
 		End Function
 	#tag EndEvent
 	#tag Event
 		Function PaintCellText(g as Graphics, row as Integer, column as Integer, x as Integer, y as Integer) As Boolean
+		  'If Main.Visible = False Then Return False ' Don't redraw if not seen 'This may be breaking Wayland, try this fix
 		  '#Pragma BreakOnExceptions False
 		  
 		  #PRAGMA unused x
 		  #PRAGMA unused y
 		  
-		  If Main.Visible = False Then Return True 'Not Seen, don't bother drawing it yet
-		  
 		  Dim Pos As Integer
 		  
-		  Pos = 2+(g.Height / 6)
-		  
-		  g.DrawingColor = ColMeta
-		  g.FontName = FontMeta
+		  Try
+		    Pos = 2+(g.Height / 6)
+		    
+		    g.DrawingColor = ColMeta
+		    g.FontName = FontMeta
+		  Catch
+		  End Try
 		  
 		  #Pragma BreakOnExceptions False
 		  Try 'Ignore no items
@@ -2668,11 +2602,6 @@ End
 		  #Pragma BreakOnExceptions True
 		  
 		  Return True
-		End Function
-	#tag EndEvent
-	#tag Event
-		Function CellPressed(row As Integer, column As Integer, x As Integer, y As Integer) As Boolean
-		  
 		End Function
 	#tag EndEvent
 	#tag Event

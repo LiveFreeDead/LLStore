@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   0
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5310,14 +5310,10 @@ End
 		  
 		  Dim InputFolder As String
 		  Dim OutputFile As String
-		  'Dim Dels() As String
 		  
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1
 		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
-		  
-		  'Below Remark isn't needed, the Saving of the LLFile detects it's all good and wont return True if it fails the tests
-		  'If Exist (TextBuildToFolder.Text) Then 'Only build if a good output path
 		  
 		  Success = SaveLLFileComplete 'This also updates Compressed Item resources
 		  
@@ -5459,12 +5455,10 @@ End
 		        InputFolder = InFolder
 		        OutputFile = OutFile
 		        
-		        
 		        If Debugging Then Debug ("OutFile: " + OutFile +" Include File To Test: " + InFile)
 		        If Debugging Then Debug ("Root Path: "+ RootPath +" InFolder: "+ InFolder)
 		        If Debugging Then Debug ("NoInstall: "+ItemLLItem.NoInstall.ToString+ " BT: "+ BT)
 		        '--------------------
-		        
 		        
 		        If Exist (Slash(TextBuildToFolder.Text)+BT+".7z") = True Then
 		          If Debugging Then Debug (Chr(10)+"Found: "+ Slash(TextBuildToFolder.Text)+BT+".7z")
@@ -5556,14 +5550,13 @@ End
 		        
 		        'Now Compress to a single 7z if checked;
 		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it, but does 7z?
-		          'MsgBox Chr(34)+OutputFile+Chr(34)+" "+InputFolder+"*"
 		          Dim ExtOut As String
 		          If BT = "ppGame" Then
 		            ExtOut = ".pgz"
 		          Else
 		            ExtOut = ".apz"
 		          End If
-		          'Make a single tar Title_Version_BuildType.tar
+		          'Make a single tar Title_Version_BuildType .apz or .pgz
 		          VersIncl = ""
 		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
 		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ExtOut
@@ -5578,20 +5571,12 @@ End
 		          Res = RunCommandResults(Commands)
 		          If Debugging Then Debug (Res)
 		          
-		          
 		          If Exist(CompressedFileOut) Then 'If Successful, delete the uncompressed version
 		            'If Debugging Then Debug("Safe To Deltree? "+ OutFolder)
 		            Deltree (OutFolder) 'If the compressed file is made from the OutFolder, just delete it
 		          End If
 		        End If
-		        
-		        
-		        'Status.Text = "Failed to Build LLFile"
-		        'If Debugging Then Debug ("Built Failed")
-		        'If Not AutoBuild Then MsgBox "Not Yet Implemented"
-		        
 		      End Select
-		      
 		      
 		    End If
 		    Status.Text = "Built Successfully"
@@ -5732,12 +5717,14 @@ End
 		  TextInstaller.Text = ""
 		  TextUsage.Text = ""
 		  
+		  
 		  'Main Window 4 - Post-Processing
 		  If Exist(Slash(ItemTempPath)+"LLScript.sh") Then TextUserScript.Text = LoadDataFromFile(Slash(ItemTempPath)+"LLScript.sh")
 		  If Exist(Slash(ItemTempPath)+BT+".cmd") Then TextUserScript.Text = LoadDataFromFile(Slash(ItemTempPath)+BT+".cmd")
 		  
 		  If Exist(Slash(ItemTempPath)+"LLScript_Sudo.sh") Then TextSudoScript.Text = LoadDataFromFile(Slash(ItemTempPath)+"LLScript_Sudo.sh")
 		  If Exist(Slash(ItemTempPath)+BT+".reg") Then TextSudoScript.Text = LoadDataFromFile(Slash(ItemTempPath)+BT+".reg")
+		  
 		  
 		  'Main Window 5 - Graphics
 		  If Exist(Slash(ItemTempPath)+BT+".jpg") Then
@@ -5762,6 +5749,7 @@ End
 		  
 		  TextMovieFile.Text = ItemLLItem.FileMovie
 		  
+		  
 		  'Main Window 6 - MetaData
 		  ComboTags.Text = "" 'Need to populate these here
 		  TextTags.Text = ItemLLItem.Tags
@@ -5776,6 +5764,7 @@ End
 		  TextReleaseDate.Text = ItemLLItem.ReleaseDate
 		  TextBuilder.Text = ItemLLItem.Builder
 		  TextInstalledSize.Text = ItemLLItem.InstallSize.ToString
+		  
 		  
 		  'Main Window 7 - Build Tab
 		  If TargetWindows Then
@@ -5800,6 +5789,7 @@ End
 		  
 		  Dim BTF As String = Slash(TextBuildToFolder.Text)
 		  Dim BT As String = ItemLLItem.BuildType
+		  Dim Res As String
 		  
 		  Dim FlagsOut As String
 		  
@@ -5816,7 +5806,7 @@ End
 		    If ItemLLItem.KeepInFolder = True Then  FlagsOut = FlagsOut + "keepinfolder "
 		    ItemLLItem.Flags = FlagsOut.Trim
 		    
-		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn 2027
+		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn 2040 - Appears not to, will check when I start using to build new stuff
 		    If LnkCount >= 1 Then
 		      For I = 1 To LnkCount
 		        If ItemLnk(I).Title.Trim <> "" Then
@@ -5833,16 +5823,12 @@ End
 		          'If OrigLine.IndexOf("panel") >= 1  Then ItemLnk(LnkEditing).Panel = True Else ItemLnk(LnkEditing).Panel = False
 		          'If OrigLine.IndexOf("favorite") >= 1 Then ItemLnk(LnkEditing).Favorite = True Else ItemLnk(LnkEditing).Favorite = False
 		          
-		          
 		        End If
 		      Next
 		    End If
 		    
 		    
 		    If SaveLLFile (BTF) = True Then
-		      'Copy the new Pictures here (They get re-added to the compressed item along with the LLFile)
-		      
-		      
 		      'Grab the name of the INI file
 		      Select Case BT
 		      Case "ppGame"
@@ -5857,14 +5843,12 @@ End
 		        INIFile = BT+".llg"
 		      End Select
 		      
-		      Dim Res As String
-		      
 		      If ItemLLItem.Compressed = True Then 'Just Update the existing compressed item (Try adding 7z support as well as doing tar's like normal)
 		        Select Case BT 'I may have to chnage this to use 7z for all of them as tar isn't available in windows properly, will see, Glenn 2030
 		        Case "LLApp", "LLGame" 'Tar's
 		          If TargetWindows Then
-		            Status.Text =  "Failed, LLApps and LLGames can only edit in Linux"
-		            MsgBox "Failed, LLApps and LLGames can only edit in Linux"
+		            Status.Text =  "Failed, LLApps and LLGames can only be edited in Linux"
+		            MsgBox "Failed, LLApps and LLGames can only be edited in Linux"
 		            Return False
 		            
 		            
@@ -5906,8 +5890,6 @@ End
 		        Case Else '7zip not tar
 		          If TargetWindows Then
 		            If Debugging Then Debug("Updating: "+ItemLLItem.FileINI + " With: " + BTF+INIFile)
-		            'ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
-		            'Res = RunCommandResults ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
 		            Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
 		            If Debugging Then Debug(Res)
 		            
@@ -5922,7 +5904,7 @@ End
 		            
 		          Else 'Linux
 		            If Debugging Then Debug("Updating: "+ItemLLItem.FileINI + " With: " + BTF+INIFile)
-		            'ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
+		            'ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + Chr(10) + Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34)) '7z doesn't need the cd command to make the files in the root of archive
 		            ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
 		            If Debugging Then Debug(ShellFast.Result)
 		            
@@ -5936,11 +5918,6 @@ End
 		            If Exist(BTF+BT+".reg") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".reg" + Chr(34))
 		            
 		          End If
-		          
-		          'Status.Text =  "Failed, 7zip not yet implemented into editor"
-		          'MsgBox "Failed, 7zip not yet implemented into editor"
-		          'Return False
-		          
 		          Status.Text =  "Saved Successfully: " + ItemLLItem.FileINI
 		          Return True 'Success
 		          
@@ -5956,12 +5933,6 @@ End
 		    MsgBox "Failed, No Build To Output Path Set"
 		  End If
 		  Return False
-		  
-		  'If Not Access(LLMod.LLFileINI, gb.Write) Then
-		  'Message("Built To Path is read Only")                 
-		  'Return
-		  'End If
-		  
 		End Function
 	#tag EndMethod
 
@@ -6212,33 +6183,6 @@ End
 		    Next
 		    ComboShortcut.SelectedRowIndex = 0 'Pick first item to populate the Link Data
 		  End If
-		  
-		  
-		  ''If ItemLnk(I).Title = "" Then Continue 'Dud item, continue looping to next item
-		  '
-		  ''If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
-		  ''LnkCount = LnkCount + 1 'Add one
-		  ''ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
-		  ''ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
-		  ''ComboShortcut.SelectedRowIndex = ComboShortcut.LastAddedRowIndex 'Jumps to newly added item
-		  ''End If
-		  '
-		  ''ComboShortcut.SelectedRowText = "" 'Clear the items it's currently on
-		  '
-		  'TextComment.Text = ""
-		  'TextExecute.Text = ""
-		  ''TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
-		  'TextIcon.Text = ""
-		  'TextFileTypes.Text = ""
-		  'TextDescriptionLink.Text = ""
-		  'TextFlags.Text = ""
-		  ''TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
-		  'CheckRunInTerminal.Value = False
-		  'CheckSendTo.Value = False
-		  'CheckShowDesktop.Value = False
-		  'CheckShowFavorites.Value = False
-		  'CheckSendTo.Value = False
-		  'CheckShowPanel.Value = False
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6436,7 +6380,6 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  'MsgBox "Load Fader"
 		  Dim ImageIn As String
 		  Dim F As FolderItem
 		  
@@ -6450,9 +6393,6 @@ End
 		  ImageIn = ImageIn.ReplaceAll("\","/")
 		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
 		  
-		  
-		  'MsgBox ImageIn
-		  
 		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
 		  If TargetWindows = True Then
 		    ImageIn = ImageIn.ReplaceAll("/","\")
@@ -6465,7 +6405,6 @@ End
 		    NewFileFader = ImageIn
 		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
 		    CanvasFader.Backdrop = Picture.Open(F)
-		    'MsgBox ImageIn
 		  End If
 		End Sub
 	#tag EndEvent
@@ -6473,7 +6412,6 @@ End
 #tag Events CanvasScreenshot
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  'MsgBox "Load Fader"
 		  Dim ImageIn As String
 		  Dim F As FolderItem
 		  
@@ -6487,9 +6425,6 @@ End
 		  ImageIn = ImageIn.ReplaceAll("\","/")
 		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
 		  
-		  
-		  'MsgBox ImageIn
-		  
 		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
 		  If TargetWindows = True Then
 		    ImageIn = ImageIn.ReplaceAll("/","\")
@@ -6502,7 +6437,6 @@ End
 		    NewFileScreenshot = ImageIn
 		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
 		    CanvasScreenshot.Backdrop = Picture.Open(F)
-		    'MsgBox ImageIn
 		  End If
 		End Sub
 	#tag EndEvent
@@ -6516,7 +6450,6 @@ End
 #tag Events CanvasIcon
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  'MsgBox "Load Fader"
 		  Dim ImageIn As String
 		  Dim F As FolderItem
 		  
@@ -6530,9 +6463,6 @@ End
 		  ImageIn = ImageIn.ReplaceAll("\","/")
 		  ImageIn = Left(ImageIn,InStrRev(ImageIn,"/") -1) 'Get Parent
 		  
-		  
-		  'MsgBox ImageIn
-		  
 		  If ImageIn = "" Then ImageIn = SpecialFolder.Desktop.NativePath
 		  If TargetWindows = True Then
 		    ImageIn = ImageIn.ReplaceAll("/","\")
@@ -6545,7 +6475,6 @@ End
 		    NewFileIcon = ImageIn
 		    F = GetFolderItem(ImageIn, FolderItem.PathTypeShell)
 		    CanvasIcon.Backdrop = Picture.Open(F)
-		    'MsgBox ImageIn
 		  End If
 		End Sub
 	#tag EndEvent
@@ -6646,11 +6575,6 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag Events ComboDE
-	#tag Event
-		Sub Closing()
-		  Debug("-- Editor Closed")
-		End Sub
-	#tag EndEvent
 #tag EndEvents
 #tag Events ButtonAddDE
 	#tag Event
@@ -6710,7 +6634,6 @@ End
 #tag Events ComboBuildType
 	#tag Event
 		Sub SelectionChanged(item As DesktopMenuItem)
-		  'Glenn 2040
 		  Dim CatFileToUse As String
 		  
 		  ComboCategory.RemoveAllRows
@@ -6722,8 +6645,6 @@ End
 		    ComboCategory.AddAllRows(LLCatalogApps())
 		    ComboMenuCatalog.AddAllRows(LLCatalogGames())
 		  End If
-		  
-		  'Load in Cats and populate the Categories
 		  
 		End Sub
 	#tag EndEvent

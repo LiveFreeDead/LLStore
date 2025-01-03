@@ -10,8 +10,6 @@ Protected Module LLDownloader
 
 	#tag Method, Flags = &h0
 		Sub GetOnlineFile(URL As String, OutPutFile As String)
-		  
-		  
 		  Dim I As Integer
 		  If QueueCount >= 1 Then 'Testing if this causes issues
 		    For I = 0 To QueueCount - 1

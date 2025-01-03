@@ -126,7 +126,6 @@ End
 		  
 		  Dim I As Integer
 		  Dim DeTest As String
-		  'Dim F As FolderItem
 		  
 		  'Check if App Path exists
 		  For I = 0 To Data.Items.RowCount - 1
@@ -174,7 +173,6 @@ End
 		      End If
 		    End If
 		    
-		    
 		  Next
 		  
 		  
@@ -198,8 +196,11 @@ End
 		  
 		  'Check Version - Add Timeout as this shouldn't take more than a second - Glenn 2027
 		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
+		  
+		  TimeOut = System.Microseconds + (5 *1000000) 'Set Timeout after 5 seconds
 		  While Downloading = True
 		    App.DoEvents(3)
+		    If System.Microseconds >= TimeOut Then Exit 'Timeout after 5 seconds
 		  Wend
 		  
 		  OnlineVersionS = LoadDataFromFile(Slash(TmpPath)+"version.ini").Trim
@@ -208,7 +209,8 @@ End
 		  CurrentVersionS = Str(App.MajorVersion)+"."+Str(App.MinorVersion)
 		  CurrentVersion = CurrentVersionS.ToDouble
 		  
-		  'MsgBox "String: " + CurrentVersionS + ">>" + OnlineVersionS
+		  If Debugging Then Debug("--- Update Store Check ---")
+		  If Debugging Then Debug("Running Version: " + CurrentVersionS +" Online Version Found: " + OnlineVersionS)
 		  
 		  If OnlineVersion > CurrentVersion Then 'Is Newer, download and apply
 		    
@@ -217,7 +219,6 @@ End
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    
-		    'MsgBox Str(CurrentVersion) + ">>" + Str(OnlineVersion)
 		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
 		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
 		    
@@ -225,47 +226,35 @@ End
 		      App.DoEvents(1)
 		    Wend
 		    
-		    'MsgBox "Waiting downloaded replacements"
-		    
 		    If TargetWindows Then
 		      'Do Windows .exe
 		      If Exist(Slash(TmpPath)+"llstore.exe") Then
 		        ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
-		        'MsgBox "Renamed .exe " + ShellFast.Result
 		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		        'MsgBox "Waiting replaced with new .exe"
 		      End If
 		      
 		      If Exist(Slash(TmpPath)+"llstore") Then
 		        Deltree (Slash(AppPath)+"llstore")
-		        'MsgBox "Waiting, Deleted llstore"
-		        'ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
 		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		        'MsgBox "Waiting replaced with new llstore"
 		      End If
 		      
 		    Else 'Linux
 		      If Exist(Slash(TmpPath)+"llstore") Then
 		        'Rename Existing as it's running
 		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
-		        'MsgBox "Waiting renamed to llstoreold"
 		        'Replace Original and Make Executable
 		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
 		        ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
-		        'MsgBox "Waiting replaced llstore and made executable"
 		      End If
 		      
 		      'Now do Windows .exe
 		      If Exist(Slash(TmpPath)+"llstore.exe") Then
 		        Deltree (Slash(AppPath)+"llstore.exe")
-		        'MsgBox "Waiting, Deleted llstore.exe"
 		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
-		        'MsgBox "Waiting replaced with new .exe"
 		      End If
 		    End If
 		    
 		    'ReRun the newer Store version
-		    
 		    If TargetWindows Then
 		      F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
 		      F.Launch
@@ -275,7 +264,7 @@ End
 		    End If
 		    
 		    'These Flags allow it to Quit after the update without rescanning when another timer triggers
-		    'ForceQuit = True
+		    'ForceQuit = True ' Not required as using QuitApp now
 		    Quitting = True
 		    'Main.Close
 		    QuitApp
@@ -292,14 +281,16 @@ End
 		  If Debugging Then Debug("- Starting Check Installed Items -")
 		  App.DoEvents(1) 'This makes the Load Screen Update the Status Text, Needs to be in each Function and Sub call
 		  
-		  DIm I As Integer
+		  Dim I As Integer
 		  Dim F As FolderItem
 		  
 		  'Check if App Path exists
-		  For I = 0 To Data.Items.RowCount - 1
-		    F = GetFolderItem(ExpPath(Data.Items.CellTextAt(I, Data.GetDBHeader("PathApp"))), FolderItem.PathTypeNative)
-		    If F.Exists = True Then Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "T" Else Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "F"
-		  Next
+		  If Data.Items.RowCount - 1 >= 0 Then
+		    For I = 0 To Data.Items.RowCount - 1
+		      F = GetFolderItem(ExpPath(Data.Items.CellTextAt(I, Data.GetDBHeader("PathApp"))), FolderItem.PathTypeNative)
+		      If F.Exists = True Then Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "T" Else Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "F"
+		    Next
+		  End If
 		  
 		End Sub
 	#tag EndMethod
@@ -308,16 +299,19 @@ End
 		Sub CheckPath(DirToCheck As String)
 		  Dim F As FolderItem
 		  
-		  If TargetWindows Then
-		    F = GetFolderItem(DirToCheck.ReplaceAll("/","\"), FolderItem.PathTypeShell)
-		  Else
-		    F = GetFolderItem(DirToCheck, FolderItem.PathTypeShell)
-		  End If
-		  'If Debugging Then Debug("Checking Item Path: "+ FixPath(F.NativePath)) 'Don't need to show all these, the parent folder will do.
-		  If F.IsFolder And F.IsReadable Then
-		    Data.ScanPaths.AddRow(FixPath(F.NativePath))
-		    If Debugging Then Debug("Adding Item Path: "+ FixPath(F.NativePath))
-		  End If
+		  Try
+		    If TargetWindows Then
+		      F = GetFolderItem(DirToCheck.ReplaceAll("/","\"), FolderItem.PathTypeShell)
+		    Else
+		      F = GetFolderItem(DirToCheck, FolderItem.PathTypeShell)
+		    End If
+		    'If Debugging Then Debug("Checking Item Path: "+ FixPath(F.NativePath)) 'Don't need to show all these, the parent folder will do.
+		    If F.IsFolder And F.IsReadable Then
+		      Data.ScanPaths.AddRow(FixPath(F.NativePath))
+		      If Debugging Then Debug("Adding Item Path: "+ FixPath(F.NativePath))
+		    End If
+		  Catch
+		  End Try
 		End Sub
 	#tag EndMethod
 
@@ -694,7 +688,7 @@ End
 		    ItemCount =  Data.Items.RowCount
 		    Data.Items.AddRow(Data.Items.RowCount.ToString("000000")) 'This adds the Leading 0's or prefixes it to 6 digits as it sort Alphabettical, fixed 1,10,100,2 to 001,002,010,100 for example
 		    
-		    'Reference Only
+		    'Reference Only Keep
 		    'LocalDBHeader = " BuildType Compressed HiddenAlways ShowAlways ShowSetupOnly Arch OS TitleName Version Categories Description URL Priority PathApp PathINI FileINI FileCompressed FileIcon FileScreenshot FileFader FileMovie Flags Tags Publisher Language Rating Additional Players License ReleaseVersion ReleaseDate RequiredRuntimes Builder InstalledSize LnkTitle LnkComment LnkDescription LnkCategories LnkRunPath LnkExec LnkArguments LnkFlags LnkAssociations LnkTerminal LnkMultiple LnkIcon LnkOSCompatible LnkDECompatible LnkPMCompatible ArchCompatible  NoInstall OSCompatible DECompatible PMCompatible ArchCompatible UniqueName Dependencies ""
 		    
 		    For I = 1 To Data.Items.ColumnCount
@@ -769,7 +763,6 @@ End
 		      Case "Compressed"
 		        Data.Items.CellTextAt(ItemCount,I) = Left(Str(ItemLLItem.Compressed),1)
 		        
-		        
 		      Case "OSCompatible"
 		        Data.Items.CellTextAt(ItemCount,I) = ItemLLItem.OSCompatible
 		      Case "DECompatible"
@@ -823,7 +816,7 @@ End
 		    
 		  End If
 		  
-		  'Reference Only
+		  'Reference Only Keep
 		  '"RefID Selected BuildType Compressed Hidden ShowAlways ShowSetupOnly Installed Arch OS TitleName Version Categories Description URL Priority PathApp PathINI FileINI FileCompressed FileIcon IconRef FileScreenshot FileFader FileMovie Flags Tags Publisher Language Rating Additional Players License ReleaseVersion ReleaseDate RequiredRuntimes Builder InstalledSize
 		  'LnkTitle LnkComment LnkDescription LnkCategories LnkRunPath LnkExec LnkArguments LnkFlags LnkAssociations LnkTerminal LnkMultiple LnkParentRef LnkIcon LnkOSCompatible LnkDECompatible LnkPMCompatible LnkArchCompatible NoInstall OSCompatible DECompatible PMCompatible ArchCompatible UniqueName Dependencies "
 		  
@@ -1007,8 +1000,8 @@ End
 		  If Inn = "" Then Return
 		  Inn = Slash(FixPath(Inn))
 		  
-		  If ScannedRootFoldersCount >=1 Then 'See if already added and skip it, FIX IT Glenn 2027
-		    '- Only add Paths not already added, but I only send through the root, need to check if scanned before, this is broken
+		  If ScannedRootFoldersCount >=1 Then 'See if already added and skip it, Glenn 2040 - Make sure this actuall allows root item to show
+		    '- Only add Paths not already added, but I only send through the root, need to check if scanned before
 		    For I = 1 To ScannedRootFoldersCount
 		      If Inn = ScannedRootFolders(I) Then Return 'Skip existing items
 		    Next I
@@ -1032,7 +1025,6 @@ End
 		    CheckPath(Slash(Inn + "ppAppsInstalls"))
 		    CheckPath(Slash(Inn + "ppAppsLive"))
 		    CheckPath(Slash(Inn + "ppGamesInstalls"))
-		    
 		    
 		  Catch
 		  End Try
@@ -1084,11 +1076,11 @@ End
 		  
 		  ''Get Remote WebLinks to use 'Disabled for now due to Google stopping API use with wget
 		  'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/WebLinks.db",Slash(RepositoryPathLocal)+"RemoteWebLinks.db")
+		  'TimeOut = System.Microseconds + (5 *1000000) 'Set Timeout after 5 seconds
 		  'While Downloading = True
 		  'App.DoEvents(3)
+		  'If System.Microseconds >= TimeOut Then Exit 'Timeout after 5 seconds
 		  'Wend
-		  
-		  'ForceQuit = True ' Not using this method anymore, it's too recursive
 		End Sub
 	#tag EndMethod
 
@@ -1313,7 +1305,6 @@ End
 		  Dim F As FolderItem
 		  Dim RL As String
 		  
-		  
 		  #Pragma BreakOnExceptions Off
 		  Try
 		    If StoreMode = 0 Then
@@ -1335,6 +1326,7 @@ End
 		    End If
 		  Catch
 		    'No Theme files found
+		    If Debugging Then Debug("* Error: Theme Not Found: "+ThemePath)
 		  End Try
 		  #Pragma BreakOnExceptions On
 		End Sub
@@ -1440,7 +1432,6 @@ End
 		          Continue
 		        End If
 		        
-		        
 		      End If
 		    Next
 		  Next
@@ -1453,7 +1444,6 @@ End
 		  If FullPathGiven = True Then
 		    F = GetFolderItem(DBRootIn, FolderItem.PathTypeNative)
 		    DBRootIn = Left(DBRootIn,DBRootIn.IndexOf("00-")) 'Drop back to the Folder
-		    'MsgBox DBRootIn 'Debug Glenn 2027
 		  Else
 		    F = GetFolderItem(DBRootIn+".lldb/lldb.ini",FolderItem.PathTypeNative)
 		  End If
@@ -1711,7 +1701,6 @@ End
 		      End If
 		    Case "useonlinerepositiories"
 		      If LineData <> "" Then Settings.SetUseOnlineRepos.Value = IsTrue(LineData)
-		      'MsgBox  LineData +" "+ IsTrue(LineData).ToString
 		    Case "debugenabled"
 		      If LineData <> "" Then Settings.SetDebugEnabled.Value = IsTrue(LineData)
 		      If DebugFileOk = True Then
@@ -1954,6 +1943,8 @@ End
 		  ColDual = Color.RGB(((ColHiLite.Blue + ColSelect.Blue) /2),((ColHiLite.Green + ColSelect.Green)/2),((ColHiLite.Red + ColSelect.Red) /2)) 'Inversed
 		  'ColDual = Color.RGB(((ColHiLite.Red + ColSelect.Red) /2),((ColHiLite.Green + ColSelect.Green)/2),((ColHiLite.Blue + ColSelect.Blue) /2)) 'Average
 		  
+		  If Debugging Then Debug("- Loaded Theme: "+ThemeName)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -2067,12 +2058,7 @@ End
 		        End If
 		      End If
 		    Next
-		    'Deltree (DBOutPath+"lldb.ini")
-		    'F = GetFolderItem(DBOutPath+"lldb.ini", FolderItem.PathTypeNative)
-		    ''If F.Exists Then F.Delete 'Remove Existing DB (Will need to test if ReadOnly)
-		    'OutputStream = TextOutputStream.Open(F)
-		    'OutputStream.Write (DBOutText)
-		    'OutputStream.Close
+		    'Save File
 		    SaveDataToFile (DBOutText, DBOutPath+"lldb.ini")
 		  Next
 		  
@@ -2088,28 +2074,10 @@ End
 		  For I = 0 To FavCount - 1
 		    If Favorites(I) <> "" Then FavOut = FavOut + Favorites(I) + Chr(10)
 		  Next I
-		  'MsgBox FavOut
 		  
 		  If FavOut <> "" Then
 		    SaveDataToFile (FavOut, Slash(AppPath)+"Favorites.ini")
 		  End If
-		  
-		  
-		  'If StoreMode = 1 Then
-		  'If Exist(Slash(AppPath)+"Favorites.ini") Then
-		  'InFavs = LoadDataFromFile(Slash(AppPath)+"Favorites.ini")
-		  'InFavs = Replace(InFavs, Chr(13), Chr(10))
-		  'InFavSp() = InFavs.Split(Chr(10))
-		  'If InFavSp.Count >= 1 Then
-		  'For I = 0 To InFavSp.Count - 1
-		  'If InFavSp(I).Trim <> "" Then
-		  'Favorites(FavCount) = InFavSp(I).Trim
-		  'FavCount = FavCount + 1
-		  'End If
-		  'Next
-		  'End If
-		  'End If
-		  'End If
 		End Sub
 	#tag EndMethod
 
@@ -2195,9 +2163,6 @@ End
 		  RL = RL + "DebugEnabled=" + Str(Settings.SetDebugEnabled.Value) + Chr(10)
 		  
 		  RL = RL + "AlwaysShowRes=" + Str(Settings.SetAlwaysShowRes.Value) + Chr(10)
-		  
-		  
-		  'Msgbox RL
 		  
 		  'Save to actual Settings File
 		  SaveDataToFile(RL, SettingsFile)
@@ -2415,20 +2380,16 @@ End
 		    
 		    'Change Categories to All (This Generates the items too)
 		    Main.ChangeCat("All")
-		    'Main.GenerateItems()
 		    
 		    'Load Favorites
 		    LoadFavorites()
-		    
 		    
 		    'Last Status 
 		    Loading.Status.Text = "Generating GUI..."
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    
-		    
 		    'Save Debug Of The Scanned Items:
-		    
 		    If Debugging Then
 		      Debug ("--- ITEMS IN DB ---")
 		      If Data.Items.RowCount >=1 Then
@@ -2441,9 +2402,7 @@ End
 		      End If
 		    End If
 		    
-		    
-		    'Centre Main Form (For now, will load in position once stored)
-		    
+		    'Load position of main windows or Centre if not set
 		    If StoreMode = 0 Or StoreMode = 1 Then Loading.LoadPosition 'Only Load if Store or Launcher
 		    
 		    If LoadedPosition = False Then 'Only resize to default position if none loaded
@@ -2516,7 +2475,6 @@ End
 		    
 		    'Load The Preset specified
 		    If LoadPresetFile = True Then
-		      'MsgBox CommandLineFile
 		      If CommandLineFile <> "" Then
 		        If Not Exist(CommandLineFile) Then
 		          Test = Slash(Slash(AppPath)+"Presets")+CommandLineFile
@@ -2638,12 +2596,10 @@ End
 		        End If
 		        SaveDataToFile ("Failed Finding Remote: "+GetURL, Slash(RepositoryPathLocal) + "FailedDownload")
 		      Else ' It exist, download it
-		        'SaveDataToFile(GetURL+Chr(10)+Test, Slash(SpecialFolder.Desktop.NativePath)+"Debug_Worked.txt")
 		        If Debugging Then Debug ("Start Downloading From: "+GetURL)
 		        FailedDownload = False
 		        If TargetWindows Then
 		          Commands = WinWget + " --tries=6 --timeout=9 -q -O " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " --show-progress " + Chr(34) + GetURL + Chr(34) + " && echo 'done' > " + Slash(RepositoryPathLocal) + "DownloadDone"        
-		          'SaveDataToFile (Commands, SpecialFolder.Desktop.NativePath+"Here.cmd")
 		          If Debugging Then Debug("Command: "+Chr(10)+Commands)
 		          DownloadShell.Execute (Commands)
 		        Else
@@ -2681,8 +2637,8 @@ End
 		        
 		        'For I = 0 To 10 '10 is about 1 second of looking for it
 		        'If Exist(QueueLocal(QueueUpTo) + ".partial") Then Exit 'If it is found, stop looking for it
-		        'App.DoEvents(100) 'Give it time to make the file exist after it completes, else it detects as not found (A bug??)
-		        'Next I
+		        'App.DoEvents(100) 'Give it time to make the file exist after it completes, else it detects as not found.
+		        'Next
 		        
 		        If Exist(QueueLocal(QueueUpTo) + ".partial") Then 'If you don't have access to the file then it's better to try to delete it and then not move/overwrite as it asks if you want to try, this stops automation.
 		          If Exist(QueueLocal(QueueUpTo)) Then Deltree QueueLocal(QueueUpTo) 'Remove Existing item, only if Partial one is ready to rename
@@ -2691,7 +2647,6 @@ End
 		            Commands = Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34)
 		            Commands = Commands.ReplaceAll("/", "\")'Windows move commands requires backslash's
 		            Commands = "move /y " + Commands
-		            'SaveDataToFile (Commands, SpecialFolder.Desktop.NativePath+"Here.cmd")
 		            Sh = New Shell ' Clear previous results
 		            Sh.Execute (Commands)
 		            While Sh.IsRunning
@@ -2699,7 +2654,6 @@ End
 		            Wend
 		            If Debugging Then Debug ("Move Results: "+ Sh.Result)
 		          Else
-		            'MsgBox "Move "+ QueueLocal(QueueUpTo) + ".partial"
 		            Sh = New Shell ' Clear previous results
 		            Sh.Execute ("mv -f " + Chr(34) + QueueLocal(QueueUpTo) + ".partial" + Chr(34) + " " + Chr(34) + QueueLocal(QueueUpTo) + Chr(34))
 		            While Sh.IsRunning
@@ -2752,9 +2706,6 @@ End
 		  
 		  VeryFirstRunTimer.RunMode = Timer.RunModes.Off ' Disable this timer again
 		  
-		  'Disabled this as it's dodgy, use QuitApp Now
-		  'ForceQuit = True 'Enable this when I can so you can close the loading screen to quit the app, else it opens without the loading form
-		  
 		  'Get Consts
 		  If TargetLinux Then
 		    SysDesktopEnvironment = System.EnvironmentVariable("XDG_SESSION_DESKTOP").Lowercase
@@ -2771,8 +2722,6 @@ End
 		  SysAvailableDesktops = Array("All","All-Linux","Cinnamon","Explorer","Gnome","KDE","LXDE","Mate","Unity","XFCE","cosmic")
 		  SysAvailablePackageManagers = Array("All","apt","apk","dnf","emerge","pacman","winget","zypper")
 		  SysAvailableArchitectures = Array("All","x86 + x64","x86","x64","ARM")
-		  
-		  'MsgBox  SysDesktopEnvironment
 		  
 		  Dim F, G As FolderItem
 		  Dim TI As TextInputStream
@@ -2819,12 +2768,8 @@ End
 		      End If
 		    End If
 		  Loop
-		  'AppPath = FixPath(App.ExecutableFile.Parent.NativePath)
-		  OldAppPath = AppPath
-		  'AppPath = Replace(AppPath,"Debugllstore/","") 'Use correct path when running from IDE
-		  'AppPath = Replace(AppPath,"Debugllstore\","") 'Use correct path when running from IDE in Windows
 		  
-		  'If AppPath <> OldAppPath Then RunningInIDE = True ' Found Debug executable, meaning in IDE
+		  OldAppPath = AppPath
 		  
 		  If TargetWindows Then 'Need to add Windows ppGames and Apps drives here
 		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
@@ -2937,7 +2882,6 @@ End
 		  Win7z = Chr(34)+ToolPath + "7z.exe"+Chr(34) 'Added " to make it work in paths with spaces?
 		  WinWget = Chr(34)+ToolPath + "wget.exe"+Chr(34) 'Added " to make it work in paths with spaces?
 		  
-		  
 		  'Clean Temp folders
 		  CleanTemp 'Clearing LLTemp folder entirly
 		  If Exist(Slash(RepositoryPathLocal) + "DownloadDone") Then Deltree (Slash(RepositoryPathLocal) + "DownloadDone")
@@ -2951,7 +2895,6 @@ End
 		    MakeFolder (TmpPath)
 		  End If
 		  
-		  
 		  'Make sure paths exist (But only once per execution)
 		  TmpPathItems = Slash(TmpPath)+"items/" 'Use Linux Paths for both OS's
 		  if TargetWindows then
@@ -2961,9 +2904,6 @@ End
 		  Else
 		    MakeFolder(TmpPathItems)
 		  End If
-		  
-		  
-		  
 		  
 		  'Make Local paths and Debug File
 		  #Pragma BreakOnExceptions Off
@@ -2975,7 +2915,7 @@ End
 		    End Try
 		  End If
 		  
-		  'Debug
+		  'Enable Debugger
 		  Try
 		    DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
 		    If Exist(Slash(TmpPath)+"DebugLog.txt") Then
@@ -3002,7 +2942,6 @@ End
 		  'Check the Arguments here and don't show if installer mode or editor etc
 		  Dim Args As String
 		  Args = System.CommandLine
-		  
 		  
 		  'Pick mode depending on calling name
 		  If Args.IndexOf("lllauncher") >= 0 Then
@@ -3044,7 +2983,6 @@ End
 		  
 		  'Cleaning above isn't really required, maybe kill it off once testing is done
 		  
-		  
 		  Dim I As Integer
 		  Dim ArgsSP(-1) As String
 		  ArgsSP=System.CommandLine.ToArray(" ")
@@ -3075,7 +3013,6 @@ End
 		      StoreMode = 3
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-build" Then
 		      StoreMode = 3
 		      Build = True
@@ -3086,7 +3023,6 @@ End
 		      Build = True
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-compress" Then
 		      StoreMode = 3
 		      Build = True
@@ -3099,25 +3035,21 @@ End
 		      Compress = True
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-preset" Then
 		      StoreMode = 0
 		      LoadPresetFile = True
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-p" Then
 		      StoreMode = 0
 		      LoadPresetFile = True
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-setup" Then
 		      StoreMode = 4
 		      InstallStore = True
 		      Continue
 		    End If
-		    
 		    If ArgsSP(I).Lowercase = "-s" Then
 		      StoreMode = 4
 		      InstallStore = True
@@ -3154,7 +3086,6 @@ End
 		  CommandLineFile = CommandLineFile.ReplaceAll("Files\LLStore\llstore.exe"+Chr(34),"")
 		  CommandLineFile = CommandLineFile.ReplaceAll("Files\LLStore\llstore.exe","")
 		  CommandLineFile = CommandLineFile.ReplaceAll(" "+Chr(34),Chr(34)) 'If the Loading file has a space after it, it'll have the quote around it, removed.
-		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
 		  
 		  If TargetWindows Then
@@ -3187,7 +3118,7 @@ End
 		    'Remove Quotes that get put on my Nemo etc
 		    If Left(CommandLineFile,1) = Chr(34) Then CommandLineFile = CommandLineFile.ReplaceAll(Chr(34),"") 'Remove Quotes from given path entirly
 		    
-		    'Need to convert ./ to $PWD etc
+		    'Need to convert ./ to $PWD etc - Glenn 2025
 		    
 		    
 		    If IsFolder(CommandLineFile) Then
@@ -3275,14 +3206,12 @@ End
 		    Return ' Just get out of here once set to show editor
 		  End If
 		  
-		  
-		  'Install Mode
+		  'Install Item Mode
 		  If StoreMode = 2 Then
 		    SudoAsNeeded = True 'As your only installing one item, there is no benefit to asking for SUDO if it isn't needed, so don't
 		    InstallOnly = True
 		    If Debugging Then Debug("--- Install From Commandline ---")
 		    #Pragma BreakOnExceptions Off
-		    'MsgBox "Check to Install: "+ CommandLineFile
 		    If CommandLineFile <> "" Then
 		      If Exist (CommandLineFile) Then 'Install it
 		        'MsgBox "Installing: "+ CommandLineFile
@@ -3316,19 +3245,8 @@ End
 		      Editor.PopulateData
 		      Editor.Show
 		    Else
-		      'F = GetFolderItem(CommandLineFile, FolderItem.PathTypeShell)
-		      'If  F.IsFolder Then
-		      'If Exist (Slash(CommandLineFile)+"LLApp.lla") Then CommandLineFile = CommandLineFile+"LLApp.lla"
-		      'If Exist (Slash(CommandLineFile)+"LLGame.llg") Then CommandLineFile = CommandLineFile+"LLGame.llg"
-		      'If Exist (Slash(CommandLineFile)+"ssApp.app") Then CommandLineFile = CommandLineFile+"ssApp.app"
-		      'If Exist (Slash(CommandLineFile)+"ppApp.app") Then CommandLineFile = CommandLineFile+"ppApp.app"
-		      'If Exist (Slash(CommandLineFile)+"ppGame.ppg") Then CommandLineFile = CommandLineFile+"ppGame.ppg"
-		      'End If
-		      'F = Nil
 		      Success = LoadLLFile(CommandLineFile) ', "", True) 'The true means it extracts all the file contents, we'll just update existing ones if open then saving instead of Extracting the big ones
 		      If Success Then 
-		        'MsgBox "Path: "+ItemTempPath +" Compresed: "+ ItemLLItem.Compressed.ToString
-		        'MsgBox ItemLLItem.TitleName
 		        If Build = False Then
 		          Editor.Left = (Screen(0).AvailableWidth/2) - (Editor.Width /2) 'Centered
 		          Editor.Top = (Screen(0).AvailableHeight/2) - (Editor.Height /2)
@@ -3356,7 +3274,7 @@ End
 		  End If
 		  
 		  'Using a timer at the end of Form open allows it to display, many events hold off other processes until the complete
-		  If StoreMode <=2 Then FirstRunTime.RunMode = Timer.RunModes.Single ' Only show the store in Installer or Launcher modes, else just quit?
+		  If StoreMode <=1 Then FirstRunTime.RunMode = Timer.RunModes.Single ' Only show the store in Installer or Launcher modes, else just quit?
 		  
 		  
 		End Sub
@@ -3367,8 +3285,6 @@ End
 		Sub Action()
 		  If ForceQuit = True Then
 		    If EditorOnly Then 
-		      'MsgBox "Quit"
-		      'Quit
 		      PreQuitApp
 		      QuitApp
 		    End If

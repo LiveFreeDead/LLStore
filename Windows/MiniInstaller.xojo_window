@@ -502,7 +502,6 @@ End
 		  #PRAGMA unused x
 		  #PRAGMA unused y
 		  
-		  
 		  Var icon As Picture
 		  
 		  Dim Pos As Integer
@@ -576,9 +575,12 @@ End
 		Function PaintCellBackground(g As Graphics, row As Integer, column As Integer) As Boolean
 		  'If MiniInstaller.Visible = False Then Return False' Don't redraw if not seen
 		  
-		  ''Can Do Solid Color 'Black for now
-		  g.DrawingColor =  ColBG '&C000000 'Match Description BG colour
-		  g.FillRectangle(0,0,g.Width, g.Height)
+		  ''Can Do Solid Color
+		  Try
+		    g.DrawingColor =  ColBG '&C000000 'Match Description BG colour
+		    g.FillRectangle(0,0,g.Width, g.Height)
+		  Catch
+		  End Try
 		  
 		  'Draw Wallpaper (Transparent) Disabled for now
 		  'g.DrawPicture ScaledWallpaper, -Items.Left, (-Items.Top)-(row*me.RowHeight) +(Me.ScrollPosition*me.RowHeight)
@@ -672,7 +674,7 @@ End
 		    End If
 		  End If
 		  
-		  'App.DoEvents(4000) 'Wait 4 seconds
+		  'App.DoEvents(4000) 'Wait 4 seconds 'Just a for testing thing
 		  
 		  ThreadFinished = True
 		End Sub
@@ -818,7 +820,7 @@ End
 		          Return
 		        End If
 		        
-		        'Do counter here, so will abort - Glenn 2027
+		        'Do counter here, so will abort - Glenn 2040
 		        
 		        Return 'Once you start the download we don't continue the job processing below, just update the stats until it's done or aborted
 		      End If
@@ -826,7 +828,7 @@ End
 		      If MiniUpTo >= 0 And MiniUpTo < ItemsToInstall Then 
 		        If ThreadFinished Then
 		          InstallItems.Start 'Loop again Recursive
-		          'MsgBox FileToInstallFrom 'Glenn 2027 'Mesage box needs to be below due to recursive and thread based
+		          'MsgBox FileToInstallFrom 'Glenn 2027 'Mesage box needs to be below due to recursive and thread based, For Debugging, Keep
 		        End If
 		      Else
 		        Installing = False

@@ -29,7 +29,6 @@ Protected Module LLMod
 		    If Not err = 0 Then
 		      Success = False
 		      System.DebugLog("ERROR " + Str(err))
-		      'MsgBox Str(err)
 		    End
 		    
 		  #ElseIf TargetWin32
@@ -64,17 +63,6 @@ Protected Module LLMod
 		      Deltree(Slash(TmpPath)+"*.cmd")
 		      Deltree(Slash(TmpPath)+"*.sh")
 		      Deltree(Slash(TmpPath)+"*")
-		      
-		      'Old Method
-		      'If TargetWindows Then
-		      'RunCommand ("rmdir /q /s " + Chr(34)+TmpPath+"/items"+Chr(34))
-		      'RunCommand ("rmdir /q /s " + Chr(34)+TmpPath+"/LLShorts"+Chr(34))
-		      'RunCommand ("rmdir /q " + Chr(34)+TmpPath+"/*.cmd"+Chr(34)) 'Remove Scripts from Temp
-		      'Else
-		      'ShellFast.Execute ("rm -rf " + Chr(34)+TmpPath+"/items"+Chr(34))
-		      'ShellFast.Execute ("rm -rf " + Chr(34)+TmpPath+"/LLShorts"+Chr(34))
-		      'ShellFast.Execute ("rm -f " + Chr(34)+TmpPath+"/*.sh"+Chr(34)) 'Remove Scripts from Temp
-		      'End If
 		    End If
 		  End If
 		End Sub
@@ -116,11 +104,10 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Sub Copy(FileIn As String, FileOut As String)
 		  If Debugging Then Debug("Copy "+ FileIn +" To " + FileOut)
-		  'I may update this routune to new methods, but works for now using Xojo method - Glenn 2027
+		  'I may update this routune to new methods, but works for now using Xojo method - Glenn 2040
 		  
 		  Dim F, G As FolderItem
 		  
-		  'MsgBox FileIn + " "+ FileOut
 		  If Exist(FileIn) Then
 		    #Pragma BreakOnExceptions Off
 		    Try
@@ -142,14 +129,9 @@ Protected Module LLMod
 		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String, Args As String = "", IconFile As String = "")
 		  If Debugging Then Debug("--- Starting Create Shortcuts ---")
 		  
-		  'WorkingDir = NoSlash(WorkingDir).ReplaceAll("/","\") 'Used for Windows
-		  'LinkFolder = NoSlash(LinkFolder).ReplaceAll("/","\") 'Used for Windows
-		  'Target = Target.ReplaceAll("/","\") 'Used for Windows
-		  
 		  If Debugging Then Debug("TitleName: "+TitleName+" , Target: "+Target+" , Working: "+WorkingDir+" , LinkFolder: "+LinkFolder)
 		  
 		  Dim scWorkingDir As FolderItem
-		  
 		  
 		  'Dim scTarget As FolderItem
 		  'scTarget = GetFolderItem(Target, FolderItem.PathTypeShell)
@@ -173,14 +155,10 @@ Protected Module LLMod
 		          
 		          If IconFile <> "" Then lnkObj.IconLocation = IconFile 'If Icon (.ico) Provided it can be used/set
 		          
-		          
+		          'Save Lnk file
 		          lnkObj.Save
-		          'Return SpecialFolder.Desktop.TrueChild(scName + ".lnk")
 		        Else
-		          'Return Nil
 		        End If
-		      Else
-		        'Return Nil
 		      End If
 		    End If
 		  Catch
@@ -319,12 +297,10 @@ Protected Module LLMod
 		  Dim F As FolderItem
 		  FileIn = FileIn.Trim
 		  If FileIn = "" Then Return False
-		  'MsgBox "Is "+ FileIn
 		  #Pragma BreakOnExceptions Off
 		  Try
 		    F = GetFolderItem(FileIn, FolderItem.PathTypeShell)
 		    If F <> Nil Then
-		      'MsgBox "FOUND!"
 		      'If Debugging Then Debug("Exist: "+FileIn +" = True")  'Too many calls to log it really
 		      If F.Exists Then Return True
 		    End If
@@ -606,6 +582,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function ExpPathScript(PathIn As String, WinPaths As Boolean = False) As String
+		  'Glenn 2040 - Make sure I convert ALL the Variables I need in all these expanders
+		  
 		  If Debugging Then Debug("ExpPathScript = " +PathIn)
 		  Dim UserName As String
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
@@ -1162,9 +1140,6 @@ Protected Module LLMod
 		  Success = LoadLLFile(FileIn, "", True) '"" Means it will generate a new Temp folder and return it as TempInstall Globally and the True means Install Item, will extract whole archive, not just LLFile resources
 		  If Debugging Then Debug("Install Loading in File: "+FileIn + " ItemTempPath: " + ItemTempPath +" Good: "+Success.ToString)
 		  
-		  
-		  'SaveDataToFile("Loading "+FileIn+" "+Str(Success)+Chr(10)+TempInstall+Chr(10)+ItemTempPath, SpecialFolder.Desktop.NativePath+"/Debug1.txt")
-		  
 		  If Success = False Then
 		    If Debugging Then Debug("* Error: Failed - Aborting Install")
 		    Return False ' Couldn't Load Item
@@ -1197,7 +1172,6 @@ Protected Module LLMod
 		    If Debugging Then Debug("Installing To Path: "+ InstallToPath)
 		    
 		    'Change to App/Games INI Path to run Assemblys from
-		    'MsgBox "Current Path: " + InstallFromPath
 		    If ChDirSet(InstallFromPath) = True Then ' Was successful
 		    End If
 		    
@@ -1261,19 +1235,19 @@ Protected Module LLMod
 		      If ItemLLItem.BuildType = "LLGame"  Then
 		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
-		          App.DoEvents(7)  'Used to be 50, trying 7 to see if more responsive. - It is
+		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ppGame"  Then
 		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
-		          App.DoEvents(7)  'Used to be 50, trying 7 to see if more responsive. - It is
+		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ppApp"  Then
 		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
-		          App.DoEvents(7)  'Used to be 50, trying 7 to see if more responsive. - It is
+		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ssApp" Then
@@ -1302,7 +1276,7 @@ Protected Module LLMod
 		      End If
 		    End If
 		    
-		    'Run Scripts ' Still need to expand path here Glenn 2027
+		    'Run Scripts
 		    RunScripts
 		    
 		    'Run Registry Enteries
@@ -1337,7 +1311,7 @@ Protected Module LLMod
 		    'No need to do Registry Stuff for linux items, but will see if any is in there anyway
 		    RunRegistry
 		    
-		    'Run Scripts ' Still need to expand path here Glenn 2027
+		    'Run Scripts
 		    RunScripts
 		    
 		    'Run Sudo Scripts
@@ -1346,7 +1320,6 @@ Protected Module LLMod
 		    
 		    'Make Links
 		    MakeLinks
-		    
 		    
 		  End If
 		  
@@ -1417,10 +1390,9 @@ Protected Module LLMod
 		    MainPath = MainPath.ReplaceAll("\","/")
 		    InstallPath = "/LastOS/LLStore/"
 		    Target = InstallPath+"llstore"
-		    'If Not Exist(InstallPath) Then 'Only do this if required
+		    
 		    EnableSudoScript
 		    RunSudo("mkdir -p "+Chr(34)+InstallPath+Chr(34)+ " ; " + "chmod -R 777 "+Chr(34)+InstallPath+Chr(34))
-		    'End If
 		    
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Libs"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Resources"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
@@ -1507,9 +1479,6 @@ Protected Module LLMod
 		    
 		    
 		    'Close Sudo Terminal
-		    'Make sure Sudo is closed (not added ability to echo to /tmp/LLSudo to close it yet, so disabled) Glenn 2029
-		    
-		    'If Not SudoShellLoop.IsRunning Then 
 		    ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
 		  End If
 		End Sub
@@ -1580,7 +1549,7 @@ Protected Module LLMod
 		  Dim IsTrue As Boolean
 		  IsTrue = False
 		  Select Case Inn.Lowercase
-		  Case "y", "tes",  "t", "true","1","on"
+		  Case "y", "yes",  "t", "true","1","on"
 		    IsTrue = True
 		  End Select
 		  
@@ -1629,8 +1598,6 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function LoadLLFile(ItemInn As String, InnTmp As String = "", InstallItem As Boolean = False) As Boolean
-		  'MsgBox "LoadLLFile: "+ ItemInn
-		  
 		  App.DoEvents(1)
 		  
 		  EditingLnk = 0
@@ -1816,22 +1783,18 @@ Protected Module LLMod
 		        LineID = Lin.Trim
 		      End If
 		      
-		      'MsgBox LineID +" = " + LineData 'Glenn 2030
-		      
 		      If ReadMode = 0 Then  'Only if ReadMode = 0
 		        Select Case LineID
 		        Case "title"
 		          If LineData = "" Then Return False
-		          'MsgBox "Data is = "+ LineData
 		          ItemLLItem.TitleName = LineData
-		          'MsgBox "This one should be set 2: "+ItemLLItem.TitleName
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "version"
 		          ItemLLItem.Version = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "description"
 		          ItemLLItem.Descriptions = LineData '.ReplaceAll(Chr(30),Chr(13)) 'Disabled converting the Data to CRLF to speed up loading and to make writing the DB files easier
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "apppath"
 		          ItemLLItem.PathApp = ExpPath(LineData)
 		          If TargetWindows Then
@@ -1840,10 +1803,10 @@ Protected Module LLMod
 		          Else
 		            ItemLLItem.PathApp = ItemLLItem.PathApp.ReplaceAll("\","/")
 		          End If
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "url"
 		          ItemLLItem.URL = LineData '.ReplaceAll("|",Chr(13)) 'Leep condensed for now
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "category"
 		          ItemLLItem.Categories = FixGameCats(LineData)
 		          
@@ -1853,14 +1816,16 @@ Protected Module LLMod
 		          End If
 		          ItemLLItem.Categories = ItemLLItem.Categories.Trim
 		          
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "buildtype"
 		          If LineData <> "" Then ItemLLItem.BuildType = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "assembly"
 		          ItemLLItem.Assembly = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "shortcutnameskeep"
 		          ItemLLItem.ShortCutNamesKeep = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "catalog"
 		          ItemLLItem.Catalog = FixCatalog(LineData)
 		          'Fix Catalog
@@ -1868,10 +1833,13 @@ Protected Module LLMod
 		            If Left(ItemLLItem.Catalog, 5) <>"Game;" And ItemLLItem.Catalog.IndexOf(" Game;") <= 0 Then  ItemLLItem.Catalog=ItemLLItem.Catalog+" Game;"
 		          End If
 		          ItemLLItem.Catalog = ItemLLItem.Catalog.Trim
+		          Continue 'Only need to process this line and then move to the next
 		        Case "startmenulegacyprimary"
 		          ItemLLItem.StartMenuLegacyPrimary = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "startmenusourcepath"
 		          ItemLLItem.StartMenuSourcePath = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "flags"
 		          ItemLLItem.Flags = LineData.Lowercase
 		          
@@ -1924,61 +1892,67 @@ Protected Module LLMod
 		          Else
 		            ItemLLItem.SendTo = False
 		          End If
-		          
 		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
 		        Case "priority"
 		          ItemLLItem.Priority = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "priorityorder"
 		          ItemLLItem.Priority = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "tags"
 		          ItemLLItem.Tags = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "publisher"
 		          ItemLLItem.Publisher = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "language"
 		          ItemLLItem.Language = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "arch","architecture"
 		          ItemLLItem.Arch = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "os"
 		          ItemLLItem.OS = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "rating"
 		          ItemLLItem.Rating = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "players"
 		          ItemLLItem.Players = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "license"
 		          ItemLLItem.License = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "licensetype"
 		          ItemLLItem.License = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "releaseversion"
 		          ItemLLItem.ReleaseVersion = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "releasedate"
 		          ItemLLItem.ReleaseDate = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "builder"
 		          ItemLLItem.Builder = LineData
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "installedsize"
 		          ItemLLItem.InstallSize = Val(LineData)
-		          Continue 'Once used Data no need to process the rest, The other lines will cause the lower things to be tested per line
+		          Continue 'Once used Data no need to process the rest
 		        Case "oscompatible"
 		          ItemLLItem.OSCompatible = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "decompatible"
 		          ItemLLItem.DECompatible = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "pmcompatible"
 		          ItemLLItem.PMCompatible = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "archcompatible"
 		          ItemLLItem.ArchCompatible = LineData
+		          Continue 'Once used Data no need to process the rest
 		        Case "dependencies"
 		          ItemLLItem.Dependencies = LineData
+		          Continue 'Once used Data no need to process the rest
 		        End Select
 		        
 		      End If 'Only if ReadMode = 0
@@ -2010,55 +1984,67 @@ Protected Module LLMod
 		        Select Case LineID
 		        Case "exec"
 		          ItemLnk(LnkEditing).Exec = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "target"
 		          ItemLnk(LnkEditing).Exec = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "arguments"
 		          ItemLnk(LnkEditing).Arguments = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "comment"
 		          ItemLnk(LnkEditing).Comment = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "description"
 		          If LineData <> "" Then ItemLnk(LnkEditing).Description = Replace(LineData, Chr(30), Chr(10)) 'Replace RS lines ASAP to avoid issues, save will make sure to put them back
+		          Continue 'Only need to process this line and then move to the next
 		        Case "path"
 		          ItemLnk(LnkEditing).RunPath = Trim(LineData)
 		          If ItemLnk(LnkEditing).RunPath = "" Then ItemLnk(LnkEditing).RunPath= Slash(ItemLLItem.PathApp)
+		          Continue 'Only need to process this line and then move to the next
 		        Case "icon"
 		          ItemLnk(LnkEditing).Icon = Trim(LineData)
 		          If ItemLnk(LnkEditing).Icon = "" Then ItemLnk(LnkEditing).Icon = Slash(ItemLLItem.PathApp) + ItemLLItem.BuildType + ".png"
+		          Continue 'Only need to process this line and then move to the next
 		        Case "categories"
 		          ItemLnk(LnkEditing).Categories = FixGameCats(LineData)
 		          'Fix Categories, Can do here because the type is set above
 		          If ItemLLItem.BuildType = "ppGame" Or ItemLLItem.BuildType = "LLGame" Then
 		            If Left(ItemLnk(LnkEditing).Categories, 5) <>"Game;" And ItemLnk(LnkEditing).Categories.IndexOf(" Game;") <= 0 Then  ItemLnk(LnkEditing).Categories=ItemLnk(LnkEditing).Categories+" Game;"
 		          End If
-		          
+		          Continue 'Only need to process this line and then move to the next
 		        Case "extensions"
 		          ItemLnk(LnkEditing).Associations = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "flags"
 		          ItemLnk(LnkEditing).Flags = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "terminal"
 		          If LineData = "True" Then ItemLnk(LnkEditing).Terminal= True Else ItemLnk(LnkEditing).Terminal= False
-		          
+		          Continue 'Only need to process this line and then move to the next
 		        Case "showon"
 		          If OrigLine.IndexOf("desktop") >= 1 Then ItemLnk(LnkEditing).Desktop = True Else ItemLnk(LnkEditing).Desktop = False
 		          If OrigLine.IndexOf("panel") >= 1  Then ItemLnk(LnkEditing).Panel = True Else ItemLnk(LnkEditing).Panel = False
 		          If OrigLine.IndexOf("favorite") >= 1 Then ItemLnk(LnkEditing).Favorite = True Else ItemLnk(LnkEditing).Favorite = False
 		          If OrigLine.IndexOf("sendto") >= 1 Then ItemLnk(LnkEditing).LnkSendTo = True Else ItemLnk(LnkEditing).LnkSendTo = False
+		          Continue 'Only need to process this line and then move to the next
 		        Case "lnkoscompatible"
 		          ItemLnk(LnkEditing).LnkOSCompatible = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "lnkdecompatible"
 		          ItemLnk(LnkEditing).LnkDECompatible = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "lnkpmcompatible"
 		          ItemLnk(LnkEditing).LnkPMCompatible = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        Case "lnkarchcompatible"
 		          ItemLnk(LnkEditing).LnkArchCompatible = LineData
+		          Continue 'Only need to process this line and then move to the next
 		        End Select
 		      End If 'End ReadMode 1
 		    Next
 		    
 		    ItemLLItem.LnkCount = LnkCount
 		  End If
-		  
-		  'MsgBox "This one should be set: "+ItemLLItem.TitleName
 		  
 		  Dim MediaPath As String
 		  MediaPath = Slash(ExpPath(ItemLLItem.PathINI)) 
@@ -2107,7 +2093,6 @@ Protected Module LLMod
 		        ItemIcon = Nil
 		      End If
 		    End If
-		    'End If
 		  End If
 		  NewFileIcon = ""
 		  If Right(ItemLLItem.FileIcon,4) = ".ico" Then 'Don't allow png or svg Icons, they dont work with windows purposes and Linux doesn't need the Icon
@@ -2144,7 +2129,7 @@ Protected Module LLMod
 		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
 		  
 		  if TargetLinux Then 'Only Linux needs this, Win doesn't
-		    Sh.Execute ("chmod -R 775 "+Chr(34)+PathIn+Chr(34)) '+" ; "+ "chmod 775 "+Chr(34)+PathIn+Chr(34) 'Change Read/Write/Execute to defaults 'remarked this Glenn 2027
+		    Sh.Execute ("chmod -R 775 "+Chr(34)+PathIn+Chr(34) +" ; "+ "chmod 775 "+Chr(34)+PathIn+Chr(34)) 'Change Read/Write/Execute to defaults 'The 2nd time is for single file only, not a recursive folder
 		    While Sh.IsRunning
 		      App.DoEvents(2)  ' used to be 50, trying 7 to see if more responsive. - It is
 		    Wend
@@ -2169,21 +2154,15 @@ Protected Module LLMod
 		    Typs = Split(EXT, " ")
 		    If Typs.Count >= 1 Then
 		      For J = 0 To Typs.Count - 1
-		        ''FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*." + Typs(J) + Chr(34) + "/>" + Chr(10)
-		        'Shelly.Execute ("assoc "+"." + Typs(J)+"="+Chr(34)+EXECU+Chr(34)) 'Test this works in Windows, Glenn 2027
-		        
 		        EXECU = EXECU.ReplaceAll("/","\") 'I think Assoc requires windows paths and not linux slashes
 		        TypeName = Replace(APP, "(", "") 'Remove Brackets
 		        TypeName = Replace(TypeName.Trim, ")", "") 'Remove Brackets
 		        TypeName = Replace(TypeName, " ", ".") 'Remove Spaces
 		        Res = RunCommandResults("assoc "+"." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+Chr(10)+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34))
-		        'If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+EXECU+Chr(34)+ Chr(10)+ Shelly.Result)
 		        If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+"|"+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34)+ Chr(10)+ Res)
 		      Next
 		    End If
 		    
-		    
-		    'assoc .txt="C:\Program Files\Windows\System32\notepad.exe"
 		  Else 'Linux
 		    OrigAppName = APP
 		    APP = Replace(APP, " (Linux)", "") 'Remove Bracketed Linux
@@ -2193,11 +2172,8 @@ Protected Module LLMod
 		    
 		    If Debugging Then Debug ("Making Linux Association for: " + APP)
 		    
-		    
 		    If Not Exist(TmpPath) Then Shelly.Execute ("mkdir -p " + Chr(34) + TmpPath + Chr(34))
 		    'MIME Type
-		    'Print "MIME Output"
-		    
 		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
 		    CurrentIconTheme = Shelly.Result
 		    CurrentIconTheme = Replace(CurrentIconTheme, "'", "")  
@@ -2227,9 +2203,7 @@ Protected Module LLMod
 		    Shelly.Execute (" rm " + FileOut)
 		    Shelly.Execute ("update-mime-database $HOME/.local/share/mime")
 		    
-		    
 		    If EXECU.Left(5) = "wine " Then
-		      'Glenn 2030
 		      'I use the 2nd one below to make it more system compatible, but may change to installing the python requirements and script to make it perfect on every OS?
 		      ''EXECU = "python3 "+Slash(ToolPath)+"wine-launcher.py " + Chr(34) + Right(EXECU, Len(EXECU) - 5) + Chr(34) + " %f" 'Works Perfect But requirtes external and Pythos on the OS, will test more
 		      EXECU = "wine " + Chr(34) + Right(EXECU, Len(EXECU) - 5) + Chr(34) 'Works ok
@@ -2237,9 +2211,8 @@ Protected Module LLMod
 		      EXECU = EXECU + " %U"
 		    End If
 		    
-		    If Right(PathIn, 1) = "/" Then PathIn = Left(PathIn, Len(PathIn) - 1) 'Remove Slash
+		    PathIn = NoSlash(PathIn) 'Remove Slash
 		    
-		    'Print "Desktop Output"
 		    'Desktop Association
 		    FileOut = Slash(TmpPath) + APP + "_filetype.desktop"
 		    FileContent = "[Desktop Entry]" + Chr(10)
@@ -2259,8 +2232,6 @@ Protected Module LLMod
 		    Shelly.Execute ("update-desktop-database $HOME/.local/share/applications")
 		    Shelly.Execute ("xdg-mime default " + APP + ".desktop application/x-" + APP)
 		    Shelly.Execute ("update-icon-caches $HOME/.local/share/icons/*")
-		    'Print "MIME Done"
-		    
 		  End If
 		End Sub
 	#tag EndMethod
@@ -2286,13 +2257,9 @@ Protected Module LLMod
 		    end if
 		    
 		    If TargetWindows Then 'Only windows has the stupid shell bug, so only it needs an external script called instead
-		      'Sh.Execute(S)
-		      'If Debugging Then Debug ("Make Folder: "+Path+" = " + Sh.Result)
-		      'Sh.Execute ("icacls"+ NoSlash(Path)+ " /grant "+ "Users:F /t /c /q")
 		      Res = RunCommandResults (S + Chr(10) + "icacls "+Chr(34)+ NoSlash(Path)+Chr(34)+ " /grant "+ "Users:F /t /c /q") 'Using Chr(10) instead of ; as scripts don't allow them, only the prompt does
 		      If Debugging Then Debug ("- Make Folder: "+Path+" = " + Res)
 		    Else
-		      'RunCommand (S + " ; " + "chmod 775 "+Chr(34)+Txt+Chr(34)) 'Linux doesn't make a script, but using ; will wait and do the next command after it's done, Can't do this here as it doesn't have a tmpPath folder to make the Script to make TmpPath
 		      Sh.Execute(S)
 		      If Debugging Then Debug ("- Make Folder: "+Path+" = " + Sh.Result)
 		      Sh.Execute("chmod 775 "+Chr(34)+Path+Chr(34)) 'Change Read/Write/Execute to defaults, -R would do all files and folders, but we might not want this here
@@ -2300,13 +2267,14 @@ Protected Module LLMod
 		  Catch
 		    If Debugging Then Debug ("~ Failed to Make Folder: " + Path)
 		  End Try
-		  'SaveDataToFile(S+Chr(10)+Sh.Result, SpecialFolder.Desktop.NativePath+"/DebugMakeFolder.txt")
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MakeLinks()
+		  'Glenn 2040 - Maybe ReWrite this section - it's everywhere
+		  
 		  If Debugging Then Debug("--- Starting Make Links ---")
 		  
 		  Dim I, J, K, L As Integer
@@ -2328,12 +2296,11 @@ Protected Module LLMod
 		    'Make SentTo for first item if Main flag set
 		    If BT ="ssApp" Then 'Do Send To if Set in
 		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
-		        'Glenn 2027 - not done ssApp Processing yet, onyl the cleanup
+		        'Glenn 2027 - not done ssApp Processing yet, only the cleanup
 		      End If
 		    End If
 		    
 		  End If
-		  
 		  
 		  
 		  'Sort Catalog to Shortcuts - Windows ItemsOnly
@@ -2436,7 +2403,6 @@ Protected Module LLMod
 		        If Debugging Then Debug ("LnkOSCompatible: "+ItemLnk(I).LnkOSCompatible)
 		        
 		        If ItemLnk(I).LnkOSCompatible = "F" Then Continue 'Doesn't process Non Compatible links, Need to add Arch Check also (Glenn 2027)
-		        
 		        
 		        
 		        'If ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue 'Skip dual arch shortcuts, just keep 1st one, which is usually x64 anyway
@@ -2662,10 +2628,11 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub Move(Source As String, Dest As String)
+		  'Glenn 2040 - ReWrite this to use RunCommand if I have future issues
+		  
 		  If Debugging Then Debug("Move: "+Source + " To "+Dest)
 		  If Source = "" Or Source.Length <= 4 Then Return 'Don't remove short paths, it's dangerous to do them as mistakes happen
 		  If Dest = "" Or Dest.Length <= 4 Then Return 'Don't remove short paths, it's dangerous to do them as mistakes happen
-		  
 		  
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1
@@ -2675,16 +2642,13 @@ Protected Module LLMod
 		  
 		  Dim OutFile As String
 		  
-		  'Source = Slash(Source)
 		  Dest = Slash(Dest) 'Must have Slash at the end or will fail (asking for is file or folder)
 		  
 		  If TargetWindows Then Source = Source.ReplaceAll("/","\") 'move needs backslash in Windows
 		  If TargetWindows Then Dest = Dest.ReplaceAll("/","\") 'move needs backslash in Windows
 		  
-		  
 		  Source = Source.Trim
 		  Dest = Dest.Trim
-		  
 		  
 		  If Right(Source,4) <> ".lnk" Then
 		    Parent = NoSlash(Source).Trim
@@ -2705,34 +2669,16 @@ Protected Module LLMod
 		    End If
 		    Deltree (Source) 'Remove once xcopied
 		    
-		    ''Method 3 'Untested, but need to rewrite the method for bulding a script, running it and deleting it
-		    'If Parent <> "" Then
-		    'OutFile = "xcopy /e /c /q /h /r /y " + Chr(34)+Source+Chr(34)+" "+ Chr(34)+Dest+"\"+Parent+"\"+Chr(34)
-		    'Else
-		    'OutFile = "xcopy /e /c /q /h /r /y " + Chr(34)+Source+Chr(34)+" "+ Chr(34)+Dest+"\"+Chr(34)
-		    'End If
-		    'SaveDataToFile(OutFile, Slash(TmpPath)+"MoveIt.cmd")
-		    'Sh.Execute (Slash(TmpPath)+"MoveIt.cmd") 'Run script file instead of command, works perfect in win
-		    'While Sh.IsRunning
-		    'App.DoEvents(1)
-		    'Wend
-		    'Deltree (Source) 'Remove once xcopied
-		    
 		  Else 'linux, no problems with running shell
 		    ShellFast.Execute ("mv -f " + Chr(34)+Source+Chr(34)+" "+ Chr(34)+Dest+Chr(34))
 		  End If
-		  
-		  ''Move File, very old method, fails in Win due to wrong slashes etc
-		  'If TargetWindows Then
-		  'ShellFast.Execute ("move /y " + Chr(34)+Source+Chr(34)+" "+ Chr(34)+Dest+Chr(34))
-		  'Else
-		  'ShellFast.Execute ("mv -f " + Chr(34)+Source+Chr(34)+" "+ Chr(34)+Dest+Chr(34))
-		  'End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MoveLinks()
+		  'Glenn 2040 - This needs a Rewrite to add in all the missing methods for working with the Links, would work out better to do what freezer did and make my own updated LLFile with the lnk info
+		  
 		  If Debugging Then Debug("--- Starting Move Links ---")
 		  Dim DaBugs As String
 		  
@@ -2905,7 +2851,6 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Sub PreQuitApp()
 		  If Debugging Then Debug("- Pre Quit LLStore -")
-		  'MsgBox "Pre Quitting"
 		  
 		  Loading.SaveSettings
 		  
@@ -2922,7 +2867,7 @@ Protected Module LLMod
 		Sub QuitApp()
 		  If Debugging Then Debug("--- Quitting LLStore ---")
 		  ForceQuit = True
-		  Quit ' This Works on Compiled Versions, test if Windows is OK too, dont know why it was being so problematic.
+		  Quit
 		  'was 24 r4 causing issues
 		  
 		  'I added the Quit timer to the Loading Form, it now seems to quit when it's called, I only make the Editor set it to ForceQuit and hide iteself and let the QuitApp routine do the rest.
@@ -2930,47 +2875,14 @@ Protected Module LLMod
 		  ''Should never get here
 		  
 		  ForceQuit = True
-		  'MsgBox "Quitting"
-		  
-		  'Close other forms
-		  'If EditorOnly = True Then
-		  
-		  
-		  'Old Method
-		  'Editor.Close
-		  'Data.Close
-		  'ScreenResolution.Close
-		  'MiniInstaller.Close
-		  'Settings.Close
-		  'Main.Close
-		  ''Do this last as it's the main form
-		  'Loading.Close
-		  
-		  'MsgBox "Should quit now"
-		  'Quit
-		  
 		  
 		  //manually close all windows
 		  while window(0) <> nil
-		    'dim s as string = window(0).Title
 		    window(0).close
 		  wend
 		  
 		  Quit
 		  
-		  'Exception err
-		  'select case err
-		  'case isa EndException
-		  'MsgBox "EndException"
-		  'end select
-		  
-		  
-		  ''Dim I As Integer
-		  
-		  'For i As Integer = WindowCount - 1 DownTo 0
-		  'Var w As Window = Window(i)
-		  'If w <> Nil then w.close
-		  'Next
 		End Sub
 	#tag EndMethod
 
@@ -3227,7 +3139,6 @@ Protected Module LLMod
 		  Shelly.TimeOut = -1
 		  
 		  Dim StillActive As Boolean = True
-		  
 		  Dim F As FolderItem
 		  
 		  'Change to App/Games Install To path to run scripts from (NoInstall sets to InstallFrom)
@@ -3639,10 +3550,7 @@ Protected Module LLMod
 		    End If
 		  End If
 		  
-		  
 		  If DataOut <> "" Then
-		    'Msgbox "Save To: "+LLFileOut
-		    'Msgbox DataOut
 		    SaveDataToFile(DataOut, LLFileOut) 'This should work, I may need to check here or somewhere (Editor) if I need to update a pre compressed item using the temp paths
 		    Return True ' Success
 		  Else
@@ -3695,7 +3603,8 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Sub XCopy(InPath As String, OutPath As String)
 		  If Debugging Then Debug("XCopy: "+ InPath +" To " + OutPath)
-		  RunCommand("xcopy.exe /E /C /I /H /Q /R /J /O /Y " +Chr(34) + InPath +Chr(34) +" "+Chr(34)+ OutPath +Chr(34)) ' Don't use linix paths here, xcopy may be fussy
+		  
+		  RunCommand("xcopy.exe /E /C /I /H /Q /R /J /O /Y " +Chr(34) + InPath +Chr(34) +" "+Chr(34)+ OutPath +Chr(34)) ' Don't use linux paths here, xcopy may be fussy
 		  
 		End Sub
 	#tag EndMethod
@@ -4231,6 +4140,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		ThemePath As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		TimeOut As Double = 0
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
