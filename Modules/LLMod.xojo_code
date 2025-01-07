@@ -104,6 +104,7 @@ Protected Module LLMod
 	#tag Method, Flags = &h0
 		Sub Copy(FileIn As String, FileOut As String)
 		  If Debugging Then Debug("Copy "+ FileIn +" To " + FileOut)
+		  If FileIn = FileOut Then Return 'Do not run if it's the same as it will delete it below and we don't want that
 		  'I may update this routune to new methods, but works for now using Xojo method - Glenn 2040
 		  
 		  Dim F, G As FolderItem
@@ -1165,6 +1166,8 @@ Protected Module LLMod
 		  
 		  If Debugging Then Debug("Installing From Path: "+ InstallFromPath)
 		  
+		  If InstallOnly = True Then Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, -1) 'Mini Installer can't call this and wouldn't want to.
+		  
 		  If ItemLLItem.NoInstall = False Then 'Has a Destination Path
 		    
 		    InstallToPath = Slash(ExpPath(ItemLLItem.PathApp))
@@ -1343,6 +1346,8 @@ Protected Module LLMod
 		    If ItemLLItem.BuildType = "LLGame" Then Deltree (Slash(HomePath)+"LLGames/.lldb")
 		    If ItemLLItem.BuildType = "ppGame" Then Deltree (ppGames+"/.lldb")
 		  End If
+		  
+		  If InstallOnly = True Then Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, 1) 'Mini Installer can't call this and wouldn't want to.
 		  
 		  Return True ' Successfully Installed
 		End Function
@@ -2868,6 +2873,67 @@ Protected Module LLMod
 		  End If
 		  Return Inn
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Notify(Head As String, Msg As String, IconFile As String = "", NoteTimeOut As Integer = 4)
+		  Dim F As FolderItem
+		  Dim IconPic As Picture
+		  Notification.Status.Text = Msg
+		  
+		  IconPic = Nil
+		  
+		  If IconFile <> "" Then
+		    Try
+		      If ItemLLItem.FileFader <> "" Then
+		        F = GetFolderItem(IconFile, FolderItem.PathTypeShell)
+		        If F.Exists Then
+		          'Notification.Icon.Backdrop = Picture.Open(F)
+		          IconPic = Picture.Open(F)
+		        End If
+		      End If
+		    End Try
+		  Else
+		    IconPic = Nil
+		  End If
+		  
+		  Try
+		    If IconPic = Nil Then 'Set default Icon
+		      'Notification.Icon.Backdrop = DefaultFader
+		      IconPic = DefaultFader
+		    End If
+		  Catch
+		  End Try
+		  
+		  Try
+		    'Below is the only way to make the icon blend with the text status as it doesn't honer the Theme
+		    Notification.Backdrop =  New Picture(Notification.Width,Notification.Height, 32)
+		    Notification.Backdrop.Graphics.DrawingColor =  &C000000
+		    Notification.Backdrop.Graphics.FillRectangle(0,0,Notification.Width,Notification.Height)
+		    
+		    
+		    Notification.Icon.Backdrop = New Picture(Notification.Icon.Width,Notification.Icon.Height, 32)
+		    Notification.Icon.Backdrop.Graphics.DrawingColor =  &C000000
+		    Notification.Icon.Backdrop.Graphics.FillRectangle(0,0,Notification.Icon.Width,Notification.Icon.Height)
+		    Notification.Icon.Backdrop.Graphics.DrawPicture(IconPic,0,0,Notification.Icon.Width, Notification.Icon.Height,0,0,IconPic.Width, IconPic.Height)
+		    Notification.Icon.Refresh
+		  Catch
+		  End Try
+		  
+		  If MiniInstaller.Visible = True Then
+		    Notification.Left = MiniInstaller.Left - Notification.Width ' Put to Left of the MiniInstaller (not Used)
+		  Else
+		    Notification.Left = Screen(0).AvailableWidth - Notification.Width - 10 ' (10 padding?)
+		  End If
+		  Notification.Top = Screen(0).AvailableHeight - Notification.Height -10
+		  
+		  Notification.NotificationTime = NoteTimeOut
+		  
+		  Notification.Title = Head
+		  
+		  Notification.Show
+		  Notification.SetFocus
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

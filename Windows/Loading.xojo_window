@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -3077,6 +3073,9 @@ End
 		  
 		  'Get theme
 		  GetTheme
+		  
+		  'Nofications can not be called before here - The theme needs to be loaded in to show Graphics, else it'll just show text
+		  'Notify ("This is a long test to see how it goes when you type a really really long status.")
 		  
 		  'Load Settings - (This is Where the Debugger is activated, else it's not writing until after here)
 		  LoadSettings

@@ -1758,6 +1758,16 @@ End
 		  
 		  If ScreenRes = "Desktop" Then ScreenRes = "" 'Clear Desktop once passed cancel test
 		  
+		  If TargetLinux Then 'Grab Screen res to restore after game run
+		    ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'")
+		    Wid = ShWait.Result
+		    ShWait.Execute ("xrandr --current | grep current | awk '{print $10}'")
+		    Hit = ShWait.Result
+		    
+		    Wid = Wid.Trim
+		    Hit = Hit.Replace(",", "")
+		  End If
+		  
 		  BT = Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("BuildType"))
 		  If BT = "ppGame" Then
 		    If TargetWindows Then
@@ -1766,13 +1776,6 @@ End
 		    Else 'Running ppGame in Linux
 		      
 		      If ScreenRes <> "" Then 'Change to Picked Res
-		        ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'")
-		        Wid = ShWait.Result
-		        ShWait.Execute ("xrandr --current | grep current | awk '{print $10}'")
-		        Hit = ShWait.Result
-		        
-		        Wid = Wid.Trim
-		        Hit = Hit.Replace(",", "")
 		        
 		        ShWait.Execute (ToolPath+"BackupWineDPI.sh")
 		        ShWait.Execute (ToolPath+"DefaultWineDPI.sh")
@@ -1788,13 +1791,6 @@ End
 		      Sh.Execute (Exe)
 		    Else
 		      If ScreenRes <> "" Then 'Change to Picked Res
-		        ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'")
-		        Wid = ShWait.Result
-		        ShWait.Execute ("xrandr --current | grep current | awk '{print $10}'")
-		        Hit = ShWait.Result
-		        
-		        Wid = Wid.Trim
-		        Hit = Hit.Replace(",", "")
 		        
 		        Sh.Execute ("xrandr -s " +ScreenRes + " ; " + Exe)
 		        
@@ -1820,16 +1816,17 @@ End
 		    Wend
 		    'End If
 		  Else 'Is Linux
-		    If Settings.SetRecoverScreenRes.Value = True Then
-		      If Wid <> "" Then ' Put Orig Res back if changed
-		        While ShWait.Result.Trim <> Wid ' Wait for Screen Width to be the original res
-		          ShWait.Execute ("xrandr -s " + Wid + "x" + Hit) 'Keep Trying until it's set
-		          App.DoEvents(1)
-		          ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'") ' Get current Width
-		          App.DoEvents(1)
-		        Wend
-		      End If
+		    'If Settings.SetRecoverScreenRes.Value = True Then
+		    If Wid = "0" Then Wid = ""
+		    If Wid <> "" Then ' Put Orig Res back if changed
+		      While ShWait.Result.Trim <> Wid ' Wait for Screen Width to be the original res
+		        ShWait.Execute ("xrandr -s " + Wid + "x" + Hit) 'Keep Trying until it's set
+		        App.DoEvents(1)
+		        ShWait.Execute ("xrandr --current | grep current | awk '{print $8}'") ' Get current Width
+		        App.DoEvents(1)
+		      Wend
 		    End If
+		    'End If
 		    ShWait.Execute (ToolPath+"RestoreWineDPI.sh")
 		  End If
 		  
