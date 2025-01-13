@@ -60,9 +60,10 @@ Protected Module LLMod
 		      
 		      Deltree(Slash(TmpPath)+"items")
 		      Deltree(Slash(TmpPath)+"LLShorts")
-		      Deltree(Slash(TmpPath)+"*.cmd")
-		      Deltree(Slash(TmpPath)+"*.sh")
-		      Deltree(Slash(TmpPath)+"*")
+		      Deltree(Slash(TmpPath)+"Expanded_Script.cmd")
+		      Deltree(Slash(TmpPath)+"Expanded_Script.sh")
+		      Deltree(Slash(TmpPath)+"Expanded_Reg.reg")
+		      Deltree(Slash(TmpPath)+"version.ini")
 		    End If
 		  End If
 		End Sub
@@ -2962,7 +2963,13 @@ Protected Module LLMod
 		  
 		  DebugOutput.Flush ' Actually Write to file after each thing
 		  DebugOutput.Close 'Close File when quiting
-		  If Debugging Then Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore_Debug.txt") 'Copy Debug to Desktop
+		  Dim today As DateTime = DateTime.Now
+		  Dim FileNameOut As String
+		  If Debugging Then
+		    FileNameOut = "LLStore_Debug "+today.Year.ToString+"-"+today.Month.ToString+"-"+today.Day.ToString+" "+today.Hour.ToString+"-"+today.Minute.ToString+"-"+today.Second.ToString+".txt"
+		    MakeFolder (Slash(SpecialFolder.Desktop.NativePath)+"LLStore Debug-Logs")
+		    Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore Debug-Logs/"+FileNameOut) 'Copy Debug to Desktop
+		  End If
 		  
 		  'Clean Up Temp
 		  CleanTemp
