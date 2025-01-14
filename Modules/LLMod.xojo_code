@@ -1306,6 +1306,7 @@ Protected Module LLMod
 		    'Run Sudo Scripts
 		    RunSudoScripts
 		    
+		    '------------------------------- Do ssApp Links ----------------------------------
 		    'Move ssApp Shortcuts to their sorted locations (Need to try in Linux to see if they get moved in there or I'll have to edit the .desktop files as well) Do this first so MakeLinks can use LLShorts to source the links
 		    If ItemLLItem.BuildType = "ssApp" Then MoveLinks
 		    
@@ -2344,9 +2345,13 @@ Protected Module LLMod
 		  If TargetWindows Then 'Do ssApps/SentTo here
 		    'Make SentTo for first item if Main flag set
 		    If BT ="ssApp" Then 'Do Send To if Set in
-		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
+		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then 'Do SendTo (Not done yet)
 		        'Glenn - not done ssApp Links Processing yet, only the cleanup
 		      End If
+		      
+		      'Clean up links, only leave on Desktop if enabled
+		      'Done in MoveLinks
+		      
 		    End If
 		    
 		  End If
@@ -2750,7 +2755,7 @@ Protected Module LLMod
 		    If ItemLLItem.Flags.IndexOf("desktop") < 0 Then 'Not found, so Move it to the destination folder or delete it if exist
 		      Sp() = ItemLLItem.ShortCutNamesKeep.Split("|")
 		      For M = 0 To Sp.Count-1
-		        Move (Slash(FixPath(SpecialFolder.Desktop.NativePath)) + Sp(M).Trim +".desktop", Slash(TmpPath)+"LLShorts/")
+		        Move (Slash(FixPath(SpecialFolder.Desktop.NativePath)) + Sp(M).Trim +".desktop", Slash(TmpPath)+"LLShorts/") 'Current User
 		        'Move (Slash(FixPath(SpecialFolder.SharedDesktop.NativePath)) + Sp(M).Trim +".desktop", Slash(TmpPath)+"LLShorts/") 'No Shared Desktop in Linux
 		      Next M
 		    End If
@@ -2813,8 +2818,8 @@ Protected Module LLMod
 		      'Delete for now, will use Move once I make a function
 		      Sp() = ItemLLItem.ShortCutNamesKeep.Split("|")
 		      For M = 0 To Sp.Count-1
-		        Move (Slash(FixPath(SpecialFolder.Desktop.NativePath)) + Sp(M).Trim +".lnk", Slash(TmpPath)+"LLShorts/")
-		        Move (Slash(FixPath(SpecialFolder.SharedDesktop.NativePath)) + Sp(M).Trim +".lnk", Slash(TmpPath)+"LLShorts/")
+		        Move (Slash(FixPath(SpecialFolder.Desktop.NativePath)) + Sp(M).Trim +".lnk", Slash(TmpPath)+"LLShorts/") 'Current User
+		        Move (Slash(FixPath(SpecialFolder.SharedDesktop.NativePath)) + Sp(M).Trim +".lnk", Slash(TmpPath)+"LLShorts/") 'All Users
 		      Next M
 		      
 		      'Deltree (Slash(FixPath(SpecialFolder.Desktop.NativePath)) + ItemLLItem.ShortCutNamesKeep +".lnk") 'Remove it, clean up Current User
