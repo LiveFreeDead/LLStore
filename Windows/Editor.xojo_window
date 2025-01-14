@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   5
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -6241,11 +6241,89 @@ End
 		  Dim FileTypes As String
 		  Dim Term As Boolean
 		  
+		  Dim F As FolderItem
+		  
+		  'Glenn Maybe add Include Folder from shortcut selection??? would only work in Windows as I can't get the .lnk target yet (only .desktop)
+		  
 		  
 		  If TargetWindows Then
 		    'List All start menu items to pick one - just copy the .lnk files from all users and current user then follow the lnk to the actual EXE etc, but use lnk for Title name, icon etc
 		    
-		    MsgBox "Not Yet Implemented Browsing Shortcuts in windows"
+		    'MsgBox "Not Yet Implemented Browsing Shortcuts in windows"
+		    
+		    Dim iniType As New FileType
+		    iniType.Name = "link/desktop"
+		    iniType.MacType = "DESKTOP;LNK"
+		    iniType.Extensions = "desktop;lnk"
+		    
+		    ImageIn = SpecialFolder.Desktop.NativePath
+		    
+		    ImageIn = ImageIn.ReplaceAll("/","\")
+		    
+		    ImageIn = OpenFileDialog(iniType, "Select Desktop File to Use as Shortcut", ImageIn) ' browse for one 
+		    If ImageIn <> "" Then
+		      
+		      If Right(ImageIn.Lowercase,4) = ".lnk" Then 'Windows Lnk file
+		        
+		        'MsgBox ImageIn 'LnkPath
+		        
+		        F = GetFolderItem(ImageIn)
+		        'MsgBox F.NativePath '.EXE path 
+		        
+		        If Debugging Then Debug("Grab shortcut Data from: "+ ImageIn)
+		        
+		        Name = Right(ImageIn, Len(ImageIn) - InStrRev(ImageIn,"\")) 'Remove Path
+		        Name = Left(Name, Len(Name)-4) 'Remove .lnk
+		        Exec = Right(F.NativePath, Len(F.NativePath) - InStrRev(F.NativePath,"\")) 'Remove Path
+		        
+		        If Name <> "" Then 'Add item, select it and fill data
+		          
+		          'Add new shortcut
+		          TextNewShortcut.Text = Name 'Set from .desktop file
+		          NewShortName = TextNewShortcut.Text
+		          If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
+		            LnkCount = LnkCount + 1 'Add one
+		            ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
+		            ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
+		            EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		            ComboShortcut.SelectedRowIndex = EditingCBLnk 'Jumps to newly added item
+		            ComboShortcut.RowTagAt(EditingCBLnk) = LnkCount
+		            EditingLnk = LnkCount
+		          End If
+		          
+		          'Clear Text Field and hide it again
+		          TextNewShortcut.Text = ""
+		          TextNewShortcut.Visible = False
+		          
+		          TextComment.Text = ""
+		          TextExecute.Text = ""
+		          TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
+		          TextIcon.Text = ""
+		          TextFileTypes.Text = ""
+		          TextDescriptionLink.Text = ""
+		          TextFlags.Text = ""
+		          TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
+		          CheckRunInTerminal.Value = False
+		          CheckSendTo.Value = False
+		          CheckShowDesktop.Value  = False
+		          CheckShowFavorites.Value  = False
+		          CheckSendTo.Value = False
+		          CheckShowPanel.Value  = False
+		          
+		          'Add Data from loaded .desktop file
+		          TextExecute.Text = Exec
+		          TextComment.Text  = Comment
+		          TextIcon.Text = Icon
+		          TextRunInPath.Text = Path
+		          Categories = Categories.ReplaceAll(";", ";"+Chr(10))
+		          TextMenuCatalog.Text = Categories
+		          CheckRunInTerminal.Value = Term
+		        End If
+		        
+		        
+		      End If
+		    End If
+		    
 		    
 		  Else 'Linux
 		    'List All .desktop file and let user pick on to populate the fields on the form (has it all written in itself)
@@ -6253,8 +6331,8 @@ End
 		    
 		    Dim iniType As New FileType
 		    iniType.Name = "link/desktop"
-		    iniType.MacType = "DESKTOP"
-		    iniType.Extensions = "desktop"
+		    iniType.MacType = "DESKTOP;LNK"
+		    iniType.Extensions = "desktop;lnk"
 		    
 		    ImageIn = SpecialFolder.Desktop.NativePath
 		    
@@ -6266,75 +6344,89 @@ End
 		    
 		    ImageIn = OpenDialog(iniType, "Select Desktop File to Use as Shortcut", ImageIn) ' browse for one 
 		    If ImageIn <> "" Then
-		      If Debugging Then Debug("Load shortcut Data from: "+ ImageIn)
-		      RL = LoadDataFromFile(ImageIn)
-		      Sp = RL.Split(Chr(10))
-		      For I = 0 To Sp.Count - 1
-		        If Left (Sp(I),5) = "Name=" Then
-		          Name = Right(Sp(I), Len(Sp(I))-5)
-		          Name = Name.Trim
-		        End If
-		        If Left (Sp(I),5) = "Exec=" Then Exec = Right(Sp(I), Len(Sp(I))-5)
-		        If Left (Sp(I),8) = "Comment=" Then Comment = Right(Sp(I), Len(Sp(I))-8)
-		        If Left (Sp(I),5) = "Icon=" Then Icon = Right(Sp(I), Len(Sp(I))-5)
-		        If Left (Sp(I),5) = "Path=" Then Path = Right(Sp(I), Len(Sp(I))-5)
-		        If Left (Sp(I),11) = "Categories=" Then
-		          Categories = Right(Sp(I), Len(Sp(I))-11)
-		          
-		        End If
-		        If Left (Sp(I),9) = "Terminal=" Then
-		          If IsTrue(Right(Sp(I), Len(Sp(I))-9)) Then
-		            Term = True
-		          Else
-		            Term = False
-		          End If
-		        End If
-		      Next
-		    End If
-		    
-		    If Name <> "" Then 'Add item, select it and fill data
 		      
-		      'Add new shortcut
-		      TextNewShortcut.Text = Name 'Set from .desktop file
-		      NewShortName = TextNewShortcut.Text
-		      If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
-		        LnkCount = LnkCount + 1 'Add one
-		        ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
-		        ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
-		        EditingCBLnk = ComboShortcut.LastAddedRowIndex
-		        ComboShortcut.SelectedRowIndex = EditingCBLnk 'Jumps to newly added item
-		        ComboShortcut.RowTagAt(EditingCBLnk) = LnkCount
-		        EditingLnk = LnkCount
+		      If Right(ImageIn.Lowercase,4) = ".lnk" Then 'Windows Lnk file
+		        If Debugging Then Debug("Grab shortcut Data from: "+ ImageIn)
+		        
+		        Name = Right(ImageIn, Len(ImageIn) - InStrRev(ImageIn,"/")) 'Remove Path
+		        Name = Left(Name, Len(Name)-4) 'Remove .lnk
+		        
+		        'MsgBox GetLnk(ImageIn) 'Incomplete Function
+		        'Can't get much from shortcut in Linux yet, Glenn
+		        
 		      End If
 		      
-		      'Clear Text Field and hide it again
-		      TextNewShortcut.Text = ""
-		      TextNewShortcut.Visible = False
+		      If Right(ImageIn,4) = "ktop" Then
+		        If Debugging Then Debug("Load shortcut Data from: "+ ImageIn)
+		        RL = LoadDataFromFile(ImageIn)
+		        Sp = RL.Split(Chr(10))
+		        For I = 0 To Sp.Count - 1
+		          If Left (Sp(I),5) = "Name=" Then
+		            Name = Right(Sp(I), Len(Sp(I))-5)
+		            Name = Name.Trim
+		          End If
+		          If Left (Sp(I),5) = "Exec=" Then Exec = Right(Sp(I), Len(Sp(I))-5)
+		          If Left (Sp(I),8) = "Comment=" Then Comment = Right(Sp(I), Len(Sp(I))-8)
+		          If Left (Sp(I),5) = "Icon=" Then Icon = Right(Sp(I), Len(Sp(I))-5)
+		          If Left (Sp(I),5) = "Path=" Then Path = Right(Sp(I), Len(Sp(I))-5)
+		          If Left (Sp(I),11) = "Categories=" Then
+		            Categories = Right(Sp(I), Len(Sp(I))-11)
+		            
+		          End If
+		          If Left (Sp(I),9) = "Terminal=" Then
+		            If IsTrue(Right(Sp(I), Len(Sp(I))-9)) Then
+		              Term = True
+		            Else
+		              Term = False
+		            End If
+		          End If
+		        Next
+		      End If
 		      
-		      
-		      TextComment.Text = ""
-		      TextExecute.Text = ""
-		      TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
-		      TextIcon.Text = ""
-		      TextFileTypes.Text = ""
-		      TextDescriptionLink.Text = ""
-		      TextFlags.Text = ""
-		      TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
-		      CheckRunInTerminal.Value = False
-		      CheckSendTo.Value = False
-		      CheckShowDesktop.Value  = False
-		      CheckShowFavorites.Value  = False
-		      CheckSendTo.Value = False
-		      CheckShowPanel.Value  = False
-		      
-		      'Add Data from loaded .desktop file
-		      TextExecute.Text = Exec
-		      TextComment.Text  = Comment
-		      TextIcon.Text = Icon
-		      TextRunInPath.Text = Path
-		      Categories = Categories.ReplaceAll(";", ";"+Chr(10))
-		      TextMenuCatalog.Text = Categories
-		      CheckRunInTerminal.Value = Term
+		      If Name <> "" Then 'Add item, select it and fill data
+		        
+		        'Add new shortcut
+		        TextNewShortcut.Text = Name 'Set from .desktop file
+		        NewShortName = TextNewShortcut.Text
+		        If TextNewShortcut.Text.Trim <> "" Then ' Only if Valid
+		          LnkCount = LnkCount + 1 'Add one
+		          ItemLnk(LnkCount).Title = TextNewShortcut.Text.Trim
+		          ComboShortcut.AddRow(ItemLnk(LnkCount).Title)
+		          EditingCBLnk = ComboShortcut.LastAddedRowIndex
+		          ComboShortcut.SelectedRowIndex = EditingCBLnk 'Jumps to newly added item
+		          ComboShortcut.RowTagAt(EditingCBLnk) = LnkCount
+		          EditingLnk = LnkCount
+		        End If
+		        
+		        'Clear Text Field and hide it again
+		        TextNewShortcut.Text = ""
+		        TextNewShortcut.Visible = False
+		        
+		        
+		        TextComment.Text = ""
+		        TextExecute.Text = ""
+		        TextRunInPath.Text = "" 'Leave this one behind, will keep it default for all apps and give path to copy from
+		        TextIcon.Text = ""
+		        TextFileTypes.Text = ""
+		        TextDescriptionLink.Text = ""
+		        TextFlags.Text = ""
+		        TextMenuCatalog.Text = "" 'Leave This off so that all shortcuts default to the same set path as the previous items
+		        CheckRunInTerminal.Value = False
+		        CheckSendTo.Value = False
+		        CheckShowDesktop.Value  = False
+		        CheckShowFavorites.Value  = False
+		        CheckSendTo.Value = False
+		        CheckShowPanel.Value  = False
+		        
+		        'Add Data from loaded .desktop file
+		        TextExecute.Text = Exec
+		        TextComment.Text  = Comment
+		        TextIcon.Text = Icon
+		        TextRunInPath.Text = Path
+		        Categories = Categories.ReplaceAll(";", ";"+Chr(10))
+		        TextMenuCatalog.Text = Categories
+		        CheckRunInTerminal.Value = Term
+		      End If
 		    End If
 		  End If
 		  

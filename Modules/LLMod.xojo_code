@@ -1099,6 +1099,63 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function GetLnk(InLnk As String) As String
+		  If TargetLinux Then
+		    
+		    Return ""
+		  End If
+		  
+		  Dim lnkObj As OLEObject
+		  Dim scriptShell As New OLEObject("{F935DC22-1CF0-11D0-ADB9-00C04FD58A0B}")
+		  If scriptShell <> Nil then
+		    'lnkObj = scriptShell.CreateShortcut(LinkFolder  + TitleName + ".lnk")
+		    Return "NoScript"
+		  End If
+		  
+		  Return ""
+		  
+		  ''If Debugging Then Debug("--- Starting Create Shortcuts ---")
+		  ''
+		  'If Debugging Then Debug("TitleName: "+TitleName+" , Target: "+Target+" , Working: "+WorkingDir+" , LinkFolder: "+LinkFolder)
+		  '
+		  'Dim scWorkingDir As FolderItem
+		  '
+		  ''Dim scTarget As FolderItem
+		  ''scTarget = GetFolderItem(Target, FolderItem.PathTypeShell)
+		  'scWorkingDir = GetFolderItem(WorkingDir, FolderItem.PathTypeShell)
+		  '
+		  ''Making Links fails if no folder made for it, we don't want it to crash a store when a shortcut fails.
+		  '#Pragma BreakOnExceptions Off
+		  'Try
+		  'If TargetWindows Then
+		  'Dim lnkObj As OLEObject
+		  'Dim scriptShell As New OLEObject("{F935DC22-1CF0-11D0-ADB9-00C04FD58A0B}")
+		  '
+		  'If scriptShell <> Nil then
+		  'lnkObj = scriptShell.CreateShortcut(LinkFolder  + TitleName + ".lnk")
+		  'If lnkObj <> Nil then
+		  'lnkObj.Description = TitleName
+		  ''lnkObj.TargetPath = scTarget.NativePath
+		  'lnkObj.TargetPath = Target 'Target may also have some Arguments, so use text not folder item.
+		  'If Args <> "" Then lnkObj.Arguments = Args 'Target may also have some Arguments, so use text not folder item.
+		  'lnkObj.WorkingDirectory = Slash(FixPath(scWorkingDir.NativePath))
+		  '
+		  'If IconFile <> "" Then lnkObj.IconLocation = IconFile 'If Icon (.ico) Provided it can be used/set
+		  '
+		  ''Save Lnk file
+		  'lnkObj.Save
+		  'Else
+		  'End If
+		  'End If
+		  'End If
+		  'Catch
+		  'End Try
+		  '
+		  '#Pragma BreakOnExceptions On
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GetLongPath(InPath As String) As String
 		  'Returns a Long Path from a Short path
 		  
@@ -2958,6 +3015,30 @@ Protected Module LLMod
 		  dlg.Title = Title
 		  dlg.Filter = FileTyp
 		  F = dlg.ShowModal()
+		  
+		  If F = Nil Then Return "" Else Return F.NativePath
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OpenFileDialog(FileTyp As FileType, Title As String, InitialPath As String) As String
+		  Dim Init, F As FolderItem
+		  Dim dlg As OpenFileDialog
+		  
+		  If InitialPath = "" Then InitialPath = SpecialFolder.Desktop.NativePath
+		  
+		  Init = GetFolderItem(InitialPath, FolderItem.PathTypeShell)
+		  dlg = New OpenFileDialog
+		  dlg.InitialDirectory = Init
+		  dlg.Title = Title
+		  dlg.Filter = FileTyp
+		  F = dlg.ShowModal()
+		  
+		  If F <> Nil Then
+		    For Each file As Folderitem In dlg.SelectedFiles(False)
+		      Return file.NativePath
+		    Next
+		  End If
 		  
 		  If F = Nil Then Return "" Else Return F.NativePath
 		End Function

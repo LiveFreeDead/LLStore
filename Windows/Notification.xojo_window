@@ -82,6 +82,7 @@ Begin DesktopWindow Notification
       Width           =   96
    End
    Begin Timer NotifyTimeOut
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   4000
@@ -354,6 +355,14 @@ End
 		Group="Deprecated"
 		InitialValue="False"
 		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NotificationTime"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior
