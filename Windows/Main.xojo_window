@@ -2652,10 +2652,19 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub MouseUp(x As Integer, y As Integer)
-		  'MsgBox "Here"
-		  
-		  'Glenn Open URL if click anywhere on MetaData
-		  MsgBox ItemLLItem.URL
+		  'Open URL if click anywhere on MetaData
+		  Dim I As Integer
+		  Dim Urls() As String
+		  If Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("URL")) <> "" Then
+		    Urls() = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("URL")).Split("|")
+		    If Urls.Count >= 0 Then
+		      For I = 0 To Urls.Count - 1
+		        System.GotoURL(Urls(I).Trim)
+		      Next
+		    Else
+		      System.GotoURL(Urls(0).Trim)
+		    End If
+		  End If
 		End Sub
 	#tag EndEvent
 	#tag Event
