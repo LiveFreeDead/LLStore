@@ -1000,9 +1000,9 @@ End
 		  If Inn = "" Then Return
 		  Inn = Slash(FixPath(Inn))
 		  
-		  If ScannedRootFoldersCount >=1 Then 'See if already added and skip it, Glenn 2040 - Make sure this actuall allows root item to show
+		  If ScannedRootFoldersCount >=1 Then 'Make sure this actuall allows root item to show
 		    '- Only add Paths not already added, but I only send through the root, need to check if scanned before
-		    For I = 1 To ScannedRootFoldersCount
+		    For I = 1 To ScannedRootFoldersCount 'See if already added and skip it
 		      If Inn = ScannedRootFolders(I) Then Return 'Skip existing items
 		    Next I
 		  End If
@@ -1194,12 +1194,12 @@ End
 		      For I = 0 To 23
 		        Let = Asc("C") + I
 		        DirToCheck = Chr(Let)+":/" 'Linux Path
-		        F = GetFolderItem(DirToCheck.ReplaceAll("/","\"), FolderItem.PathTypeShell) 'This fixes the issue 2029, yes whenever windows does folder stuff, convert it back until it returns, or it will add a backslash after the forward slash
+		        F = GetFolderItem(DirToCheck.ReplaceAll("/","\"), FolderItem.PathTypeShell) 'This fixes the issue, yes whenever windows does folder stuff, convert it back until it returns, or it will add a backslash after the forward slash
 		        
 		        If F.IsFolder And F.IsReadable Then
 		          If F.Count > 0 Then
 		            For D = 1 To F.Count
-		              item = F.trueItem(D) 'This is the issue Glenn 2029, it returns "D:/\Path/" instead when using "D:/" in path
+		              item = F.trueItem(D) 'This is the issue, it returns "D:/\Path/" instead when using "D:/" in path
 		              
 		              If Right(FixPath(Item.NativePath),4) <> ".lnk" Then 'Do NOT use .lnk to folders, if missing it will throw an error, plus why would you?
 		                
@@ -3085,7 +3085,7 @@ End
 		    'Remove Quotes that get put on my Nemo etc
 		    If Left(CommandLineFile,1) = Chr(34) Then CommandLineFile = CommandLineFile.ReplaceAll(Chr(34),"") 'Remove Quotes from given path entirly
 		    
-		    'Need to convert ./ to $PWD etc - Glenn 2025
+		    'Do I Need to convert ./ to $PWD etc - Glenn 2025
 		    
 		    
 		    If IsFolder(CommandLineFile) Then

@@ -5321,7 +5321,7 @@ End
 		Sub Opening()
 		  If Debugging Then Debug("--- Starting Editor Opening ---")
 		  LoadCatalogs() 'This will populate the Data so the Catalogs work
-		  ComboTags.RemoveAllRows 'Remove them, need to Add a list file sooner or later or use all the ones loaded into existing apps/games? Glenn 2040
+		  ComboTags.RemoveAllRows 'Remove them, need to Add a list file sooner or later or use all the ones loaded into existing apps/games? Glenn
 		  
 		  If ForceQuit = True Then Return 'Don't bother even opening if set to quit
 		End Sub
@@ -5556,10 +5556,10 @@ End
 		                  For I = FC To 1 Step -1 'Do backwards so it doesn't remove them and make the folder count less/reordered and skip removing some of them
 		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
 		                    Status.Text =  "Clean Up Files..."
-		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
+		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn
 		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Then
 		                    Else 'Not a LLFile type or a script
-		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept (Testing Glenn 2027)
+		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept
 		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
 		                          If Right(F.Item(I).Name, 4) <> ".png" Then
 		                            If Right(F.Item(I).Name, 4) <> ".svg" Then
@@ -5839,7 +5839,7 @@ End
 		    If ItemLLItem.KeepInFolder = True Then  FlagsOut = FlagsOut + "keepinfolder "
 		    ItemLLItem.Flags = FlagsOut.Trim
 		    
-		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn 2040 - Appears not to, will check when I start using to build new stuff
+		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn - Appears not to, will check when I start using to build new stuff
 		    If LnkCount >= 1 Then
 		      For I = 1 To LnkCount
 		        If ItemLnk(I).Title.Trim <> "" Then
@@ -6330,7 +6330,7 @@ End
 		      'Add Data from loaded .desktop file
 		      TextExecute.Text = Exec
 		      TextComment.Text  = Comment
-		       TextIcon.Text = Icon
+		      TextIcon.Text = Icon
 		      TextRunInPath.Text = Path
 		      Categories = Categories.ReplaceAll(";", ";"+Chr(10))
 		      TextMenuCatalog.Text = Categories

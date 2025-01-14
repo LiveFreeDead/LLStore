@@ -693,7 +693,7 @@ End
 		  Categories.Visible = False
 		  If Main.Width < 600 Then Main.Width = 600
 		  If Main.Height < 400 Then Main.Height = 400
-		  ResizeMainForm 'Might be too slow? Is a bit, Needs to test in Linux Glenn
+		  ResizeMainForm 'Might be too slow? Seems ok in Windows and Linux
 		End Sub
 	#tag EndEvent
 
@@ -2655,6 +2655,7 @@ End
 		  'MsgBox "Here"
 		  
 		  'Glenn Open URL if click anywhere on MetaData
+		  MsgBox ItemLLItem.URL
 		End Sub
 	#tag EndEvent
 	#tag Event

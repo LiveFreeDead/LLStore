@@ -169,6 +169,7 @@ Begin DesktopWindow MiniInstaller
       Width           =   56
    End
    Begin Thread InstallItems
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Priority        =   5
@@ -178,6 +179,7 @@ Begin DesktopWindow MiniInstaller
       Type            =   0
    End
    Begin Timer UpdateUI
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -668,8 +670,13 @@ End
 		  If QuitInstaller = False Then 'Bypass everything if you close the form
 		    If Not Paused Then 
 		      Installing = True
-		      SuccessfulInstall = InstallLLFile (FileToInstallFrom)
-		      MiniUpTo = MiniUpTo + 1 'Move to the Next Item
+		      If FileToInstallFrom <> "" Then '------------
+		        SuccessfulInstall = InstallLLFile (FileToInstallFrom)
+		        If SuccessfulInstall = False Then 'Check for errors
+		          If Debugging Then Debug("* Error: Failed - Aborting Install")
+		        End If
+		      End If '--------------------
+		      MiniUpTo = MiniUpTo + 1 'Move to the Next Item, current item was empty or completed
 		      Installing = False
 		    End If
 		  End If
@@ -821,7 +828,7 @@ End
 		          Return
 		        End If
 		        
-		        'Do counter here, so will abort - Glenn 2040
+		        'Do counter here, so will abort if stuck in download loop etc- Glenn
 		        
 		        Return 'Once you start the download we don't continue the job processing below, just update the stats until it's done or aborted
 		      End If
@@ -829,7 +836,7 @@ End
 		      If MiniUpTo >= 0 And MiniUpTo < ItemsToInstall Then 
 		        If ThreadFinished Then
 		          InstallItems.Start 'Loop again Recursive
-		          'MsgBox FileToInstallFrom 'Glenn 2027 'Mesage box needs to be below due to recursive and thread based, For Debugging, Keep
+		          'MsgBox FileToInstallFrom 'Glenn  'Mesage box needs to be below due to recursive and thread based, For Debugging, Keep
 		        End If
 		      Else
 		        Installing = False

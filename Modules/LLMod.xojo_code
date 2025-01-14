@@ -106,7 +106,7 @@ Protected Module LLMod
 		Sub Copy(FileIn As String, FileOut As String)
 		  If Debugging Then Debug("Copy "+ FileIn +" To " + FileOut)
 		  If FileIn = FileOut Then Return 'Do not run if it's the same as it will delete it below and we don't want that
-		  'I may update this routune to new methods, but works for now using Xojo method - Glenn 2040
+		  'I may update this routune to new methods, but works for now using Xojo method - Glenn
 		  
 		  Dim F, G As FolderItem
 		  
@@ -584,7 +584,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function ExpPathScript(PathIn As String, WinPaths As Boolean = False) As String
-		  'Glenn 2040 - Make sure I convert ALL the Variables I need in all these expanders
+		  'Glenn - Make sure I convert ALL the Variables I need in all these expanders
 		  
 		  If Debugging Then Debug("ExpPathScript = " +PathIn)
 		  Dim UserName As String
@@ -1123,6 +1123,10 @@ Protected Module LLMod
 		  If TargetWindows Then
 		    FileIn = FileIn.ReplaceAll("/","\") 'Make it more windowsy so it works better when installing from windows
 		  End If
+		  If FileIn.Trim = "" Then
+		    If Debugging Then Debug("~ Warning - No file given, skipping item") 'Need to check the call just incase it's an empty call
+		    Return False
+		  End If
 		  
 		  'App.DoEvents(1) 'Redraw Forms
 		  
@@ -1143,7 +1147,6 @@ Protected Module LLMod
 		  If Debugging Then Debug("Install Loading in File: "+FileIn + " ItemTempPath: " + ItemTempPath +" Good: "+Success.ToString)
 		  
 		  If Success = False Then
-		    If Debugging Then Debug("* Error: Failed - Aborting Install")
 		    Return False ' Couldn't Load Item
 		  End If
 		  
@@ -2319,7 +2322,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MakeLinks()
-		  'Glenn 2040 - Maybe ReWrite this section - it's everywhere
+		  'Glenn - Maybe ReWrite this section - it's everywhere
 		  
 		  If Debugging Then Debug("--- Starting Make Links ---")
 		  
@@ -2342,7 +2345,7 @@ Protected Module LLMod
 		    'Make SentTo for first item if Main flag set
 		    If BT ="ssApp" Then 'Do Send To if Set in
 		      If ItemLLItem.Flags.IndexOf("sendto") >=0 Then
-		        'Glenn 2027 - not done ssApp Links Processing yet, only the cleanup
+		        'Glenn - not done ssApp Links Processing yet, only the cleanup
 		      End If
 		    End If
 		    
@@ -2448,7 +2451,7 @@ Protected Module LLMod
 		        If Debugging And ItemLnk(I).LnkPMCompatible <> "" Then Debug ("LnkPMCompatible: "+ItemLnk(I).LnkPMCompatible)
 		        If Debugging Then Debug ("LnkOSCompatible: "+ItemLnk(I).LnkOSCompatible)
 		        
-		        If ItemLnk(I).LnkOSCompatible = "F" Then Continue 'Doesn't process Non Compatible links, Need to add Arch Check also (Glenn 2027)
+		        If ItemLnk(I).LnkOSCompatible = "F" Then Continue 'Doesn't process Non Compatible links, Need to add Arch Check also Glenn
 		        
 		        
 		        'If ItemLnk(I).Title.IndexOf(1, "{#2}") >= 1 Then Continue 'Skip dual arch shortcuts, just keep 1st one, which is usually x64 anyway
@@ -2674,7 +2677,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub Move(Source As String, Dest As String)
-		  'Glenn 2040 - ReWrite this to use RunCommand if I have future issues
+		  'Glenn - ReWrite this to use RunCommand if I have future issues
 		  
 		  If Debugging Then Debug("Move: "+Source + " To "+Dest)
 		  If Source = "" Or Source.Length <= 4 Then Return 'Don't remove short paths, it's dangerous to do them as mistakes happen
@@ -2723,7 +2726,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Sub MoveLinks()
-		  'Glenn 2040 - This needs a Rewrite to add in all the missing methods for working with the Links, would work out better to do what freezer did and make my own updated LLFile with the lnk info
+		  'Glenn - This needs a Rewrite to add in all the missing methods for working with the Links, would work out better to do what freezer did and make my own updated LLFile with the lnk info
 		  
 		  If Debugging Then Debug("--- Starting Move Links ---")
 		  Dim DaBugs As String
@@ -3269,7 +3272,7 @@ Protected Module LLMod
 		      
 		      ScriptFile = ExpScript (InstallToPath + "LLScript.sh")
 		      F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
-		      Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; bash " + Chr(34) + FixPath(F.NativePath) + Chr(34)) 'Glenn 2027 - Check bash is suitable over sh. I think it is
+		      Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; bash " + Chr(34) + FixPath(F.NativePath) + Chr(34)) 'Use bash over sh. I think it is better
 		      While Shelly.IsRunning
 		        App.DoEvents(7)
 		      Wend

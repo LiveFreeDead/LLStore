@@ -2,9 +2,9 @@
 Protected Module LLDownloader
 	#tag Method, Flags = &h0
 		Sub Download(InURL As String, OutFile As String)
-		  Dim http As New HTTPSocket
-		  Dim f as FolderItem = GetFolderItem(OutFile, FolderItem.PathTypeShell)
-		  http.Get(InURL, f)
+		  'Dim http As New HTTPSocket
+		  'Dim f as FolderItem = GetFolderItem(OutFile, FolderItem.PathTypeShell)
+		  'http.Get(InURL, f)
 		End Sub
 	#tag EndMethod
 
