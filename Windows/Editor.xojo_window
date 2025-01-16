@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5262,7 +5262,7 @@ Begin DesktopWindow Editor
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   False
-      Left            =   7
+      Left            =   71
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
@@ -5282,7 +5282,39 @@ Begin DesktopWindow Editor
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   623
+      Width           =   559
+   End
+   Begin DesktopButton OpenFile
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Open"
+      Default         =   True
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   21
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   False
+      Left            =   7
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   False
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   "Open Existing LLFile"
+      Top             =   492
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   59
    End
 End
 #tag EndDesktopWindow
@@ -5344,6 +5376,7 @@ End
 		  
 		  Dim InputFolder As String
 		  Dim OutputFile As String
+		  Dim SevenZip As String
 		  
 		  Dim Sh As New Shell
 		  Sh.TimeOut = -1
@@ -5357,12 +5390,25 @@ End
 		    Else ' If the items wasn't compressed, check to see if we need to compress it (Build)
 		      'Build here and clean up
 		      If Debugging Then Debug (Chr(10)+"Item not compressed, compressing...")
+		      
+		      'Compress Patch folder to 7z file
+		      OutFolder = Slash(TextBuildToFolder.Text)
+		      If Exist (OutFolder+"Patch") Then
+		        Status.Text =  "Compressing Patch..."
+		        SevenZip = Linux7z
+		        If TargetWindows Then SevenZip = Win7z
+		        Commands = SevenZip +" a -m0=lzma2 -mx=2 "+Chr(34)+OutFolder+"Patch.7z"+Chr(34)+" "+Slash(OutFolder+"Patch")+"*"  ' -m0=lzma2 -mx=2  Faster but less compressed
+		        If Debugging Then Debug (Commands)
+		        Res = RunCommandResults(Commands)
+		        If Debugging Then Debug (Res)
+		        If Exist(OutFolder+"Patch.7z") Then Deltree (OutFolder+"Patch") 'Remove the folder once compressed successfully
+		      End If
+		      
 		      Select Case BT
 		      Case"LLApp", "LLGame"
 		        If Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Or Exist (Slash(TextBuildToFolder.Text)+"LLApp.tar.gz") = True Then
 		          'Do Nothing
 		        Else 'Only compress if not already compressed file found
-		          OutFolder = Slash(TextBuildToFolder.Text)
 		          OutFile = OutFolder+BT+".tar.gz"
 		          InFolder = Slash(TextIncludeFolder.Text)
 		          InFile = InFolder+BT+".tar.gz"
@@ -5375,7 +5421,7 @@ End
 		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		                If ItemLLItem.NoInstall = False Then 
 		                  Status.Text =  "Compressing Files..."
-		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                  Sh.Execute (Commands)
 		                  While Sh.IsRunning
 		                    App.DoEvents(1)
@@ -5394,7 +5440,7 @@ End
 		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		              If  ItemLLItem.NoInstall = False Then 
 		                Status.Text =  "Compressing Files..."
-		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                Sh.Execute (Commands)
 		                While Sh.IsRunning
 		                  App.DoEvents(1)
@@ -5424,7 +5470,7 @@ End
 		                    If Debugging Then Debug("Testing If Deletion "+I.ToString+"/"+FC.ToString+": "+F.Item(I).NativePath)
 		                    Status.Text =  "Clean Up Files..."
 		                    'May also need to check for patch folder/files and other stuff like Files with same name as title (Like pics for multi shortcut items) Glenn 2027
-		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Then
+		                    If Left(F.Item(I).Name, 5) = Left(BT, 5) Or Left(F.Item(I).Name, 5) = "LLScr" Or Left(F.Item(I).Name, 8) = "Patch.7z"  Then 'Keep
 		                    Else 'Not a LLFile type or a script
 		                      If Right(F.Item(I).Name, 4) <> ".jpg" Then 'If the file to delete isn't a picture, movie etc then it gets deleted, else it gets kept
 		                        If Right(F.Item(I).Name, 4) <> ".mp4" Then
@@ -7260,6 +7306,44 @@ End
 	#tag Event
 		Sub Pressed()
 		  MsgBox "Not Yet Implemented"
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events OpenFile
+	#tag Event
+		Sub Pressed()
+		  If Debugging Then Debug("--- Open To Edit")
+		  
+		  Dim PresetIn As String
+		  
+		  Dim Success As Boolean
+		  
+		  Dim iniType As New FileType
+		  iniType.Name = "llfile/ini"
+		  iniType.MacType = "LLA;LLG;APP;PPG;TAR;APZ;PGZ"
+		  iniType.Extensions = "lla;llg;app;ppg;tar;apz;pgz"
+		  
+		  If PreviousPresetPath = "" Then PreviousPresetPath = Slash(AppPath)+"Presets"
+		  If TargetWindows = True Then
+		    PreviousPresetPath = PreviousPresetPath.ReplaceAll("/","\")
+		  Else
+		    PreviousPresetPath = PreviousPresetPath.ReplaceAll("\","/")
+		  End If
+		  
+		  If PresetIn = "" Then PresetIn = OpenDialog(iniType, "Select LLFile type File", PreviousPresetPath) ' browse for one 
+		  
+		  If TargetWindows Then
+		    PresetIn = PresetIn.ReplaceAll("/","\")
+		  Else
+		    PresetIn = PresetIn.ReplaceAll("\","/")
+		  End If
+		  
+		  If PresetIn <> "" Then
+		    If Debugging Then Debug("Opening To Edit: "+PresetIn)
+		    Success = LoadLLFile(PresetIn)
+		    If Debugging Then Debug("Opened To Edit: "+PresetIn +" "+Success.ToString)
+		    If Success Then Editor.PopulateData 'Populate if Data loaded successfully
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
