@@ -724,6 +724,41 @@ Protected Module LLMod
 		  Sp()=RL.Split(Chr(10))
 		  If Sp.Count <= 0 Then Return OrigScript ' Empty File or no header
 		  For I = 0 To Sp().Count -1
+		    
+		    'Filter out lines with Wrong Arch
+		    If Sp(I).IndexOf(0, "#Is_x86#") >= 0 Then
+		      If SysArchitecture = "x86" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If Sp(I).IndexOf(0, "#Is_x64#") >= 0 Then
+		      If SysArchitecture = "x64" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If Sp(I).IndexOf(0, "#Is_ARM#") >= 0 Then
+		      If SysArchitecture = "ARM" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    'Filter Gateways and Directives
+		    Sp(I) = Sp(I).ReplaceAll("#Is_x86#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_x64#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_ARM#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT5#","") 'Clean unrequired text 'NT check not yet added to this method so will just use all by default, may cause issues? Glenn
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT6#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT10#","") 'Clean unrequired text
+		    
+		    
 		    ScriptContent = ScriptContent + ExpPathReg(Sp(I), True) + Chr(10)
 		  Next I
 		  
@@ -787,6 +822,40 @@ Protected Module LLMod
 		        End If
 		      End If
 		    End If
+		    
+		    'Filter wrong arch lines out
+		    If Sp(I).IndexOf(0, "#Is_x86#") >= 0 Then
+		      If SysArchitecture = "x86" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If Sp(I).IndexOf(0, "#Is_x64#") >= 0 Then
+		      If SysArchitecture = "x64" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If Sp(I).IndexOf(0, "#Is_ARM#") >= 0 Then
+		      If SysArchitecture = "ARM" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        Continue 'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    'Filter Gateways and Directives
+		    Sp(I) = Sp(I).ReplaceAll("#Is_x86#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_x64#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_ARM#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT5#","") 'Clean unrequired text 'NT check not yet added to this method so will just use all by default, may cause issues? Glenn
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT6#","") 'Clean unrequired text
+		    Sp(I) = Sp(I).ReplaceAll("#Is_NT10#","") 'Clean unrequired text
+		    
 		    ScriptContent = ScriptContent + ExpPathScript(Sp(I), True) + Chr(10)
 		  Next I
 		  
@@ -3111,25 +3180,100 @@ Protected Module LLMod
 		  Sp = Split(ItemLLItem.Assembly, Chr(30))
 		  If Sp.Count >=1 Then
 		    For I = 0 To Sp.Count -1
-		      If Sp(I).IndexOf(0, "#Is_x86#") >= 0 Then Continue 'Skip x86 lines, we will only do x64 for now
+		      
+		      If Sp(I).IndexOf(0, "#Is_x86#") >= 0 Then
+		        If SysArchitecture = "x86" Or SysArchitecture = "ALL" Then
+		          'Do It
+		        Else
+		          Continue 'Skip lines with wrong Arch
+		        End If
+		      End If
+		      
+		      If Sp(I).IndexOf(0, "#Is_x64#") >= 0 Then
+		        If SysArchitecture = "x64" Or SysArchitecture = "ALL" Then
+		          'Do It
+		        Else
+		          Continue 'Skip lines with wrong Arch
+		        End If
+		      End If
+		      
+		      If Sp(I).IndexOf(0, "#Is_ARM#") >= 0 Then
+		        If SysArchitecture = "ARM" Or SysArchitecture = "ALL" Then
+		          'Do It
+		        Else
+		          Continue 'Skip lines with wrong Arch
+		        End If
+		      End If
+		      
+		      Sp(I) = Sp(I).ReplaceAll("#Is_x86#","") 'Clean unrequired text
 		      Sp(I) = Sp(I).ReplaceAll("#Is_x64#","") 'Clean unrequired text
+		      Sp(I) = Sp(I).ReplaceAll("#Is_ARM#","") 'Clean unrequired text
+		      Sp(I) = Sp(I).ReplaceAll("#Is_NT5#","") 'Clean unrequired text 'NT check not yet added to this method so will just use all by default, may cause issues? Glenn
+		      Sp(I) = Sp(I).ReplaceAll("#Is_NT6#","") 'Clean unrequired text
+		      Sp(I) = Sp(I).ReplaceAll("#Is_NT10#","") 'Clean unrequired text
+		      
 		      If Sp(I) <> "" Then
 		        
 		        'Add MSI installer to lines that have a .msi in them - May Need to remove for Windows Target
 		        If Sp(I).IndexOf(".msi") >=1 Then
 		          If Left(Sp(I),7) <> "msiexec" Then
 		            'If Left(Sp(I),1)<>Chr(34) Then 'Need to check for end of .msi and remove /qb if it's an issue
-		            Sp(I)= "msiexec /quiet /norestart /i "+Sp(I)
+		            Sp(I) = "msiexec /quiet /norestart /i "+Sp(I)
 		          Else
 		          End If
 		        End If
+		        
+		        'Below is no longer available as I use a single generated script to apply Assembly, so this must happen in the default order, use Scripts if you need a defined order
+		        Sp(I) = Sp(I).ReplaceAll("#RunScripts#","") 'Clean unrequired text
+		        Sp(I) = Sp(I).ReplaceAll("#ApplyRegistry#","") 'Clean unrequired text
+		        Sp(I) = Sp(I).ReplaceAll("#RegisterDLL#","") 'Clean unrequired text
+		        Sp(I) = Sp(I).ReplaceAll("#ApplyPatch#","") 'Clean unrequired text
+		        Sp(I) = Sp(I).ReplaceAll("#ShortcutS#","") 'Clean unrequired text
 		        
 		        AssemblyContent = AssemblyContent + Sp(I)+ Chr(10)
 		      End If
 		    Next
 		  Else ' Single Line?
-		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#Is_x86#","") 'Clean unrequired text
-		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#Is_x64#","") 'Clean unrequired text
+		    If Debugging Then Debug("- Single Line Assembly Command -")
+		    
+		    If ItemLLItem.Assembly.IndexOf(0, "#Is_x86#") >= 0 Then
+		      If SysArchitecture = "x86" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        AssemblyContent = ""  'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If ItemLLItem.Assembly.IndexOf(0, "#Is_x64#") >= 0 Then
+		      If SysArchitecture = "x64" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        AssemblyContent = ""  'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    If ItemLLItem.Assembly.IndexOf(0, "#Is_ARM#") >= 0 Then
+		      If SysArchitecture = "ARM" Or SysArchitecture = "ALL" Then
+		        'Do It
+		      Else
+		        AssemblyContent = ""  'Skip lines with wrong Arch
+		      End If
+		    End If
+		    
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_x86#","") 'Clean unrequired text
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_x64#","") 'Clean unrequired text
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_ARM#","") 'Clean unrequired text
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_NT5#","") 'Clean unrequired text 'NT check not yet added to this method so will just use all by default, may cause issues? Glenn
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_NT6#","") 'Clean unrequired text
+		    ItemLLItem.Assembly  = ItemLLItem.Assembly.ReplaceAll("#Is_NT10#","") 'Clean unrequired text
+		    
+		    'Below is no longer available as I use a single generated script to apply Assembly, so this must happen in the default order, use Scripts if you need a defined order
+		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#RunScripts#","") 'Clean unrequired text
+		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#ApplyRegistry#","") 'Clean unrequired text
+		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#RegisterDLL#","") 'Clean unrequired text
+		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#ApplyPatch#","") 'Clean unrequired text
+		    ItemLLItem.Assembly = ItemLLItem.Assembly.ReplaceAll("#ShortcutS#","") 'Clean unrequired text
+		    
 		    If ItemLLItem.Assembly <> "" Then
 		      
 		      'Add MSI installer to lines that have a .msi in them - May Need to remove for Windows Target
