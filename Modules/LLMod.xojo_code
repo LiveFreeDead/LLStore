@@ -71,7 +71,7 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function CompPath(PathIn As String, SkipAppPath As Boolean = False) As String
-		  If Debugging Then Debug("CompPath: " + PathIn)
+		  'If Debugging Then Debug("CompPath: " + PathIn) 'This gets called a lot, don't need to debug it for now, may adjust when it gets called depending on the Column Header
 		  
 		  If SkipAppPath =False Then
 		    PathIn = PathIn.ReplaceAll(ItemLLItem.PathApp.ReplaceAll("\","/"),"%AppPath%") ' Convert Windows paths to Linux paths, makes the DB cross platform compatible
@@ -4238,6 +4238,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		ItemTempPath As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		LastUsedCategory As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

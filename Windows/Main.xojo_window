@@ -742,6 +742,8 @@ End
 	#tag Method, Flags = &h0
 		Sub ChangeCat(CatPicked As String)
 		  CurrentCat = CatPicked
+		  If LoadedMain = True Then LastUsedCategory = CurrentCat 'Only set it once loaded
+		  
 		  Dim I As Integer
 		  For I = 0 To Categories.RowCount - 1
 		    If Categories.CellTextAt(I,0) = CatPicked Then
@@ -986,6 +988,11 @@ End
 		    base.Item(MC).Append M
 		    
 		    M = New MenuItem
+		    M.Text = "Not Installed"
+		    M.Checked =  HideNotInstalled
+		    base.Item(MC).Append M
+		    
+		    M = New MenuItem
 		    M.Text = "Online"
 		    M.Checked =  HideOnline
 		    base.Item(MC).Append M
@@ -1178,6 +1185,9 @@ End
 		    Settings.Left = (Screen(0).AvailableWidth/2)-(Settings.Width/2)
 		    Settings.Top = (Screen(0).AvailableHeight/2)-(Settings.Height/2)
 		    Settings.Show
+		  Case "Not Ins" ' Hide Not Installed
+		    HideNotInstalled = Not HideNotInstalled
+		    GenerateItems()
 		  Case "Install" ' Hide Installed
 		    HideInstalled = Not HideInstalled
 		    GenerateItems()
@@ -1266,7 +1276,8 @@ End
 		  'Add Sorted Categories from Data form
 		  For I = 0 To Data.Categories.RowCount - 1
 		    Main.Categories.AddRow(Data.Categories.CellTextAt(I, 0))
-		  Next I
+		  Next
+		  
 		End Sub
 	#tag EndMethod
 
@@ -1340,6 +1351,8 @@ End
 		    'Hide Conditions
 		    If StoreMode = 0 Then ' Only do it for Installer
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "T" And HideInstalled = True Then Hidden = True ' Hide Installed
+		      
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("Installed")) = "F" And HideNotInstalled = True Then Hidden = True ' Hide Installed
 		      
 		      If Left(Data.Items.CellTextAt(I, Data.GetDBHeader("PathIni")), 2) = "ht" And HideOnline = True Then Hidden = True 'Hide Online
 		      
@@ -2097,6 +2110,10 @@ End
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		HideNotInstalled As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		HideOnline As Boolean = False
 	#tag EndProperty
 
@@ -2130,6 +2147,10 @@ End
 
 	#tag Property, Flags = &h0
 		Typing As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Untitled As Integer
 	#tag EndProperty
 
 
@@ -3072,6 +3093,22 @@ End
 		Group="Behavior"
 		InitialValue="False"
 		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideNotInstalled"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Untitled"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior

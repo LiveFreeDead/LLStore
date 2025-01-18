@@ -1655,7 +1655,8 @@ End
 		      LineData=LineData.Trim
 		    End If
 		    Select Case LineID
-		      
+		    Case "LastUsedCategory"
+		      LastUsedCategory = LineData
 		    Case"SudoAsNeeded"
 		      If LineData <> "" Then Settings.SetSudoAsNeeded.Value = IsTrue(LineData)
 		      SudoAsNeeded = Settings.SetSudoAsNeeded.Value
@@ -2155,6 +2156,7 @@ End
 		  RL = RL + "UseLocalDBs=" + Str(Settings.SetUseLocalDBFiles.Value) + Chr(10)
 		  RL = RL + "CopyItemsToBuiltRepo=" + Str(Settings.SetCopyToRepoBuild.Value) + Chr(10)
 		  RL = RL + "IgnoreCachedRepoItems=" + Str(Settings.SetIgnoreCache.Value) + Chr(10)
+		  RL = RL + "LastUsedCategory=" + LastUsedCategory + Chr(10)
 		  If Settings.SetFlatpakAsUser.Value = True Then
 		    RL = RL + "FlatpakLocation=User" + Chr(10)
 		  Else
@@ -2394,7 +2396,22 @@ End
 		    Main.GenerateCategories()
 		    
 		    'Change Categories to All (This Generates the items too)
-		    Main.ChangeCat("All")
+		    If LastUsedCategory = "" Then
+		      Main.ChangeCat("All")
+		    Else
+		      Dim DidIt As Boolean = False
+		      'Select Last Used Category - If Exist
+		      For I = 0 To Data.Categories.RowCount - 1
+		        If Main.Categories.CellTextAt(I, 0) = LastUsedCategory Then
+		          'MsgBox LastUsedCategory
+		          Main.ChangeCat(LastUsedCategory)
+		          DidIt = True
+		          Exit
+		        End If
+		      Next
+		      'If not set then set to All
+		      If DidIt = False Then  Main.ChangeCat("All")
+		    End If
 		    
 		    'Load Favorites
 		    LoadFavorites()
