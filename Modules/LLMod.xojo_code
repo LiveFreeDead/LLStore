@@ -2113,7 +2113,7 @@ Protected Module LLMod
 		          ItemLLItem.Players = Val(LineData)
 		          Continue 'Once used Data no need to process the rest
 		        Case "license"
-		          ItemLLItem.License = Val(LineData)
+		          ItemLLItem.License = Val(Left(LineData,1)) '0-Unknown, 1-Paid, 2-Free, 3-Open
 		          Continue 'Once used Data no need to process the rest
 		        Case "licensetype"
 		          ItemLLItem.License = Val(LineData)

@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   5
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -3114,7 +3114,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   161
+         Top             =   155
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -3167,7 +3167,7 @@ Begin DesktopWindow Editor
          Hint            =   ""
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
-         InitialValue    =   "ComboLicense"
+         InitialValue    =   "Unknown\nPaid\nFree\nOpen\n"
          Italic          =   False
          Left            =   85
          LockBottom      =   False
@@ -5256,7 +5256,7 @@ End
 		              If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		                If ItemLLItem.NoInstall = False Then 
 		                  Status.Text =  "Compressing Files..."
-		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                  Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"--exclude=*.jpg "+ "--exclude=*.png "+"--exclude=*.mp4 "+"--exclude=*.svg "+"--exclude=*.ico "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                  Sh.Execute (Commands)
 		                  While Sh.IsRunning
 		                    App.DoEvents(1)
@@ -5275,7 +5275,7 @@ End
 		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		              If  ItemLLItem.NoInstall = False Then 
 		                Status.Text =  "Compressing Files..."
-		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
+		                Commands = "cd "+Chr(34)+InFolder+Chr(34)+" && tar " + "--exclude=" +BT+".* "+"--exclude=Patch.7z "+"--exclude=*.jpg "+ "--exclude=*.png "+"--exclude=*.mp4 "+"--exclude=*.svg "+"--exclude=*.ico "+"-czf "+Chr(34)+OutFile+Chr(34)+" *"
 		                Sh.Execute (Commands)
 		                While Sh.IsRunning
 		                  App.DoEvents(1)
@@ -5419,7 +5419,7 @@ End
 		            If Not Exist(InFile) Then 'If doesn't have the compressed file make it still
 		              If ItemLLItem.NoInstall = False Then 
 		                Status.Text =  "Compressing Files..."
-		                Commands = Win7z +" a -m0=lzma2 -mx=2 "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".*" ' -m0=lzma2 -mx=2  Faster but less compressed
+		                Commands = Win7z +" a -m0=lzma2 -mx=2 "+Chr(34)+OutFile+Chr(34)+" "+InFolder+"* "+"-x!"+BT+".* "+"-x!"+"*.jpg "+"-x!"+"*.png "+"-x!"+"*.mp4 "+"-x!"+"*.svg "+"-x!"+"*.ico" ' -m0=lzma2 -mx=2  Faster but less compressed
 		                If Debugging Then Debug (Commands)
 		                Res = RunCommandResults(Commands)
 		                If Debugging Then Debug (Res)
@@ -5696,7 +5696,11 @@ End
 		  TextRating.Text = ItemLLItem.Rating.ToString
 		  TextPlayers.Text = ItemLLItem.Players.ToString
 		  
-		  ComboLicense.Text = ItemLLItem.License.ToString 'Fix this to show right one
+		  If ItemLLItem.License = 0 Then ComboLicense.Text = "Unknown"
+		  If ItemLLItem.License = 1 Then ComboLicense.Text = "Paid"
+		  If ItemLLItem.License = 2 Then ComboLicense.Text = "Free"
+		  If ItemLLItem.License = 3 Then ComboLicense.Text = "Open"
+		  'ComboLicense.Text = ItemLLItem.License.ToString 'Fix this to show right one
 		  
 		  TextReleaseVersion.Text = ItemLLItem.ReleaseVersion
 		  TextReleaseDate.Text = ItemLLItem.ReleaseDate
@@ -6741,6 +6745,13 @@ End
 		End Function
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonLinkScreenshot
+	#tag Event
+		Sub Pressed()
+		  MsgBox "Not Yet Implemented"
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events ButtonAddTag
 	#tag Event
 		Sub Pressed()
@@ -6830,6 +6841,21 @@ End
 	#tag Event
 		Sub TextChanged()
 		  ItemLLItem.Players = Me.Text.Trim.ToInteger
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ComboLicense
+	#tag Event
+		Sub SelectionChanged(item As DesktopMenuItem)
+		  'License 3 Open Source, 2-Free, 1-Paid, 0 Unknown  
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "0" Then Description.Text &= "License: Unknown" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "1" Then Description.Text &= "License: Paid" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "2" Then Description.Text &= "License: Free" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "3" Then Description.Text &= "License: Open" & "   "
+		  If ComboLicense.Text = "Unknown" Then ItemLLItem.License = 0
+		  If ComboLicense.Text = "Paid" Then ItemLLItem.License = 1
+		  If ComboLicense.Text = "Free" Then ItemLLItem.License = 2
+		  If ComboLicense.Text = "Open" Then ItemLLItem.License = 3
 		End Sub
 	#tag EndEvent
 #tag EndEvents
