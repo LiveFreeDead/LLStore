@@ -6,13 +6,13 @@ if [[ -z $IS_GNOMETERMINAL ]]; then
 
 PACKAGES=gnome-terminal
 
-APT_CMD=$(which apt)
-DNF_CMD=$(which dnf)
-EMERGE_CMD=$(which emerge)
-APK_CMD=$(which apk)
-PACMAN_CMD=$(which pacman)
-ZYPPER_CMD=$(which zypper)
-YUM_CMD=$(which yum)
+APT_CMD=$(which apt 2>/dev/null)
+DNF_CMD=$(which dnf 2>/dev/null)
+EMERGE_CMD=$(which emerge 2>/dev/null)
+APK_CMD=$(which apk 2>/dev/null)
+PACMAN_CMD=$(which pacman 2>/dev/null)
+ZYPPER_CMD=$(which zypper 2>/dev/null)
+YUM_CMD=$(which yum 2>/dev/null)
 
 if [[ ! -z $APT_CMD ]]; then
     sudo $APT_CMD -y install $PACKAGES
@@ -51,8 +51,6 @@ env GDK_BACKEND=x11 ./llstore -setup
 #    sudo $ZYPPER_CMD --non-interactive install $PACKAGES
 
 #sudo env DEBIAN_FRONTEND=noninteractive sudo apt
-
-#yes | sudo pacman -S firefox
 
 #emerge net-proxy/tinyproxy
 

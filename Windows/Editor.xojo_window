@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   2
+      Value           =   5
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -3114,7 +3114,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   155
+         Top             =   161
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -5337,6 +5337,10 @@ End
 		            VersIncl = VersIncl.ReplaceAll(" ",".")
 		          End If
 		          'CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
+		          
+		          If CheckInternetRequired.Value = True Then VersIncl = VersIncl + "Online_" 'Add Online to output file, so you can tell it requires internet
+		          VersIncl = VersIncl + ComboArch.Text.ReplaceAll("x86 + x64","x64+x86") + "_" 'Show what Arch it is in filename
+		          
 		          CompressedFileOut = ItemLLItem.TitleName + "_" + VersIncl + BT + ".tar"
 		          CompressedFileOut = Slash(RootPath) + CompressedFileOut.ReplaceAll(" ", ".")
 		          
@@ -5487,6 +5491,10 @@ End
 		            VersIncl = ItemLLItem.Version.Trim + "_" 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
 		            VersIncl = VersIncl.ReplaceAll(" ",".")
 		          End If
+		          
+		          If CheckInternetRequired.Value = True Then VersIncl = VersIncl + "Online_" 'Add Online to output file, so you can tell it requires internet
+		          VersIncl = VersIncl + ComboArch.Text.ReplaceAll("x86 + x64","x64+x86") + "_" 'Show what Arch it is in filename
+		          
 		          CompressedFileOut = ItemLLItem.TitleName + "_" + VersIncl + BT + ExtOut
 		          CompressedFileOut = Slash(RootPath) + CompressedFileOut.ReplaceAll(" ", ".")
 		          
@@ -5962,7 +5970,7 @@ End
 #tag Events TextPriority
 	#tag Event
 		Sub TextChanged()
-		  ItemLLItem.Rating = Me.Text.Trim.ToDouble
+		  ItemLLItem.Priority = Me.Text.Trim.ToDouble
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -6772,6 +6780,13 @@ End
 	#tag Event
 		Sub TextChanged()
 		  ItemLLItem.ReleaseDate = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextBuilder
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Builder = Me.Text.Trim
 		End Sub
 	#tag EndEvent
 #tag EndEvents

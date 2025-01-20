@@ -2124,7 +2124,7 @@ Protected Module LLMod
 		        Case "releasedate"
 		          ItemLLItem.ReleaseDate = LineData
 		          Continue 'Once used Data no need to process the rest
-		        Case "builder"
+		        Case "releaser"
 		          ItemLLItem.Builder = LineData
 		          Continue 'Once used Data no need to process the rest
 		        Case "installedsize"
@@ -3856,12 +3856,15 @@ Protected Module LLMod
 		  If ItemLLItem.Flags <> "" Then DataOut = DataOut + "Flags=" + ItemLLItem.Flags+Chr(10)
 		  If ItemLLItem.Arch <> "" Then DataOut = DataOut + "Architecture=" + ItemLLItem.Arch+Chr(10) 'This will need to convert x86, x64, arm to numbered, 1 = x86, 2 = x64, will need to check the rest to make it match
 		  
-		  'Meta Here
+		  'Meta Here, Glenn 2027
 		  DataOut = DataOut + "[Meta]" + Chr(10)
 		  If ItemLLItem.InstallSize.ToString <> "" Then DataOut = DataOut + "InstalledSize=" + ItemLLItem.InstallSize.ToString+Chr(10)
 		  If ItemLLItem.Tags <> "" Then DataOut = DataOut + "Tags=" + ItemLLItem.Tags+Chr(10)
 		  If ItemLLItem.Publisher <> "" Then DataOut = DataOut + "Publisher=" + ItemLLItem.Publisher+Chr(10)
+		  If ItemLLItem.Language <> "" Then DataOut = DataOut + "Language=" + ItemLLItem.Language+Chr(10)
 		  If ItemLLItem.Builder <> "" Then DataOut = DataOut + "Releaser=" + ItemLLItem.Builder+Chr(10)
+		  If ItemLLItem.Rating <> 0 Then DataOut = DataOut + "Rating=" + ItemLLItem.Rating.ToString+Chr(10)
+		  If ItemLLItem.Players <> 0 Then DataOut = DataOut + "Players=" + ItemLLItem.Players.ToString+Chr(10)
 		  If ItemLLItem.ReleaseDate <> "" Then DataOut = DataOut + "ReleaseDate=" + ItemLLItem.ReleaseDate+Chr(10)
 		  If ItemLLItem.License.ToString <> "" Then DataOut = DataOut + "License=" + ItemLLItem.License.ToString+Chr(10)
 		  If ItemLLItem.ReleaseVersion <> "" Then DataOut = DataOut + "ReleaseVersion=" + ItemLLItem.ReleaseVersion+Chr(10)
