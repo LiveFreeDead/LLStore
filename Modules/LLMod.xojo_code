@@ -1423,14 +1423,14 @@ Protected Module LLMod
 		      End If
 		    End If
 		    
+		    'Run Sudo Scripts
+		    RunSudoScripts
+		    
 		    'Run Scripts
 		    RunScripts
 		    
 		    'Run Registry Enteries
 		    RunRegistry
-		    
-		    'Run Sudo Scripts
-		    RunSudoScripts
 		    
 		    '------------------------------- Do ssApp Links ----------------------------------
 		    'Move ssApp Shortcuts to their sorted locations (Need to try in Linux to see if they get moved in there or I'll have to edit the .desktop files as well) Do this first so MakeLinks can use LLShorts to source the links
@@ -1456,15 +1456,15 @@ Protected Module LLMod
 		    'Run Assemblys
 		    RunAssembly
 		    
+		    'Run Sudo Scripts
+		    '*** Make sure to add CD to the top of the script so it does it from the correct folder
+		    RunSudoScripts
+		    
 		    'No need to do Registry Stuff for linux items, but will see if any is in there anyway
 		    RunRegistry
 		    
 		    'Run Scripts
 		    RunScripts
-		    
-		    'Run Sudo Scripts
-		    '*** Make sure to add CD to the top of the script so it does it from the correct folder
-		    RunSudoScripts
 		    
 		    'Make Links
 		    MakeLinks
@@ -5593,7 +5593,7 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module
