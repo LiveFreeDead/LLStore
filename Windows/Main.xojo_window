@@ -1778,7 +1778,7 @@ End
 		    Hit = ShWait.Result
 		    
 		    Wid = Wid.Trim
-		    Hit = Hit.Replace(",", "")
+		    Hit = Hit.Replace(",", "") 'Only one can use Replace, not ReplaceAll
 		  End If
 		  
 		  BT = Data.Items.CellTextAt(GameIDIn, Data.GetDBHeader("BuildType"))

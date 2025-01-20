@@ -16,8 +16,6 @@ Protected Module LLDownloader
 		      If QueueURL(I) = URL Then Return 'Skip existing URL download already queued up
 		    Next
 		  End If
-		  ''URL = Replace(URL, "(", Chr(92) & "(") 'Add Break characters for special characters, not needed as I put quotes around them, so bash ignores special characters now (in shell)
-		  ''URL = Replace(URL, ")", Chr(92) & ")")
 		  QueueURL(QueueCount) = URL
 		  QueueLocal(QueueCount) = OutPutFile
 		  QueueCount = QueueCount + 1

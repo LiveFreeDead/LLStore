@@ -5332,10 +5332,18 @@ End
 		        If CheckCompress.Value = True Then 'Tar overwrites existing, so no need to check for it
 		          'Make a single tar Title_Version_BuildType.tar
 		          VersIncl = ""
-		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
-		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
+		          If ItemLLItem.Version.Trim <> "" Then
+		            VersIncl = ItemLLItem.Version.Trim + "_" 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		            VersIncl = VersIncl.ReplaceAll(" ",".")
+		          End If
+		          'CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ".tar"
+		          CompressedFileOut = ItemLLItem.TitleName + "_" + VersIncl + BT + ".tar"
+		          CompressedFileOut = Slash(RootPath) + CompressedFileOut.ReplaceAll(" ", ".")
+		          
+		          
 		          Commands = "cd "+Chr(34)+OutFolder+Chr(34)+" && tar -cf " +Chr(34)+CompressedFileOut+Chr(34)+" *"
 		          Status.Text =  "Compressing to " + CompressedFileOut
+		          If Debugging Then Debug("Compressing to file: "+CompressedFileOut)
 		          Sh.Execute (Commands)
 		          While Sh.IsRunning
 		            App.DoEvents(1)
@@ -5472,8 +5480,17 @@ End
 		          End If
 		          'Make a single tar Title_Version_BuildType .apz or .pgz
 		          VersIncl = ""
-		          If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
-		          CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ExtOut
+		          'If ItemLLItem.Version.Trim <> "" Then VersIncl = Replace(ItemLLItem.Version.Trim + "_", " ", ".") 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		          'CompressedFileOut = Slash(RootPath) + Replace(ItemLLItem.TitleName, " ", ".") + "_" + VersIncl + BT + ExtOut
+		          
+		          If ItemLLItem.Version.Trim <> "" Then
+		            VersIncl = ItemLLItem.Version.Trim + "_" 'Make sure the output filename has no spaces, just for uniform results and to upload easier.
+		            VersIncl = VersIncl.ReplaceAll(" ",".")
+		          End If
+		          CompressedFileOut = ItemLLItem.TitleName + "_" + VersIncl + BT + ExtOut
+		          CompressedFileOut = Slash(RootPath) + CompressedFileOut.ReplaceAll(" ", ".")
+		          
+		          
 		          If TargetWindows Then
 		            CompressedFileOut = CompressedFileOut.ReplaceAll("/","\")
 		          End If

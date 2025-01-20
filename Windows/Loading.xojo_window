@@ -1545,7 +1545,7 @@ End
 		  If StoreMode = 1 Then
 		    If Exist(Slash(AppPath)+"Favorites.ini") Then
 		      InFavs = LoadDataFromFile(Slash(AppPath)+"Favorites.ini")
-		      InFavs = Replace(InFavs, Chr(13), Chr(10))
+		      InFavs = InFavs.ReplaceAll (Chr(13), Chr(10))
 		      InFavSp() = InFavs.Split(Chr(10))
 		      If InFavSp.Count >= 1 Then
 		        For I = 0 To InFavSp.Count - 1
@@ -3035,10 +3035,12 @@ End
 		    Case "-build", "-b"
 		      StoreMode = 3
 		      Build = True
+		      EditorOnly = True
 		    Case "-compress", "-c"
 		      StoreMode = 3
 		      Build = True
 		      Compress = True
+		      EditorOnly = True
 		    Case "-preset", "-p"
 		      StoreMode = 0
 		      LoadPresetFile = True
@@ -3051,18 +3053,18 @@ End
 		  Next
 		  
 		  CommandLineFile = CommandLineFile.Trim '(Remove end space)
-		  'Remove Flags from name
-		  CommandLineFile = CommandLineFile.ReplaceAll("-preset","")
+		  'Remove Flags from name (I also make sure to have a space after each removal as it causes a issue when removes -Build from a folder with the word LastOS-Builder in it for example.
+		  CommandLineFile = CommandLineFile.ReplaceAll("-preset ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-p ","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-build","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-build ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-b ","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-compress","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-compress ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-c ","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-install","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-install ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-i ","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-edit","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-edit ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-e ","")
-		  CommandLineFile = CommandLineFile.ReplaceAll("-setup","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-setup ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-s ","")
 		  
 		  
@@ -3106,8 +3108,11 @@ End
 		    'Remove Quotes that get put on my Nemo etc
 		    If Left(CommandLineFile,1) = Chr(34) Then CommandLineFile = CommandLineFile.ReplaceAll(Chr(34),"") 'Remove Quotes from given path entirly
 		    
-		    'Do I Need to convert ./ to $PWD etc - Glenn 2025
-		    
+		    'Do I Need to convert ./ to $PWD etc - Glenn 2025 - Yes
+		    If TargetLinux Then
+		      'If Not Exist (CommandLineFile) Then CommandLineFile = Slash(CurrentPath)+CommandLineFile
+		      If Left (CommandLineFile,1) <> "/" Then CommandLineFile = Slash(CurrentPath)+CommandLineFile 'Make sure path is given
+		    End If
 		    
 		    If IsFolder(CommandLineFile) Then
 		      CommandLineFile = FixPath(Slash(CommandLineFile))
@@ -3121,12 +3126,16 @@ End
 		  End If
 		  
 		  'Check if CommandLineFile is an actual file and switch to install mode by default
-		  Select Case Right(CommandLineFile, 4)
-		  Case ".apz", ".pgz", ".app",".ppg",".tar",".lla",".llg"
-		    StoreMode = 2 ' This forces it to install ANY viable file regardless of how it's called' I was sick of Nemo etc removing the -i from the command.
-		  End Select
+		  If Build = True Or Compress = True Or EditorOnly = True Then 'This fixes the issue of not compressing etc, installed them instead.
+		  Else
+		    
+		    Select Case Right(CommandLineFile, 4)
+		    Case ".apz", ".pgz", ".app",".ppg",".tar",".lla",".llg"
+		      StoreMode = 2 ' This forces it to install ANY viable file regardless of how it's called' I was sick of Nemo etc removing the -i from the command.
+		    End Select
+		  End If
 		  
-		  If EditorOnly = True Then StoreMode = 3 ' Editor mode, even though the file above is a file, I never want the store or launcher to start
+		  'If EditorOnly = True Then StoreMode = 3 ' Editor mode, even though the file above is a file, I never want the store or launcher to start
 		  
 		  'Show Loading Screen here if the Store Mode is 0
 		  If StoreMode = 0 Then Loading.Visible = True 'Show the loading form here
@@ -3180,6 +3189,7 @@ End
 		  
 		  If Debugging Then Debug("Args: "+System.CommandLine)
 		  If Debugging Then Debug("CommandLineFile: " + CommandLineFile)
+		  If Debugging Then Debug("EditorOnly: " + EditorOnly.ToString +" Build: " + Build.ToString +" Compress: " + Compress.ToString)
 		  
 		  'Move from FirstRunTimer to here
 		  GetAdminMode

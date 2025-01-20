@@ -1786,6 +1786,8 @@ Protected Module LLMod
 		  'Fix ItemInn to forward slashes, Hasn't caused a problem yet
 		  ItemInn = ItemInn.ReplaceAll("\","/")
 		  
+		  If Debugging Then Debug("Load LLFile: "+ ItemInn)
+		  
 		  Dim I As Integer
 		  Dim F As FolderItem
 		  Dim SP() As String
@@ -1889,22 +1891,33 @@ Protected Module LLMod
 		    Compressed = True
 		  End Select
 		  
-		  If Success = False Then Return False 'Abort, Don't load dud Items
+		  If Success = False Then
+		    If Debugging Then Debug ("* Error: Failed to load LLFile Aborting.")
+		    Return False 'Abort, Don't load dud Items
+		  Else
+		    'If Debugging Then Debug ("Set File next")
+		  End If
 		  ItemLLItem.FileINI = ItemInn 'Set FileINI for item, has full path, also includes compressed file if is one
 		  
 		  If Compressed = False Then
+		    If Debugging Then Debug ("Un-Compressed LLFile")
 		    ActualIni = ItemInn ' Sets to this as Default, Compressed below will change it
 		    If ActualIni = "" Then Return False 'Failed to set the item
 		    #Pragma BreakOnExceptions Off
 		    Try
 		      F = GetFolderItem(ActualIni,FolderItem.PathTypeShell)
 		    Catch
+		      If Debugging Then Debug ("* Error: Failed to load LLFile, Skip: "+ActualIni)
 		      Return False'Failed to set the item
 		    End Try
 		    #Pragma BreakOnExceptions On
-		    If Not F.Exists Then Return False'Failed to set the item
+		    If Not F.Exists Then
+		      If Debugging Then Debug ("* Error: Failed to Set LLFile, Skip: "+ActualIni)
+		      Return False'Failed to set the item
+		    End If
 		  Else
 		    'Grab the uncompressed temp folder to load from
+		    If Debugging Then Debug ("Compressed LLFile")
 		    ActualIni = ""
 		    If Exist(TmpItem + "LLApp.lla") Then
 		      ActualIni = TmpItem + "LLApp.lla"
@@ -2171,7 +2184,7 @@ Protected Module LLMod
 		          ItemLnk(LnkEditing).Comment = LineData
 		          Continue 'Only need to process this line and then move to the next
 		        Case "description"
-		          If LineData <> "" Then ItemLnk(LnkEditing).Description = Replace(LineData, Chr(30), Chr(10)) 'Replace RS lines ASAP to avoid issues, save will make sure to put them back
+		          If LineData <> "" Then ItemLnk(LnkEditing).Description = LineData.ReplaceAll(Chr(30), Chr(10)) 'Replace RS lines ASAP to avoid issues, save will make sure to put them back
 		          Continue 'Only need to process this line and then move to the next
 		        Case "path"
 		          ItemLnk(LnkEditing).RunPath = Trim(LineData)
@@ -2331,9 +2344,9 @@ Protected Module LLMod
 		    If Typs.Count >= 1 Then
 		      For J = 0 To Typs.Count - 1
 		        EXECU = EXECU.ReplaceAll("/","\") 'I think Assoc requires windows paths and not linux slashes
-		        TypeName = Replace(APP, "(", "") 'Remove Brackets
-		        TypeName = Replace(TypeName.Trim, ")", "") 'Remove Brackets
-		        TypeName = Replace(TypeName, " ", ".") 'Remove Spaces
+		        TypeName = APP.ReplaceAll ("(", "") 'Remove Brackets
+		        TypeName = TypeName.Trim.ReplaceAll (")", "") 'Remove Brackets
+		        TypeName = TypeName.ReplaceAll (" ", ".") 'Remove Spaces
 		        Res = RunCommandResults("assoc "+"." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+Chr(10)+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34))
 		        If Debugging Then Debug("Win Assoc: ." + Typs(J)+"="+Chr(34)+TypeName+Chr(34)+"|"+"ftype "+TypeName+"="+Chr(34)+EXECU+Chr(34)+" "+Args+Chr(34)+"%%1 %%*" + Chr(34)+ Chr(10)+ Res)
 		      Next
@@ -2341,10 +2354,10 @@ Protected Module LLMod
 		    
 		  Else 'Linux
 		    OrigAppName = APP
-		    APP = Replace(APP, " (Linux)", "") 'Remove Bracketed Linux
-		    APP = Replace(APP, "(", "") 'Remove Brackets
-		    APP = Replace(APP.Lowercase.Trim, ")", "") 'Remove Brackets
-		    APP = Replace(APP, " ", ".") 'Remove Spaces
+		    APP = Replace(APP, " (Linux)", "") 'Remove Bracketed Linux, will only be once, so can use Replace
+		    APP = APP.ReplaceAll ("(", "") 'Remove Brackets
+		    APP = APP.Lowercase.Trim.ReplaceAll (")", "") 'Remove Brackets
+		    APP = APP.ReplaceAll (" ", ".") 'Remove Spaces
 		    
 		    If Debugging Then Debug ("Making Linux Association for: " + APP)
 		    
@@ -2352,7 +2365,7 @@ Protected Module LLMod
 		    'MIME Type
 		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
 		    CurrentIconTheme = Shelly.Result
-		    CurrentIconTheme = Replace(CurrentIconTheme, "'", "")  
+		    CurrentIconTheme = CurrentIconTheme.ReplaceAll ("'", "")  
 		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 --theme " + CurrentIconTheme + " " + Chr(34) + LOGO + Chr(34) + " application-x-" + APP)
 		    
 		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
@@ -5573,6 +5586,14 @@ Protected Module LLMod
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LastUsedCategory"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module
