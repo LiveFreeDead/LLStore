@@ -139,7 +139,8 @@ Protected Module LLMod
 		  
 		  If TargetWindows Then
 		    '''Command = "xcopy "+Chr(34)+FilesIn+Chr(34)+" "+Chr(34)+FolderOut+Chr(34)
-		    XCopyFile(FilesIn, FolderOut)
+		    'xcopy requires backslashes, not forward slashes
+		    XCopyFile(FilesIn.ReplaceAll("/","\"), FolderOut.ReplaceAll("/","\"))
 		  Else
 		    'Command = "cp -r "+Chr(34)+FilesIn+Chr(34)+" "+Chr(34)+FolderOut+Chr(34)
 		    FolderIn = Left(FilesIn, InStrRev(FilesIn,"/")-1)    'Len(FilesIn) - 
