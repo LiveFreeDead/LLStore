@@ -128,6 +128,34 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub CopyWild(FilesIn As String, FolderOut As String)
+		  
+		  Dim Sh As New Shell
+		  Sh.TimeOut = -1 'Give it All the time it needs
+		  Sh.ExecuteMode = Shell.ExecuteModes.Asynchronous
+		  
+		  Dim Command As String
+		  Dim FolderIn As String
+		  
+		  If TargetWindows Then
+		    '''Command = "xcopy "+Chr(34)+FilesIn+Chr(34)+" "+Chr(34)+FolderOut+Chr(34)
+		    XCopyFile(FilesIn, FolderOut)
+		  Else
+		    'Command = "cp -r "+Chr(34)+FilesIn+Chr(34)+" "+Chr(34)+FolderOut+Chr(34)
+		    FolderIn = Left(FilesIn, InStrRev(FilesIn,"/")-1)    'Len(FilesIn) - 
+		    FilesIn = Right(FilesIn,Len(FilesIn)-Len(FolderIn)-1)
+		    Command = "for i in "+Chr(34)+FolderIn+Chr(34)+"/"+ FilesIn+"; do cp "+Chr(34)+"$i"+Chr(34)+" "+Chr(34)+FolderOut+Chr(34)+"; done"
+		    If Debugging Then Debug("CopyWild: "+ Command)
+		    Sh.Execute (Command)
+		    While Sh.IsRunning
+		      App.DoEvents(7)
+		    Wend
+		    If Debugging Then Debug(Sh.ReadAll)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub CreateShortcut(TitleName As String, Target As String, WorkingDir As String, LinkFolder As String, Args As String = "", IconFile As String = "")
 		  If Debugging Then Debug("--- Starting Create Shortcuts ---")
 		  
@@ -1348,7 +1376,7 @@ Protected Module LLMod
 		      End If
 		    End If
 		    
-		    
+		    'Glenn 2027 - Copy all .jpg .png .svg .ico .mp4 from InstallFrom to InstallTo so screenshots for multi shortcut items work
 		    'Copy LLFiles to the Install folder (So Games Launcher has the Link Info and Screenshots/Fader etc 'This will copy all but archives, Need to manually copy the ssApp and ppApp files after this
 		    If TargetWindows Then
 		      'Find another way to copy in Windows? (RoboCopy)
@@ -1358,10 +1386,16 @@ Protected Module LLMod
 		      Copy(Slash(InstallFromPath) +ItemLLItem.BuildType+".ppg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".ppg")
 		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".reg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".reg")
 		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".cmd", Slash(InstallToPath) + ItemLLItem.BuildType+".cmd")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".jpg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".jpg")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".png", Slash(InstallToPath) +ItemLLItem.BuildType+ ".png")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".ico", Slash(InstallToPath) +ItemLLItem.BuildType+ ".ico")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".mp4", Slash(InstallToPath) +ItemLLItem.BuildType+ ".mp4")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".jpg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".jpg")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".png", Slash(InstallToPath) +ItemLLItem.BuildType+ ".png")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".ico", Slash(InstallToPath) +ItemLLItem.BuildType+ ".ico")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".mp4", Slash(InstallToPath) +ItemLLItem.BuildType+ ".mp4")
+		      
+		      CopyWild(Slash(InstallFromPath) + "*.jpg", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.png", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.ico", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.svg", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.mp4", Slash(InstallToPath))
 		      
 		    Else 'Linux Mode
 		      'Ignore LLApps??? Yeah, no need to copy the installer data to it's folder, but I do below because it's easier
@@ -1373,37 +1407,45 @@ Protected Module LLMod
 		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".cmd", Slash(InstallToPath) + ItemLLItem.BuildType+".cmd")
 		      Copy(Slash(InstallFromPath) +ItemLLItem.BuildType+".lla", Slash(InstallToPath) +ItemLLItem.BuildType+ ".lla")
 		      Copy(Slash(InstallFromPath) +ItemLLItem.BuildType+".llg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".llg")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".jpg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".jpg")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".png", Slash(InstallToPath) +ItemLLItem.BuildType+ ".png")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".ico", Slash(InstallToPath) +ItemLLItem.BuildType+ ".ico")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".svg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".svg")
-		      Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".mp4", Slash(InstallToPath) +ItemLLItem.BuildType+ ".mp4")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".jpg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".jpg")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".png", Slash(InstallToPath) +ItemLLItem.BuildType+ ".png")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".ico", Slash(InstallToPath) +ItemLLItem.BuildType+ ".ico")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".svg", Slash(InstallToPath) +ItemLLItem.BuildType+ ".svg")
+		      'Copy(Slash(InstallFromPath) + ItemLLItem.BuildType+".mp4", Slash(InstallToPath) +ItemLLItem.BuildType+ ".mp4")
+		      
+		      CopyWild(Slash(InstallFromPath) + "*.jpg", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.png", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.ico", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.svg", Slash(InstallToPath))
+		      CopyWild(Slash(InstallFromPath) + "*.mp4", Slash(InstallToPath))
+		      
 		      
 		      If ItemLLItem.BuildType = "LLGame"  Then
-		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
+		        'Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
 		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ppGame"  Then
-		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
+		        'Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
 		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ppApp"  Then
-		        Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
+		        'Shelly.Execute ("rsync -a " + Chr(34) + Slash(InstallFromPath) + "." + Chr(34) + " " + Chr(34) + InstallToPath + Chr(34) + " --exclude=LLApp.tar.gz"+" --exclude=LLGame.tar.gz" +" --exclude=*.7z")
 		        Do
 		          App.DoEvents(7)
 		        Loop Until Shelly.IsRunning = False
 		      End If
 		      If ItemLLItem.BuildType = "ssApp" Then
-		        Copy(Slash(InstallFromPath) + "ssApp.app", Slash(InstallToPath) + "ssApp.app")
-		        Copy(Slash(InstallFromPath) + "ssApp.reg", Slash(InstallToPath) + "ssApp.reg")
-		        Copy(Slash(InstallFromPath) + "ssApp.cmd", Slash(InstallToPath) + "ssApp.cmd")
-		        Copy(Slash(InstallFromPath) + "ssApp.jpg", Slash(InstallToPath) + "ssApp.jpg")
-		        Copy(Slash(InstallFromPath) + "ssApp.png", Slash(InstallToPath) + "ssApp.png")
-		        Copy(Slash(InstallFromPath) + "ssApp.ico", Slash(InstallToPath) + "ssApp.ico")
+		        'Copy(Slash(InstallFromPath) + "ssApp.app", Slash(InstallToPath) + "ssApp.app")
+		        'Copy(Slash(InstallFromPath) + "ssApp.reg", Slash(InstallToPath) + "ssApp.reg")
+		        'Copy(Slash(InstallFromPath) + "ssApp.cmd", Slash(InstallToPath) + "ssApp.cmd")
+		        'Copy(Slash(InstallFromPath) + "ssApp.jpg", Slash(InstallToPath) + "ssApp.jpg")
+		        'Copy(Slash(InstallFromPath) + "ssApp.png", Slash(InstallToPath) + "ssApp.png")
+		        'Copy(Slash(InstallFromPath) + "ssApp.ico", Slash(InstallToPath) + "ssApp.ico")
+		        'CopyWild(Slash(InstallFromPath) + "*.jpg", Slash(InstallToPath))
 		        
 		        if Not TargetWindows Then 'Only Linux needs this, Win doesn't
 		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(InstallToPath) + "*.cmd"+Chr(34)) 'Change Read/Write/Execute to defaults
