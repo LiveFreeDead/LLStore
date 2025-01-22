@@ -43,7 +43,7 @@ Begin DesktopWindow Editor
       Panels          =   ""
       Scope           =   0
       SmallTabs       =   False
-      TabDefinition   =   "General\rLinks\rAssembly\rPost-Processing\rGraphics\rMetadata\rBuild/Save"
+      TabDefinition   =   "General\rLinks\rAssembly\rPost-Processing\rGraphics\rBuild/Save/Metadata"
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   5
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -550,22 +550,22 @@ Begin DesktopWindow Editor
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   0
-         LockBottom      =   False
+         LockBottom      =   True
          LockedInPosition=   False
          LockLeft        =   True
          LockRight       =   False
-         LockTop         =   True
+         LockTop         =   False
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
          TabIndex        =   0
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   False
          Text            =   "Include Folder:"
          TextAlignment   =   3
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   35
+         Top             =   359
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -590,23 +590,23 @@ Begin DesktopWindow Editor
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   106
-         LockBottom      =   False
+         LockBottom      =   True
          LockedInPosition=   False
          LockLeft        =   True
          LockRight       =   True
-         LockTop         =   True
+         LockTop         =   False
          MaximumCharactersAllowed=   0
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
          TabIndex        =   74
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextIncludeFolder"
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   35
+         Top             =   359
          Transparent     =   False
          Underline       =   False
          ValidationMask  =   ""
@@ -628,18 +628,18 @@ Begin DesktopWindow Editor
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
          Left            =   591
-         LockBottom      =   False
+         LockBottom      =   True
          LockedInPosition=   False
          LockLeft        =   False
          LockRight       =   True
-         LockTop         =   True
+         LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
          TabIndex        =   75
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   35
+         Top             =   359
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -666,7 +666,7 @@ Begin DesktopWindow Editor
          Scope           =   0
          Selectable      =   False
          TabIndex        =   3
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   False
          Text            =   "Build To Folder:"
          TextAlignment   =   3
@@ -707,7 +707,7 @@ Begin DesktopWindow Editor
          ReadOnly        =   False
          Scope           =   0
          TabIndex        =   76
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Text            =   "TextBuildToFolder"
          TextAlignment   =   0
@@ -743,7 +743,7 @@ Begin DesktopWindow Editor
          MacButtonStyle  =   0
          Scope           =   0
          TabIndex        =   77
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
          Top             =   395
@@ -775,7 +775,7 @@ Begin DesktopWindow Editor
          MacButtonStyle  =   0
          Scope           =   0
          TabIndex        =   80
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
          Top             =   431
@@ -1765,7 +1765,7 @@ Begin DesktopWindow Editor
          LockTop         =   False
          Scope           =   0
          TabIndex        =   79
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   "This is used for Linux items that have no installable files/folders"
          Top             =   441
@@ -1792,7 +1792,7 @@ Begin DesktopWindow Editor
          HasBorder       =   True
          HasHorizontalScrollbar=   False
          HasVerticalScrollbar=   True
-         Height          =   95
+         Height          =   170
          HideSelection   =   True
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
@@ -1884,7 +1884,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   150
+         Top             =   236
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -1906,12 +1906,12 @@ Begin DesktopWindow Editor
          HasBorder       =   True
          HasHorizontalScrollbar=   False
          HasVerticalScrollbar=   True
-         Height          =   175
+         Height          =   167
          HideSelection   =   True
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
-         Left            =   7
+         Left            =   8
          LineHeight      =   0.0
          LineSpacing     =   1.0
          LockBottom      =   True
@@ -1930,7 +1930,7 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   184
+         Top             =   262
          Transparent     =   False
          Underline       =   False
          UnicodeMode     =   1
@@ -1964,7 +1964,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   4
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   154
+         Top             =   231
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -1996,7 +1996,7 @@ Begin DesktopWindow Editor
          TabPanelIndex   =   4
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   363
+         Top             =   449
          Transparent     =   False
          Underline       =   False
          Visible         =   True
@@ -2414,811 +2414,6 @@ Begin DesktopWindow Editor
          Underline       =   False
          Visible         =   True
          Width           =   144
-      End
-      Begin DesktopComboBox ComboTags
-         AllowAutoComplete=   False
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         InitialValue    =   "ComboTags"
-         Italic          =   False
-         Left            =   7
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Scope           =   0
-         SelectedRowIndex=   0
-         TabIndex        =   61
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Tooltip         =   ""
-         Top             =   35
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   196
-      End
-      Begin DesktopButton ButtonAddTag
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Cancel          =   False
-         Caption         =   "Add"
-         Default         =   True
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   26
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   205
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         MacButtonStyle  =   0
-         Scope           =   0
-         TabIndex        =   62
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Tooltip         =   ""
-         Top             =   35
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   42
-      End
-      Begin DesktopTextField TextTags
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   248
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   63
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextTags"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   35
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   376
-      End
-      Begin DesktopTextField TextPublisher
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   416
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   68
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextPublisher"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   65
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   208
-      End
-      Begin DesktopLabel LabelPublisher
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   334
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   8
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Publisher:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   65
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   74
-      End
-      Begin DesktopTextField TextReleaseVersion
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   416
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   69
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextReleaseVersion"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   95
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   208
-      End
-      Begin DesktopLabel LabelReleaseVersion
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   308
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   10
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Release Version:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   95
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopLabel LabelReleaseDate
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   308
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   11
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Release Date:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   125
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopTextField TextReleaseDate
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   416
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   70
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextReleaseDate"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   125
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   208
-      End
-      Begin DesktopLabel LabelBuilder
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   308
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   13
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Builder:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   155
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopTextField TextBuilder
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   416
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   71
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextBuilder"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   155
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   208
-      End
-      Begin DesktopLabel LabelInstallSize
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   308
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   15
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Installed Size:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   185
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopTextField TextInstalledSize
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   416
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   True
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   72
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextInstalledSize"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   185
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   152
-      End
-      Begin DesktopButton ButtonImportSize
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Cancel          =   False
-         Caption         =   "Import"
-         Default         =   True
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   26
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   571
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   False
-         LockRight       =   True
-         LockTop         =   True
-         MacButtonStyle  =   0
-         Scope           =   0
-         TabIndex        =   73
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Tooltip         =   ""
-         Top             =   185
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   53
-      End
-      Begin DesktopTextField TextLanguage
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   85
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   64
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextLanguage"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   95
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   211
-      End
-      Begin DesktopLabel LabelLanguage
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   7
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   19
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Language:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   96
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   74
-      End
-      Begin DesktopTextField TextRating
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   85
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   65
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextRating"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   125
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   211
-      End
-      Begin DesktopLabel LabelRating
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   7
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   21
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Rating:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   126
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   74
-      End
-      Begin DesktopTextField TextPlayers
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   False
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   85
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         MaximumCharactersAllowed=   0
-         Password        =   False
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   66
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Text            =   "TextPlayers"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   155
-         Transparent     =   False
-         Underline       =   False
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   211
-      End
-      Begin DesktopLabel LabelPlayers
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   7
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   23
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "Players:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   156
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   74
-      End
-      Begin DesktopComboBox ComboLicense
-         AllowAutoComplete=   True
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   26
-         Hint            =   ""
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         InitialValue    =   "Unknown\nPaid\nFree\nOpen\n"
-         Italic          =   False
-         Left            =   85
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Scope           =   0
-         SelectedRowIndex=   0
-         TabIndex        =   67
-         TabPanelIndex   =   6
-         TabStop         =   True
-         Tooltip         =   ""
-         Top             =   185
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   211
-      End
-      Begin DesktopLabel LabelLicense
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   24
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   7
-         LockBottom      =   False
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   True
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   25
-         TabPanelIndex   =   6
-         TabStop         =   False
-         Text            =   "License:"
-         TextAlignment   =   3
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   185
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   74
       End
       Begin DesktopCheckBox CheckNoInstall
          AllowAutoDeactivate=   True
@@ -4729,12 +3924,12 @@ Begin DesktopWindow Editor
          HasBorder       =   True
          HasHorizontalScrollbar=   False
          HasVerticalScrollbar=   True
-         Height          =   96
+         Height          =   33
          HideSelection   =   True
          Index           =   -2147483648
          InitialParent   =   "TabPanelEditor"
          Italic          =   False
-         Left            =   7
+         Left            =   119
          LineHeight      =   0.0
          LineSpacing     =   1.0
          LockBottom      =   True
@@ -4753,109 +3948,13 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   382
+         Top             =   432
          Transparent     =   False
          Underline       =   False
          UnicodeMode     =   1
          ValidationMask  =   ""
          Visible         =   True
          Width           =   100
-      End
-      Begin DesktopTextArea TextInstallFonts
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   True
-         AllowStyledText =   True
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         HasHorizontalScrollbar=   False
-         HasVerticalScrollbar=   True
-         Height          =   96
-         HideSelection   =   True
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   112
-         LineHeight      =   0.0
-         LineSpacing     =   1.0
-         LockBottom      =   True
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   False
-         MaximumCharactersAllowed=   0
-         Multiline       =   True
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   52
-         TabPanelIndex   =   4
-         TabStop         =   True
-         Text            =   ""
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   382
-         Transparent     =   False
-         Underline       =   False
-         UnicodeMode     =   1
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   197
-      End
-      Begin DesktopTextArea TextRegisterDLLOCX
-         AllowAutoDeactivate=   True
-         AllowFocusRing  =   True
-         AllowSpellChecking=   True
-         AllowStyledText =   True
-         AllowTabs       =   False
-         BackgroundColor =   &cFFFFFF
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Format          =   ""
-         HasBorder       =   True
-         HasHorizontalScrollbar=   False
-         HasVerticalScrollbar=   True
-         Height          =   96
-         HideSelection   =   True
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   314
-         LineHeight      =   0.0
-         LineSpacing     =   1.0
-         LockBottom      =   True
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   False
-         MaximumCharactersAllowed=   0
-         Multiline       =   True
-         ReadOnly        =   False
-         Scope           =   0
-         TabIndex        =   53
-         TabPanelIndex   =   4
-         TabStop         =   True
-         Text            =   ""
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   382
-         Transparent     =   False
-         Underline       =   False
-         UnicodeMode     =   1
-         ValidationMask  =   ""
-         Visible         =   True
-         Width           =   197
       End
       Begin DesktopLabel LabelAppExtensions
          AllowAutoDeactivate=   True
@@ -4884,77 +3983,11 @@ Begin DesktopWindow Editor
          TextAlignment   =   0
          TextColor       =   &c000000
          Tooltip         =   ""
-         Top             =   361
+         Top             =   456
          Transparent     =   False
          Underline       =   False
          Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopLabel LabelInstallFonts
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   20
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   112
-         LockBottom      =   True
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   False
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   10
-         TabPanelIndex   =   4
-         TabStop         =   False
-         Text            =   "Install Fonts:"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   361
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   100
-      End
-      Begin DesktopLabel LabelRegisterDLL
-         AllowAutoDeactivate=   True
-         Bold            =   False
-         Enabled         =   True
-         FontName        =   "System"
-         FontSize        =   0.0
-         FontUnit        =   0
-         Height          =   20
-         Index           =   -2147483648
-         InitialParent   =   "TabPanelEditor"
-         Italic          =   False
-         Left            =   314
-         LockBottom      =   True
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   False
-         LockTop         =   False
-         Multiline       =   False
-         Scope           =   0
-         Selectable      =   False
-         TabIndex        =   11
-         TabPanelIndex   =   4
-         TabStop         =   False
-         Text            =   "Register Server (DLL/OCX):"
-         TextAlignment   =   0
-         TextColor       =   &c000000
-         Tooltip         =   ""
-         Top             =   361
-         Transparent     =   False
-         Underline       =   False
-         Visible         =   True
-         Width           =   164
+         Width           =   108
       End
       Begin DesktopLabel Is_NT10
          AllowAutoDeactivate=   True
@@ -5006,13 +4039,13 @@ Begin DesktopWindow Editor
          Left            =   10
          LockBottom      =   True
          LockedInPosition=   False
-         LockLeft        =   False
-         LockRight       =   True
+         LockLeft        =   True
+         LockRight       =   False
          LockTop         =   False
          MacButtonStyle  =   0
          Scope           =   0
          TabIndex        =   78
-         TabPanelIndex   =   7
+         TabPanelIndex   =   6
          TabStop         =   True
          Tooltip         =   ""
          Top             =   431
@@ -5084,6 +4117,877 @@ Begin DesktopWindow Editor
          Underline       =   False
          Visible         =   True
          Width           =   30
+      End
+      Begin DesktopLabel LabelPublisher
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   331
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   81
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Publisher:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   90
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopLabel LabelReleaseVersion
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   305
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   82
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Release Version:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   120
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   100
+      End
+      Begin DesktopLabel LabelReleaseDate
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   305
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   83
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Release Date:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   150
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   100
+      End
+      Begin DesktopLabel LabelBuilder
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   305
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   84
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Builder:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   180
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   100
+      End
+      Begin DesktopLabel LabelInstallSize
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   305
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   85
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Installed Size:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   "Type in the Kilobyte value of the installed item, you will manually have to check the installed item to see how big it is and type it here (divide the byte value by 1024 to get the KB size)"
+         Top             =   210
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   100
+      End
+      Begin DesktopLabel LabelLanguage
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   4
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   86
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Language:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   121
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopLabel LabelRating
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   4
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   87
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Rating:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   151
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopLabel LabelPlayers
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   4
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   88
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Players:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   181
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopLabel LabelLicense
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   4
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   89
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "License:"
+         TextAlignment   =   3
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   210
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopComboBox ComboTags
+         AllowAutoComplete=   False
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         InitialValue    =   "ComboTags"
+         Italic          =   False
+         Left            =   4
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Scope           =   0
+         SelectedRowIndex=   0
+         TabIndex        =   90
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Tooltip         =   ""
+         Top             =   60
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   196
+      End
+      Begin DesktopButton ButtonAddTag
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Cancel          =   False
+         Caption         =   "Add"
+         Default         =   True
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   26
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   202
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         MacButtonStyle  =   0
+         Scope           =   0
+         TabIndex        =   91
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Tooltip         =   ""
+         Top             =   60
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   42
+      End
+      Begin DesktopTextField TextLanguage
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   82
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   92
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextLanguage"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   120
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   211
+      End
+      Begin DesktopTextField TextRating
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   82
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   93
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextRating"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   150
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   211
+      End
+      Begin DesktopTextField TextPlayers
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   82
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   94
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextPlayers"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   180
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   211
+      End
+      Begin DesktopComboBox ComboLicense
+         AllowAutoComplete=   True
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         InitialValue    =   "Unknown\nPaid\nFree\nOpen\n"
+         Italic          =   False
+         Left            =   82
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Scope           =   0
+         SelectedRowIndex=   0
+         TabIndex        =   95
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Tooltip         =   ""
+         Top             =   210
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   211
+      End
+      Begin DesktopTextField TextInstalledSize
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   413
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   96
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextInstalledSize"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   "Type in the Kilobyte value of the installed item, you will manually have to check the installed item to see how big it is and type it here (divide the byte value by 1024 to get the KB size)"
+         Top             =   210
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   208
+      End
+      Begin DesktopButton ButtonImportSize
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Cancel          =   False
+         Caption         =   "Import"
+         Default         =   True
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   26
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   568
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   False
+         LockRight       =   True
+         LockTop         =   True
+         MacButtonStyle  =   0
+         Scope           =   0
+         TabIndex        =   97
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Tooltip         =   ""
+         Top             =   240
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   False
+         Width           =   53
+      End
+      Begin DesktopTextField TextBuilder
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   413
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   98
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextBuilder"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   180
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   208
+      End
+      Begin DesktopTextField TextReleaseDate
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   413
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   99
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextReleaseDate"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   150
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   208
+      End
+      Begin DesktopTextField TextReleaseVersion
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   413
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   100
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextReleaseVersion"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   120
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   208
+      End
+      Begin DesktopTextField TextPublisher
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   413
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   101
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextPublisher"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   90
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   208
+      End
+      Begin DesktopTextField TextTags
+         AllowAutoDeactivate=   True
+         AllowFocusRing  =   True
+         AllowSpellChecking=   False
+         AllowTabs       =   False
+         BackgroundColor =   &cFFFFFF
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Format          =   ""
+         HasBorder       =   True
+         Height          =   26
+         Hint            =   ""
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   245
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   True
+         LockTop         =   True
+         MaximumCharactersAllowed=   0
+         Password        =   False
+         ReadOnly        =   False
+         Scope           =   0
+         TabIndex        =   102
+         TabPanelIndex   =   6
+         TabStop         =   True
+         Text            =   "TextTags"
+         TextAlignment   =   0
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   60
+         Transparent     =   False
+         Underline       =   False
+         ValidationMask  =   ""
+         Visible         =   True
+         Width           =   376
+      End
+      Begin DesktopLabel LabelMetaData
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   9
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   103
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Metadata: -"
+         TextAlignment   =   1
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   32
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   74
+      End
+      Begin DesktopLabel LabelBuildFolders
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Enabled         =   True
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   24
+         Index           =   -2147483648
+         InitialParent   =   "TabPanelEditor"
+         Italic          =   False
+         Left            =   9
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Multiline       =   False
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   104
+         TabPanelIndex   =   6
+         TabStop         =   False
+         Text            =   "Build Folders: -"
+         TextAlignment   =   1
+         TextColor       =   &c000000
+         Tooltip         =   ""
+         Top             =   312
+         Transparent     =   False
+         Underline       =   False
+         Visible         =   True
+         Width           =   89
       End
    End
    Begin DesktopLabel Status
@@ -6752,113 +6656,6 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events ButtonAddTag
-	#tag Event
-		Sub Pressed()
-		  Dim TXT As String
-		  
-		  TXT = TextTags.Text  +"; "+ComboTags.Text
-		  If Left(TXT, 1) = ";" Then TXT = Right(TXT, Len(TXT)-1).Trim
-		  TXT = TXT.ReplaceAll("; ;",";")
-		  TXT = TXT.ReplaceAll(";;",";")
-		  
-		  TextTags.Text = TXT
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextTags
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Tags = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextPublisher
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Publisher = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextReleaseVersion
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.ReleaseVersion = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextReleaseDate
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.ReleaseDate = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextBuilder
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Builder = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextInstalledSize
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.InstallSize = Me.Text.Trim.ToInteger
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events ButtonImportSize
-	#tag Event
-		Sub Pressed()
-		  'Get the install size from either the archive if compressed or calculate based on existing files provided (not good for ssApps or NoInstall items as these grab from the net and need to manually be written)
-		  
-		  'TextInstalledSize.Text = 
-		  
-		  If ItemLLItem.Compressed = True Then 'Grab Size from inside the Archive
-		  End If
-		  
-		  MsgBox "Not Yet Implemented Import Size"
-		  
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextLanguage
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Language = Me.Text.Trim
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextRating
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Rating = Me.Text.Trim.ToDouble
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextPlayers
-	#tag Event
-		Sub TextChanged()
-		  ItemLLItem.Players = Me.Text.Trim.ToInteger
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events ComboLicense
-	#tag Event
-		Sub SelectionChanged(item As DesktopMenuItem)
-		  'License 3 Open Source, 2-Free, 1-Paid, 0 Unknown  
-		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "0" Then Description.Text &= "License: Unknown" & "   "
-		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "1" Then Description.Text &= "License: Paid" & "   "
-		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "2" Then Description.Text &= "License: Free" & "   "
-		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "3" Then Description.Text &= "License: Open" & "   "
-		  If ComboLicense.Text = "Unknown" Then ItemLLItem.License = 0
-		  If ComboLicense.Text = "Paid" Then ItemLLItem.License = 1
-		  If ComboLicense.Text = "Free" Then ItemLLItem.License = 2
-		  If ComboLicense.Text = "Open" Then ItemLLItem.License = 3
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events CheckNoInstall
 	#tag Event
 		Sub ValueChanged()
@@ -7154,6 +6951,146 @@ End
 	#tag Event
 		Sub Pressed()
 		  MsgBox "Not Yet Implemented"
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonAddTag
+	#tag Event
+		Sub Pressed()
+		  Dim TXT As String
+		  
+		  TXT = TextTags.Text  +"; "+ComboTags.Text
+		  If Left(TXT, 1) = ";" Then TXT = Right(TXT, Len(TXT)-1).Trim
+		  TXT = TXT.ReplaceAll("; ;",";")
+		  TXT = TXT.ReplaceAll(";;",";")
+		  
+		  TextTags.Text = TXT
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextLanguage
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Language = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextRating
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Rating = Me.Text.Trim.ToDouble
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPlayers
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Players = Me.Text.Trim.ToInteger
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ComboLicense
+	#tag Event
+		Sub SelectionChanged(item As DesktopMenuItem)
+		  'License 3 Open Source, 2-Free, 1-Paid, 0 Unknown  
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "0" Then Description.Text &= "License: Unknown" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "1" Then Description.Text &= "License: Paid" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "2" Then Description.Text &= "License: Free" & "   "
+		  'If Left(Trim(Data.Items[RefsID, Data.CLicense].Text)) = "3" Then Description.Text &= "License: Open" & "   "
+		  If ComboLicense.Text = "Unknown" Then ItemLLItem.License = 0
+		  If ComboLicense.Text = "Paid" Then ItemLLItem.License = 1
+		  If ComboLicense.Text = "Free" Then ItemLLItem.License = 2
+		  If ComboLicense.Text = "Open" Then ItemLLItem.License = 3
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextInstalledSize
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.InstallSize = Me.Text.Trim.ToInteger
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonImportSize
+	#tag Event
+		Sub Pressed()
+		  'Get the install size from either the archive if compressed or calculate based on existing files provided (not good for ssApps or NoInstall items as these grab from the net and need to manually be written)
+		  
+		  Dim CompFile As String
+		  
+		  If ItemLLItem.Compressed = True Then 'Grab Size from inside the Archive (*** This wont work as I only extract the Pics and LLFile, I don't extract the .tar.gz or ppGame.7z etc so need to do that first?)
+		    
+		    'CompFile = LLApp.IncludeFolder.Text & "LLGame.tar.gz"
+		    'If Not Exist(CompFile) Then CompFile = LLApp.IncludeFolder.Text & "LLApp.tar.gz"
+		    'If Exist(CompFile) Then       
+		    ''Get it from inside the tar.gz file if it exists else grab the whole Include Folder
+		    'Shell "tar tzvf " & CompFile & " | awk '{s+=$3} END{print (s/1024), MB}'" To Test
+		    'TotalSize = Test
+		    
+		    If TargetWindows Then
+		    Else 'Linux OS getting size
+		      Select Case ItemLLItem.BuildType
+		      Case "LLApp", "LLGame"
+		        
+		      Case "ppApp", "ppGame"
+		        
+		      Case "ssApp" 'Not able to get installed size using this as it gets bigger
+		      End Select
+		      
+		    End If
+		    
+		    'TextInstalledSize.Text = 
+		    MsgBox "Not Yet Implemented Import Size from Compressed items"
+		  Else 'Uncompressed, get InstallFrom
+		    
+		    'If Exist(LLApp.IncludeFolder.Text) Then      
+		    'Shell "du -k " & LLApp.IncludeFolder.Text To TotalSize
+		    'TotalSize = Trim(Left(TotalSize, InStr(TotalSize, "/") - 2)) ' Takes off file name      
+		    ''''TotalSize = Str(Val(TotalSize) * 1024) 'Convert to Bytes
+		    'InstallSizeText.Text = TotalSize      
+		    
+		    'Get size from TextIncludeFolder, this gets set by the user and if you're editing one it sets this path to the same as TextBuildToFolder anyway, so only need to test that one path
+		    'TextIncludeFolder.Text
+		    'TextInstalledSize.Text =
+		    
+		    MsgBox "Not Yet Implemented Import Size from Uncompressed items"
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextBuilder
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Builder = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextReleaseDate
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ReleaseDate = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextReleaseVersion
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.ReleaseVersion = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextPublisher
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Publisher = Me.Text.Trim
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextTags
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Tags = Me.Text.Trim
 		End Sub
 	#tag EndEvent
 #tag EndEvents

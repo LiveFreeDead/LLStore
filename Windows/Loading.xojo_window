@@ -3213,6 +3213,12 @@ End
 		    If CommandLineFile <> "" Then
 		      If Exist (CommandLineFile) Then 'Install it
 		        'MsgBox "Installing: "+ CommandLineFile
+		        'Switched to using System Notify as it fails to show before it's extracted the archive, hopefully it works in Windows
+		        'Notify ASAP so users knows something is happening
+		        'Notify ("LLStore Installing", "Installing:-"+Chr(10)+CommandLineFile, "", -1) 'Mini Installer can't call this and wouldn't want to.
+		        'App.DoEvents(7) 'Putting this here to hopefully redraw the Notification window, it only partly draws otherwise
+		        
+		        
 		        Success = InstallLLFile (CommandLineFile)
 		        If Success Then 'Worked
 		          If Debugging Then Debug("Installed: "+ CommandLineFile)

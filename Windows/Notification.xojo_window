@@ -82,7 +82,6 @@ Begin DesktopWindow Notification
       Width           =   96
    End
    Begin Timer NotifyTimeOut
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   4000

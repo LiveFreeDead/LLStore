@@ -1274,6 +1274,8 @@ Protected Module LLMod
 
 	#tag Method, Flags = &h0
 		Function InstallLLFile(FileIn As String) As Boolean
+		  App.DoEvents(7) 'Putting this here to hopefully redraw the Notification window, it only partly draws otherwise
+		  
 		  If Debugging Then Debug("--- Starting Install LLFile ---")
 		  If TargetWindows Then
 		    FileIn = FileIn.ReplaceAll("/","\") 'Make it more windowsy so it works better when installing from windows
@@ -1325,7 +1327,18 @@ Protected Module LLMod
 		  
 		  If Debugging Then Debug("Installing From Path: "+ InstallFromPath)
 		  
-		  If InstallOnly = True Then Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, -1) 'Mini Installer can't call this and wouldn't want to.
+		  If InstallOnly = True Then
+		    If Not TargetWindows Then
+		      'Show mine (Dual notifications should be ok?), Hey calling the system one makes it draw my notification window too, nice.
+		      Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, -1) 'Mini Installer can't call this and wouldn't want to.
+		      App.DoEvents(7) 'Putting this here to hopefully redraw the Notification window, it only partly draws otherwise
+		      'Show system one
+		      RunCommand ("notify-send --hint=int:transient:1 " + Chr(34) +"Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName + Chr(34))
+		    Else
+		      Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, -1) 'Mini Installer can't call this and wouldn't want to.
+		      App.DoEvents(7) 'Putting this here to hopefully redraw the Notification window, it only partly draws otherwise
+		    End If
+		  End If
 		  
 		  If ItemLLItem.NoInstall = False Then 'Has a Destination Path
 		    
@@ -3127,6 +3140,8 @@ Protected Module LLMod
 		  
 		  Notification.Show
 		  Notification.SetFocus
+		  Notification.Refresh
+		  App.DoEvents(7) 'Make sure it draws if used
 		End Sub
 	#tag EndMethod
 
