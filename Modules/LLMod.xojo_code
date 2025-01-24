@@ -356,6 +356,9 @@ Protected Module LLMod
 		  
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
 		  
+		  'Convert x-terminal-emulator to SysTerminal
+		  PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal)
+		  
 		  PathIn = PathIn.ReplaceAll("%LLGames%", Slash(HomePath)+"LLGames")
 		  PathIn = PathIn.ReplaceAll("%LLApps%", Slash(HomePath)+"LLApps")
 		  
@@ -618,6 +621,9 @@ Protected Module LLMod
 		  If Debugging Then Debug("ExpPathScript = " +PathIn)
 		  Dim UserName As String
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
+		  
+		  'Convert x-terminal-emulator to SysTerminal
+		  PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal)
 		  
 		  PathIn = PathIn.ReplaceAll("%LLGames%", Slash(HomePath)+"LLGames")
 		  PathIn = PathIn.ReplaceAll("%LLApps%", Slash(HomePath)+"LLApps")
