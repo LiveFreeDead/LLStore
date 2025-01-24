@@ -2835,6 +2835,9 @@ End
 		    ToolPath = Slash(Slash(AppPath) +"Tools")
 		    ShellFast.Execute(Slash(AppPath)+"Tools/DefaultTerminal.sh")
 		    SysTerminal = ShellFast.Result
+		    SysTerminal = SysTerminal.ReplaceAll(Chr(10),"")
+		    SysTerminal = SysTerminal.ReplaceAll(Chr(13),"")
+		    SysTerminal = SysTerminal.ReplaceAll(EndOfLine,"")
 		  End If
 		  
 		  If TargetWindows Then
