@@ -357,7 +357,11 @@ Protected Module LLMod
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
 		  
 		  'Convert x-terminal-emulator to SysTerminal
-		  PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal)
+		  If SysTerminal.Trim = "gnome-terminal" Then
+		    PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal.Trim  + " --wait ") 'Makes scripts wait for Gnome Terminal to finish before moving to next commands (such as installing flatpaks etc)
+		  Else
+		    PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal.Trim )
+		  End If
 		  
 		  PathIn = PathIn.ReplaceAll("%LLGames%", Slash(HomePath)+"LLGames")
 		  PathIn = PathIn.ReplaceAll("%LLApps%", Slash(HomePath)+"LLApps")
@@ -623,7 +627,11 @@ Protected Module LLMod
 		  If TargetLinux Then UserName = Right( NoSlash(HomePath), Len( NoSlash(HomePath)) - InStrRev( NoSlash(HomePath), "/"))
 		  
 		  'Convert x-terminal-emulator to SysTerminal
-		  PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal)
+		  If SysTerminal.Trim = "gnome-terminal" Then
+		    PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal.Trim  + " --wait ") 'Makes scripts wait for Gnome Terminal to finish before moving to next commands (such as installing flatpaks etc)
+		  Else
+		    PathIn = PathIn.ReplaceAll("x-terminal-emulator", SysTerminal.Trim )
+		  End If
 		  
 		  PathIn = PathIn.ReplaceAll("%LLGames%", Slash(HomePath)+"LLGames")
 		  PathIn = PathIn.ReplaceAll("%LLApps%", Slash(HomePath)+"LLApps")
