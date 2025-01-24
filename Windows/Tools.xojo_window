@@ -37,7 +37,7 @@ Begin DesktopWindow Tools
       Height          =   40
       Index           =   -2147483648
       Italic          =   False
-      Left            =   470
+      Left            =   471
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   False
@@ -76,13 +76,28 @@ End
 		End Sub
 	#tag EndEvent
 
+	#tag Event
+		Sub Opening()
+		  ButtonInstallLLStore.Visible = True
+		End Sub
+	#tag EndEvent
+
 
 #tag EndWindowCode
 
 #tag Events ButtonInstallLLStore
 	#tag Event
 		Sub Pressed()
+		  Dim Old As String
+		  Old = ButtonInstallLLStore.Caption
+		  ButtonInstallLLStore.Caption = "Installing..."
+		  App.DoEvents(7)
+		  ButtonInstallLLStore.Visible = False
+		  App.DoEvents(7)
 		  InstallLLStore()
+		  ButtonInstallLLStore.Caption = Old
+		  ButtonInstallLLStore.Visible = True
+		  App.DoEvents(7)
 		  Tools.Hide
 		  
 		End Sub

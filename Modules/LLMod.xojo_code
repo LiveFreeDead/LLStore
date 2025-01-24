@@ -1501,6 +1501,9 @@ Protected Module LLMod
 		    'Make Links
 		    MakeLinks
 		    
+		    'Update Linux Links Database
+		    If TargetLinux Then ShellFast.Execute ("update-desktop-database")
+		    
 		    'Do Delete Temp Path here? if TempInstall has a path (Make sure it's in .lltemp
 		    
 		    
@@ -1530,6 +1533,10 @@ Protected Module LLMod
 		    
 		    'Make Links
 		    MakeLinks
+		    
+		    'Update Linux .desktop Links Database
+		    If TargetLinux Then ShellFast.Execute ("update-desktop-database ~/.local/share/applications")
+		    
 		    
 		  End If
 		  
@@ -1620,7 +1627,7 @@ Protected Module LLMod
 		    MainPath = MainPath.ReplaceAll("\","/")
 		    InstallPath = "/LastOS/LLStore/"
 		    Target = InstallPath+"llstore"
-		    
+		    App.DoEvents(7)
 		    EnableSudoScript
 		    RunSudo("mkdir -p "+Chr(34)+InstallPath+Chr(34)+ " ; " + "chmod -R 777 "+Chr(34)+InstallPath+Chr(34))
 		    
@@ -3708,6 +3715,10 @@ Protected Module LLMod
 		        While Exist ("/tmp/LLScript_Sudo.sh") 'This script gets removed after it completes, do not continue the processing until this happens
 		          App.DoEvents(7)
 		        Wend
+		        
+		        'Update Linux .desktop Links Database (usually occurs after sudo scripts as that installs system wide .desktop files)
+		        If TargetLinux Then RunSudo ("sudo update-desktop-database /usr/share/applications")
+		        
 		      End If
 		    End If
 		  End If
