@@ -1,0 +1,31 @@
+[Desktop Entry]
+Type=Service
+Name=LastOS Tools
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/x-llfile;
+Actions=install;editor;compress;build;
+Icon=/LastOS/LLStore/llstore Resources/appicon_48.png
+X-KDE-Priority=TopLevel
+X-KDE-Submenu=LastOS Tools
+
+[Desktop Action install]
+Name=Install With LLFile
+Exec=env GDK_BACKEND=x11 llstore -i %f
+Icon=/LastOS/LLStore/llstore Resources/appicon_48.png
+
+[Desktop Action editor]
+Name=Edit in LLFile Editor
+Exec=env GDK_BACKEND=x11 llstore -e %f
+Icon=/LastOS/LLStore/Themes/LLEditor.png
+
+[Desktop Action compress]
+Name=Compress as LLFile
+Exec=env GDK_BACKEND=x11 llstore -c %f
+Icon=/LastOS/LLStore/Themes/LLEditor.png
+
+[Desktop Action build]
+Name=Build as LLFile
+Exec=env GDK_BACKEND=x11 llstore -b %f
+Icon=/LastOS/LLStore/Themes/LLEditor.png
+
+
