@@ -1587,6 +1587,8 @@ Protected Module LLMod
 		    XCopy(MainPath+"Themes", InstallPath+"Themes\")
 		    MakeFolder(InstallPath+"Tools")
 		    XCopy(MainPath+"Tools", InstallPath+"Tools\")
+		    MakeFolder(InstallPath+"scripts")
+		    XCopy(MainPath+"scripts", InstallPath+"scripts\")
 		    XCopyFile(MainPath+"*.dll", InstallPath)
 		    XCopyFile(MainPath+"version.ini", InstallPath)
 		    XCopyFile(MainPath+"LLL_Settings.ini", InstallPath)
@@ -1645,25 +1647,22 @@ Protected Module LLMod
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Templates"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Themes"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"actions"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"share"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Thunar"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
-		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"nautilus"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "cinnamon" Then 'Add $HOME/.local/share/nemo/actions
-		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"actions"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/nemo/"+Chr(34))
+		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts/actions"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/nemo/"+Chr(34))
 		    End If
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "kde" Then 'Add $HOME/.local/share/kio/servicemenus
-		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"share/kio"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/"+Chr(34))
+		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts/share/kio"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/"+Chr(34))
 		    End If
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "xfce" Then 'Add $HOME/.config/Thunar
-		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Thunar"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".config/"+Chr(34))
+		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts/Thunar"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".config/"+Chr(34))
 		    End If
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "gnome" Then 'Add $HOME/.local/share/nautilus/scripts
-		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"nautilus"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/"+Chr(34))
+		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts/nautilus"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/"+Chr(34))
 		    End If
 		    
 		    
