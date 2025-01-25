@@ -1647,6 +1647,7 @@ Protected Module LLMod
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"actions"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"share"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Thunar"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "cinnamon" Then 'Add $HOME/.local/share/nemo/actions
 		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"actions"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/nemo/"+Chr(34))
@@ -1654,6 +1655,10 @@ Protected Module LLMod
 		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "kde" Then 'Add $HOME/.local/share/kio/servicemenus
 		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"share/kio"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/"+Chr(34))
+		    End If
+		    
+		    If SysDesktopEnvironment.Trim.Lowercase = "xfce" Then 'Add $HOME/.local/share/kio/servicemenus
+		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Thunar"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".config/"+Chr(34))
 		    End If
 		    
 		    ShellFast.Execute("cp "+Chr(34)+MainPath+Chr(34)+"*.dll"+" "+Chr(34)+InstallPath+Chr(34))
@@ -2471,6 +2476,7 @@ Protected Module LLMod
 		    If Typs.Count >= 1 Then
 		      For J = 0 To Typs.Count - 1
 		        FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*." + Typs(J) + Chr(34) + "/>" + Chr(10)
+		        If Debugging Then Debug ("Making Linux Association for: " + APP +" as "+"        <glob pattern=" + Chr(34) + "*." + Typs(J) + Chr(34) + "/>" )
 		      Next
 		    Else
 		      FileContent = FileContent + "        <glob pattern=" + Chr(34) + "*.nonegiven" + Chr(34) + "/>" + Chr(10)
