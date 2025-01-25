@@ -1,0 +1,9 @@
+[Nemo Action]
+Active=true
+Name=Edit in LLFile Editor
+Comment=Edit a LLFile
+Quote=double
+Exec=llfile -e '%F'
+Icon-Name=LLFileEditor
+Selection=S
+Extensions=lla;llg;tar;apz;pgz;app;ppg
