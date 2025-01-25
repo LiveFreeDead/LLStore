@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   5
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5475,7 +5475,10 @@ End
 		  CheckNoInstall.Value = ItemLLItem.NoInstall
 		  TextDE.Text = ItemLLItem.DECompatible
 		  TextPM.Text = ItemLLItem.PMCompatible
-		  ComboArch.Text = ItemLLItem.ArchCompatible
+		  'Move below combo popluation
+		  'ComboArch.SelectedRowIndex = 2 'Get off all items before setting text so it can jump to real one
+		  'ComboArch.Text = ItemLLItem.ArchCompatible
+		  'MsgBox ItemLLItem.ArchCompatible
 		  CheckInternetRequired.Value = ItemLLItem.InternetRequired
 		  CheckHideInLauncher.Value = ItemLLItem.HideInLauncher
 		  TextDescription.Text = ItemLLItem.Descriptions.ReplaceAll(Chr(30), Chr(13))
@@ -5514,6 +5517,9 @@ End
 		  Next
 		  ComboArch.SelectedRowIndex = 0 'All Default
 		  AdvancedLink.ComboArch.SelectedRowIndex = 0 'All Default
+		  
+		  'Set Arch to loaded in text
+		  ComboArch.Text = ItemLLItem.ArchCompatible
 		  
 		  
 		  'Main Window 2 - Links
@@ -5652,6 +5658,9 @@ End
 		    If ItemLLItem.KeepAll = True Then  FlagsOut = FlagsOut + "keepall "
 		    If ItemLLItem.KeepInFolder = True Then  FlagsOut = FlagsOut + "keepinfolder "
 		    ItemLLItem.Flags = FlagsOut.Trim
+		    
+		    'Only update the item choice here, not each time it's changed
+		    ItemLLItem.ArchCompatible = ComboArch.Text
 		    
 		    'Build Link Flags - ********************* I think this is moved to SaveLLFile, so may not be needed anymore, will need to check - Glenn - Appears not to, will check when I start using to build new stuff
 		    If LnkCount >= 1 Then
@@ -6703,7 +6712,7 @@ End
 #tag Events ComboArch
 	#tag Event
 		Sub TextChanged()
-		  ItemLLItem.ArchCompatible = ComboArch.Text
+		  'ItemLLItem.ArchCompatible = ComboArch.Text
 		End Sub
 	#tag EndEvent
 #tag EndEvents
