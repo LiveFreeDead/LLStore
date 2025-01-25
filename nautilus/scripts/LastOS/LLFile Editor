@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for f in "$@"
+do
+    /LastOS/LLStore/llstore -e $f
+done
+

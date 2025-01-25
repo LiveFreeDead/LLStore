@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gnome-terminal --wait -e "watch grep -e Dirty: -e Writeback: /proc/meminfo"

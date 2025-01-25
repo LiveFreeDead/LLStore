@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for f in "$@"
+do
+    if [ -f "$(which xed)" ]; then
+    	xed "$f"&
+    elif [ -f "$(which gnome-text-editor)" ]; then
+    	gnome-text-editor "$f"&
+    fi
+done
