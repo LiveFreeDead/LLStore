@@ -1645,6 +1645,7 @@ Protected Module LLMod
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"llstore Resources"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Presets"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Templates"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
+		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Templates"+Chr(34)+" "+Chr(34)+Slash(HomePath)+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Themes"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
