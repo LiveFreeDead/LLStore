@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   5
+      Value           =   1
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -6401,6 +6401,11 @@ End
 #tag Events TextMenuCatalog
 	#tag Event
 		Sub TextChanged()
+		  'Set Global/Default Catalog
+		  ItemLLItem.Catalog = Me.Text.Trim.ReplaceAll(Chr(10)," ")' Drop the  EOL and keep it spaced like used in the LLFile
+		  ItemLLItem.Catalog = ItemLLItem.Catalog.ReplaceAll(Chr(13)," ")
+		  
+		  'Set Per Link Catalogs
 		  If ComboShortcut.RowCount >= 1 Then 'Only allow it to Save Changes if it's Got Link Items added
 		    If EditingLnk <= LnkCount  And EditingLnk >= 0 Then ' Just a precaution
 		      ItemLnk(EditingLnk).Categories = Me.Text.Trim.ReplaceAll(Chr(10)," ")' Drop the  EOL and keep it spaced like used in the LLFile

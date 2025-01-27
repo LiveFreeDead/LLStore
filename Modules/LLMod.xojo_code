@@ -3989,6 +3989,21 @@ Protected Module LLMod
 		        If ItemLnk(I).Flags <> "" Then DataOut = DataOut + "Flags="+ItemLnk(I).Flags+Chr(10)
 		        If ItemLnk(I).Comment <> "" Then DataOut = DataOut + "Comment="+ItemLnk(I).Comment+Chr(10)
 		        If ItemLnk(I).Description <> "" Then DataOut = DataOut + "Description="+ItemLnk(I).Description+Chr(10)
+		        If ItemLnk(I).Categories <> "" Then DataOut = DataOut + "Categories="+ItemLnk(I).Categories+Chr(10)
+		        
+		        'Do ShowOn
+		        FlagsOut = ""
+		        If ItemLnk(I).Desktop = True Then  FlagsOut = FlagsOut + "desktop "
+		        If ItemLnk(I).Panel = True Then  FlagsOut = FlagsOut + "panel "
+		        If ItemLnk(I).Favorite = True Then  FlagsOut = FlagsOut + "favorite "
+		        If ItemLnk(I).LnkSendTo = True Then  FlagsOut = FlagsOut + "sendto "
+		        FlagsOut = FlagsOut.Trim
+		        If FlagsOut <> "" Then DataOut = DataOut + "ShowOn="+FlagsOut+Chr(10)
+		        
+		        If ItemLnk(I).LnkDECompatible <> "" Then DataOut = DataOut + "LnkDECompatible="+ItemLnk(I).LnkDECompatible+Chr(10)
+		        If ItemLnk(I).LnkPMCompatible <> "" Then DataOut = DataOut + "LnkPMCompatible="+ItemLnk(I).LnkPMCompatible+Chr(10)
+		        If ItemLnk(I).LnkArchCompatible <> "" Then DataOut = DataOut + "LnkArchCompatible="+ItemLnk(I).LnkArchCompatible+Chr(10)
+		        
 		      Next
 		    End If
 		    
