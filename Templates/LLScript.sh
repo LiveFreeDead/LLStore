@@ -15,6 +15,7 @@ done
 APT_CMD=$(which apt 2>/dev/null)
 DNF_CMD=$(which dnf 2>/dev/null)
 EMERGE_CMD=$(which emerge 2>/dev/null)
+EOPGK_CMD=$(which eopkg 2>/dev/null)
 APK_CMD=$(which apk 2>/dev/null)
 PACMAN_CMD=$(which pacman 2>/dev/null)
 ZYPPER_CMD=$(which zypper 2>/dev/null)
@@ -38,6 +39,9 @@ elif [[ ! -z $DNF_CMD ]]; then #dnf
 elif [[ ! -z $EMERGE_CMD ]]; then #emerge
     PM=emerge
     echo "Package Manager: emerge"
+elif [[ ! -z $EOPKG_CMD ]]; then #eopkg
+    PM=eopkg
+    echo "Package Manager: eopkg"
 elif [[ ! -z $APK_CMD ]]; then #apk
     PM=apk
     echo "Package Manager: apk"
@@ -76,6 +80,9 @@ case $ID in
   arch|endeavouros)
     ;;
 
+  solus)
+    ;;
+
   *) 
     echo "This is an unknown distribution."
       ;;
@@ -106,6 +113,12 @@ case $XDG_SESSION_DESKTOP in
     ;;
 
   cosmic|pop)
+    ;;
+
+  budgie-desktop)
+    ;;
+
+  LXQt)
     ;;
 
   *)
