@@ -2751,8 +2751,8 @@ End
 		    ManualLocationsFile = "Win"
 		  End If
 		  
-		  SysAvailableDesktops = Array("All","All-Linux","Cinnamon","Explorer","Gnome","KDE","LXDE","Mate","Unity","XFCE","cosmic")
-		  SysAvailablePackageManagers = Array("All","apt","apk","dnf","emerge","pacman","winget","zypper")
+		  SysAvailableDesktops = Array("All","All-Linux","Cinnamon","Explorer","Gnome","KDE","LXDE","Mate","Unity","XFCE","cosmic", "ubuntu","LXQt","budgie")
+		  SysAvailablePackageManagers = Array("All","apt","apk","dnf","emerge","eopkg","pacman","winget","zypper")
 		  SysAvailableArchitectures = Array("All","x86 + x64","x86","x64","ARM")
 		  
 		  Dim F, G As FolderItem
