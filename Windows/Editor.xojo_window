@@ -5397,11 +5397,12 @@ End
 		          End If
 		          
 		          If CheckInternetRequired.Value = True Then VersIncl = VersIncl + "Online_" 'Add Online to output file, so you can tell it requires internet
-		          VersIncl = VersIncl + ComboArch.Text.ReplaceAll("x86 + x64","x64+x86") + "_" 'Show what Arch it is in filename
 		          
+		          If  ComboArch.Text <> "" Then
+		            VersIncl = VersIncl + ComboArch.Text.ReplaceAll("x86 + x64","x64+x86") + "_" 'Show what Arch it is in filename
+		          End If
 		          CompressedFileOut = ItemLLItem.TitleName + "_" + VersIncl + BT + ExtOut
 		          CompressedFileOut = Slash(RootPath) + CompressedFileOut.ReplaceAll(" ", ".")
-		          
 		          
 		          If TargetWindows Then
 		            CompressedFileOut = CompressedFileOut.ReplaceAll("/","\")
