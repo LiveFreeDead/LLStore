@@ -1051,6 +1051,13 @@ End
 		    M.Checked =  HideppGames
 		    base.Item(MC).Append M
 		    
+		    base.Item(MC).Append New MenuItem(MenuItem.TextSeparator) 'Sep
+		    
+		    M = New MenuItem
+		    M.Text = "Unset Flags"
+		    M.Checked =  HideUnsetFlags
+		    base.Item(MC).Append M
+		    
 		    'Presets
 		    base.Append New MenuItem("Load From Preset") '0
 		    MC = MC + 1
@@ -1058,6 +1065,8 @@ End
 		    base.Append New MenuItem("Save To Preset") '0
 		    MC = MC + 1
 		    base.Item(MC).Shortcut  = "S"
+		    
+		    
 		    
 		  End If
 		  
@@ -1224,6 +1233,9 @@ End
 		  Case "ppGames" ' Hide
 		    HideppGames= Not HideppGames
 		    GenerateItems()
+		  Case "Unset F" ' Hide
+		    HideUnsetFlags = Not HideUnsetFlags
+		    GenerateItems()
 		  Case "Add &Ma"
 		    AddManualLocation()
 		  Case "Re(Scan"
@@ -1365,6 +1377,8 @@ End
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ssApp" And HidessApps = True Then Hidden = True ' Hide
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ppApp" And HideppApps = True Then Hidden = True ' Hide
 		      If Data.Items.CellTextAt(I, Data.GetDBHeader("BuildType")) = "ppGame" And HideppGames = True Then Hidden = True ' Hide
+		      
+		      If Data.Items.CellTextAt(I, Data.GetDBHeader("DECompatible")) = "" And HideUnsetFlags = True Then Hidden = True ' Hide if Not set which Desktop Env's work with it
 		      
 		    End If
 		    
@@ -2135,6 +2149,10 @@ End
 
 	#tag Property, Flags = &h0
 		HidessApps As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideUnsetFlags As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
