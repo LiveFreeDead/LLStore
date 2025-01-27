@@ -15,7 +15,7 @@ done
 APT_CMD=$(which apt 2>/dev/null)
 DNF_CMD=$(which dnf 2>/dev/null)
 EMERGE_CMD=$(which emerge 2>/dev/null)
-EOPGK_CMD=$(which eopkg 2>/dev/null)
+EOPKG_CMD=$(which eopkg 2>/dev/null)
 APK_CMD=$(which apk 2>/dev/null)
 PACMAN_CMD=$(which pacman 2>/dev/null)
 ZYPPER_CMD=$(which zypper 2>/dev/null)
