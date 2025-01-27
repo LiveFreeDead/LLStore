@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   1
+      Value           =   0
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -5873,6 +5873,13 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ComboCategory
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.Categories = ComboCategory.Text
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events CheckInternetRequired
 	#tag Event
 		Sub ValueChanged()
@@ -5962,8 +5969,13 @@ End
 		  BuildLLFile()
 		  
 		  'Quit after Building (If the Include Folder gets compressed then it needs to reopen the compressed file for editing, so best just quit if built, But I can change it to re-open the built item if I so wanted.
-		  PreQuitApp ' Save Debug etc
-		  QuitApp 'Done installing, exit app, no need to continue
+		  If EditorOnly Then
+		    PreQuitApp ' Save Debug etc
+		    QuitApp 'Done installing, exit app, no need to continue
+		  Else
+		    Editor.Hide
+		    Editor.Close
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
