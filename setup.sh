@@ -9,6 +9,7 @@ PACKAGES=gnome-terminal
 APT_CMD=$(which apt 2>/dev/null)
 DNF_CMD=$(which dnf 2>/dev/null)
 EMERGE_CMD=$(which emerge 2>/dev/null)
+EOPKG_CMD=$(which eopkg 2>/dev/null)
 APK_CMD=$(which apk 2>/dev/null)
 PACMAN_CMD=$(which pacman 2>/dev/null)
 ZYPPER_CMD=$(which zypper 2>/dev/null)
@@ -20,6 +21,8 @@ elif [[ ! -z $DNF_CMD ]]; then
     sudo $DNF_CMD -y install $PACKAGES
 elif [[ ! -z $EMERGE_CMD ]]; then
     sudo $EMERGE_CMD $PACKAGES
+elif [[ ! -z $EOPKG_CMD ]]; then
+    sudo $EOPKG_CMD -y install $*
 elif [[ ! -z $APK_CMD ]]; then
     sudo $APK_CMD add install $PACKAGES
 elif [[ ! -z $PACMAN_CMD ]]; then
