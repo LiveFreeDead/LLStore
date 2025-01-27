@@ -21,7 +21,7 @@ ZYPPER_CMD=$(which zypper 2>/dev/null)
 YUM_CMD=$(which yum 2>/dev/null)
 
 
-#Get Desktop Environmentto do tasks
+#Get Desktop Environment to do tasks
 echo "Terminal Used: $OSTERM"
 echo "Desktop Environment: $XDG_SESSION_DESKTOP"
 
@@ -31,7 +31,7 @@ if [[ ! -z $APT_CMD ]]; then #apt
     echo "Package Manager: apt"
     PM=apt
     #sudo apt -qq update -y 
-    #sudo apt upgrade -y
+    ##sudo apt upgrade -y #Only use to apply updates, not required for repo's
 elif [[ ! -z $DNF_CMD ]]; then #dnf
     PM=dnf
     echo "Package Manager: dnf"
@@ -87,10 +87,10 @@ case $XDG_SESSION_DESKTOP in
   cinnamon)
     ;;
 
-  gnome)
+  gnome|ubuntu)
     ;;
   
-  kde)
+  kde|KDE)
     ;;
 
   lxde)

@@ -53,7 +53,7 @@ ZYPPER_CMD=$(which zypper 2>/dev/null)
 YUM_CMD=$(which yum 2>/dev/null)
 
 
-#Get Desktop Environmentto do tasks
+#Get Desktop Environment to do tasks
 echo "Terminal Used: $OSTERM"
 echo "Desktop Environment: $XDG_SESSION_DESKTOP"
 
@@ -131,10 +131,10 @@ case $XDG_SESSION_DESKTOP in
   cinnamon)
     ;;
 
-  gnome)
+  gnome|ubuntu)
     ;;
   
-  kde)
+  kde|KDE)
     ;;
 
   lxde)
