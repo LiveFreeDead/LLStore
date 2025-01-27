@@ -3918,7 +3918,11 @@ Protected Module LLMod
 		  'All Files General
 		  DataOut = DataOut + "Title="+ ItemLLItem.TitleName+Chr(10)
 		  If ItemLLItem.Version <> "" Then DataOut = DataOut + "Version="+ ItemLLItem.Version+Chr(10)
-		  If ItemLLItem.Descriptions <> "" Then DataOut = DataOut + "Description=" + ItemLLItem.Descriptions.ReplaceAll(Chr(13),Chr(30))+Chr(10)
+		  If ItemLLItem.Descriptions <> "" Then
+		    ItemLLItem.Descriptions = ItemLLItem.Descriptions.ReplaceAll(Chr(10), Chr(30))
+		    ItemLLItem.Descriptions = ItemLLItem.Descriptions.ReplaceAll(Chr(13), Chr(30))
+		    DataOut = DataOut + "Description=" + ItemLLItem.Descriptions.ReplaceAll(EndOfLine, Chr(30))+Chr(10)
+		  End If
 		  If ItemLLItem.URL <> "" Then DataOut = DataOut + "URL=" + ItemLLItem.URL.ReplaceAll(Chr(13),"|")+Chr(10)
 		  
 		  If ItemLLItem.Categories <> "" And Len(ItemLLItem.Categories) >= 2 Then
