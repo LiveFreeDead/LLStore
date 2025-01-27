@@ -3265,8 +3265,9 @@ End
 		          If Compress = True Then Editor.CheckCompress.Value = True 'Set to Compress if it's in the Arguments
 		          Editor.ButtonBuild.Press() 'Press the Build Button with No Compress, if it's not already compressed
 		          
-		          PreQuitApp ' Save Debug etc
-		          QuitApp 'Done installing, exit app, no need to continue
+		          'Moved Below to Build Button push as I always want to quit the editor after a build
+		          'PreQuitApp ' Save Debug etc
+		          'QuitApp 'Done installing, exit app, no need to continue
 		          
 		        End If
 		      Else 'Failed to load item, Show Editor
