@@ -1528,7 +1528,7 @@ End
 		      OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("\","/")
 		      OpenPath = Left(OpenPath, InStrRev(OpenPath,"/")) 'Removes the Ini File name
 		      If Exist(OpenPath) Then
-		        Sh.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)+" &") ' Open with default windows manager
+		        ShellFast.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)+" &") ' Open with default windows manager
 		      End If
 		    Catch
 		    End Try
