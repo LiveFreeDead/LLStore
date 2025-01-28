@@ -418,6 +418,32 @@ End
 		End Sub
 	#tag EndEvent
 
+	#tag Event
+		Sub Opening()
+		  Dim I As Integer
+		  'SysAvailableDesktops
+		  AdvancedLink.ComboDE.RemoveAllRows
+		  For I = 0 To SysAvailableDesktops.Count-1
+		    AdvancedLink.ComboDE.AddRow(SysAvailableDesktops(I))
+		  Next
+		  AdvancedLink.ComboDE.SelectedRowIndex = 0 'All Default
+		  
+		  'SysAvailablePackageManagers
+		  AdvancedLink.ComboPM.RemoveAllRows
+		  For I = 0 To SysAvailablePackageManagers.Count-1
+		    AdvancedLink.ComboPM.AddRow(SysAvailablePackageManagers(I))
+		  Next
+		  AdvancedLink.ComboPM.SelectedRowIndex = 0 'All Default
+		  
+		  'SysAvailableArchitectures
+		  AdvancedLink.ComboArch.RemoveAllRows
+		  For I = 0 To SysAvailableArchitectures.Count-1
+		    AdvancedLink.ComboArch.AddRow(SysAvailableArchitectures(I))
+		  Next
+		  AdvancedLink.ComboArch.SelectedRowIndex = 0 'All Default
+		End Sub
+	#tag EndEvent
+
 
 #tag EndWindowCode
 

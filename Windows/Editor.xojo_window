@@ -51,7 +51,7 @@ Begin DesktopWindow Editor
       Top             =   0
       Transparent     =   False
       Underline       =   False
-      Value           =   0
+      Value           =   2
       Visible         =   True
       Width           =   630
       Begin DesktopLabel LabelTitle
@@ -6748,6 +6748,13 @@ End
 		      ItemLnk(EditingLnk).Flags = Me.Text.Trim
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TextInstallToFolder
+	#tag Event
+		Sub TextChanged()
+		  ItemLLItem.PathApp = Me.Text
 		End Sub
 	#tag EndEvent
 #tag EndEvents
