@@ -1507,6 +1507,8 @@ End
 
 	#tag Method, Flags = &h0
 		Sub OpenItemLocation()
+		  Dim Sh As New Shell
+		  
 		  If TargetWindows Then
 		    #Pragma BreakOnExceptions Off
 		    Try
@@ -1514,7 +1516,7 @@ End
 		      OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("/","\")
 		      OpenPath = Left(OpenPath, InStrRev(OpenPath,"\")) 'Removes the Ini File name
 		      If Exist(OpenPath) Then
-		        ShellFast.Execute("explorer " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		        Sh.Execute("explorer " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
 		      End If
 		    Catch
 		    End Try
@@ -1526,7 +1528,7 @@ End
 		      OpenPath = Data.Items.CellTextAt(CurrentItemID, Data.GetDBHeader("FileINI")).ReplaceAll("\","/")
 		      OpenPath = Left(OpenPath, InStrRev(OpenPath,"/")) 'Removes the Ini File name
 		      If Exist(OpenPath) Then
-		        ShellFast.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)) ' Open with default windows manager
+		        Sh.Execute("xdg-open " + Chr(34) + OpenPath + Chr(34)+" &") ' Open with default windows manager
 		      End If
 		    Catch
 		    End Try
@@ -3127,6 +3129,14 @@ End
 		Group="Behavior"
 		InitialValue=""
 		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HideUnsetFlags"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior
