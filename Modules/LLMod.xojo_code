@@ -2720,7 +2720,7 @@ Protected Module LLMod
 		        End If
 		        
 		        'Correct Exec if missing Quotes (May neen to test/disable if breaks things)
-		        If Left(ItemLnk(I).Exec,1) <> Chr(34) Then ItemLnk(I).Exec = Chr(34)+ItemLnk(I).Exec+Chr(34)
+		        If Left(ItemLnk(I).Exec,1) <> Chr(34) And Right(ItemLnk(I).Exec,1) <> Chr(34) Then ItemLnk(I).Exec = Chr(34)+ItemLnk(I).Exec+Chr(34) 'Only quote them if none used at all
 		        
 		        DesktopContent = "[Desktop Entry]" + Chr(10)
 		        DesktopContent = DesktopContent + "Type=Application" + Chr(10)
