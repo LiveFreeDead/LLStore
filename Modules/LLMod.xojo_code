@@ -1325,7 +1325,7 @@ Protected Module LLMod
 		  'Clear Temp Path incase it fails to load
 		  ItemTempPath = ""
 		  
-		  'Load in the LLFile
+		  'Load in the LLFile ----------------------------------- Loads file here -----------------------------------------
 		  Success = LoadLLFile(FileIn, "", True) '"" Means it will generate a new Temp folder and return it as TempInstall Globally and the True means Install Item, will extract whole archive, not just LLFile resources
 		  If Debugging Then Debug("Install Loading in File: "+FileIn + " ItemTempPath: " + ItemTempPath +" Good: "+Success.ToString)
 		  
@@ -1352,6 +1352,13 @@ Protected Module LLMod
 		  End If
 		  
 		  If Debugging Then Debug("Installing From Path: "+ InstallFromPath)
+		  
+		  'Change INIPath to TempPath if required ------------------------------------------------------- Change PathINI to Temp path
+		  Dim TempString As String
+		  TempString = ItemLLItem.PathINI
+		  'Make ItemLLItem.PathINI = InstallFromPath so that any expanded paths are the correct temp path etc
+		  ItemLLItem.PathINI = InstallFromPath
+		  
 		  
 		  If InstallOnly = True Then
 		    If Not TargetWindows Then
@@ -1557,7 +1564,6 @@ Protected Module LLMod
 		    'Update Linux .desktop Links Database
 		    If TargetLinux Then ShellFast.Execute ("update-desktop-database ~/.local/share/applications")
 		    
-		    
 		  End If
 		  
 		  If TargetWindows Then 'Remove the outdated DB's if install any new items.
@@ -1568,6 +1574,9 @@ Protected Module LLMod
 		  End If
 		  
 		  If InstallOnly = True Then Notify ("LLStore Installing", "Installing "+ItemLLItem.BuildType+":-"+Chr(10)+ItemLLItem.TitleName, ItemLLItem.FileIcon, 1) 'Mini Installer can't call this and wouldn't want to.
+		  
+		  'Put INIPath back to what it was
+		  ItemLLItem.PathINI = TempString
 		  
 		  Return True ' Successfully Installed
 		End Function
