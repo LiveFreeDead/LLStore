@@ -11,10 +11,10 @@ PACMAN_CMD=$(which pacman 2>/dev/null)
 ZYPPER_CMD=$(which zypper 2>/dev/null)
 YUM_CMD=$(which yum 2>/dev/null)
 
-if [[ ! -z $APT_CMD ]]; then
-    sudo $APT_CMD -y install $*
-elif [[ ! -z $DNF_CMD ]]; then
+if [[ ! -z $DNF_CMD ]]; then
     sudo $DNF_CMD -y install $*
+elif [[ ! -z $APT_CMD ]]; then
+    sudo $APT_CMD -y install $*
 elif [[ ! -z $EMERGE_CMD ]]; then
     sudo $EMERGE_CMD $PACKAGES
 elif [[ ! -z $EOPKG_CMD ]]; then
@@ -63,14 +63,14 @@ echo "Desktop Environment: $XDG_SESSION_DESKTOP"
 
 #Use below sections to put update/upgrade repository or add PPA or repo's
 PM=""
-if [[ ! -z $APT_CMD ]]; then #apt
+if [[ ! -z $DNF_CMD ]]; then #dnf
+    PM=dnf
+    echo "Package Manager: dnf"
+elif [[ ! -z $APT_CMD ]]; then #apt
     echo "Package Manager: apt"
     PM=apt
     #sudo apt -qq update -y 
     #sudo apt upgrade -y
-elif [[ ! -z $DNF_CMD ]]; then #dnf
-    PM=dnf
-    echo "Package Manager: dnf"
 elif [[ ! -z $EMERGE_CMD ]]; then #emerge
     PM=emerge
     echo "Package Manager: emerge"

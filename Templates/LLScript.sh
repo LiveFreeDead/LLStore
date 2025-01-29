@@ -28,14 +28,14 @@ echo "Desktop Environment: $XDG_SESSION_DESKTOP"
 
 #Use below sections to put update/upgrade repository or add PPA or repo's
 PM=""
-if [[ ! -z $APT_CMD ]]; then #apt
+if [[ ! -z $DNF_CMD ]]; then #dnf
+    PM=dnf
+    echo "Package Manager: dnf"
+elif [[ ! -z $APT_CMD ]]; then #apt
     echo "Package Manager: apt"
     PM=apt
     #sudo apt -qq update -y 
     ##sudo apt upgrade -y #Only use to apply updates, not required for repo's
-elif [[ ! -z $DNF_CMD ]]; then #dnf
-    PM=dnf
-    echo "Package Manager: dnf"
 elif [[ ! -z $EMERGE_CMD ]]; then #emerge
     PM=emerge
     echo "Package Manager: emerge"
