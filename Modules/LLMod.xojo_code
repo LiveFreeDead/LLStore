@@ -3600,6 +3600,26 @@ Protected Module LLMod
 		        App.DoEvents(7)
 		      WEnd
 		    End If
+		  Else 'Try the InstallFrom Path just in case (Like with 143 ppGames)
+		    FileToUse = InstallFromPath + ItemLLItem.BuildType+".reg"
+		    If Exist(FileToUse) Then 
+		      If TargetWindows Then
+		        ScriptFile = ExpReg (InstallFromPath + ItemLLItem.BuildType+".reg")
+		        
+		        F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
+		        
+		        Shelly.Execute ("cmd.exe /c", "regedit.exe /s " + Chr(34) + FixPath(F.NativePath) + Chr(34)) 'Trying this way as it seem more compatible
+		        While Shelly.IsRunning
+		          App.DoEvents(7)
+		        WEnd
+		      Else
+		        ScriptFile = ExpReg (InstallFromPath + ItemLLItem.BuildType+".reg")
+		        Shelly.Execute("wine regedit.exe /s " + Chr(34) + ScriptFile+ Chr(34))
+		        While Shelly.IsRunning
+		          App.DoEvents(7)
+		        WEnd
+		      End If
+		    End If
 		  End If
 		End Sub
 	#tag EndMethod
@@ -3655,22 +3675,23 @@ Protected Module LLMod
 		        App.DoEvents(7)
 		      Wend
 		      If Debugging Then Debug("Script Return (ssApp.cmd): "+ Shelly.Result)
-		    Else ' ppApp or ppGame, runs script from the InstallTo Folder
-		      F = GetFolderItem(InstallToPath + ItemLLItem.BuildType+".cmd")
-		      If Exist(InstallToPath + ItemLLItem.BuildType+".cmd") Then 
-		        ScriptFile = ExpScript (InstallToPath + ItemLLItem.BuildType+".cmd")
-		        
-		        F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
-		        If TargetWindows Then
-		          Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
-		        Else
-		          Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34))
-		        End If
-		        While Shelly.IsRunning
-		          App.DoEvents(7)
-		        Wend
-		        If Debugging Then Debug("Script Return ("+ItemLLItem.BuildType+".cmd): "+ Shelly.Result)
+		    End If
+		  Else ' ppApp or ppGame, runs script from the InstallTo Folder
+		    If Debugging Then Debug("Checking for ppApp/Game Script to Run: " + InstallToPath + ItemLLItem.BuildType+".cmd")
+		    F = GetFolderItem(InstallToPath + ItemLLItem.BuildType+".cmd")
+		    If Exist(InstallToPath + ItemLLItem.BuildType+".cmd") Then 
+		      ScriptFile = ExpScript (InstallToPath + ItemLLItem.BuildType+".cmd")
+		      If Debugging Then Debug("Running: "+ ScriptFile)
+		      F = GetFolderItem(ScriptFile, FolderItem.PathTypeShell)
+		      If TargetWindows Then
+		        Shelly.Execute ("cmd.exe /c",Chr(34)+FixPath(F.NativePath)+Chr(34))
+		      Else
+		        Shelly.Execute("cd " + Chr(34) + InstallToPath + Chr(34) + " ; wine " + Chr(34) + ScriptFile + Chr(34))
 		      End If
+		      While Shelly.IsRunning
+		        App.DoEvents(7)
+		      Wend
+		      If Debugging Then Debug("Script Return ("+ItemLLItem.BuildType+".cmd): "+ Shelly.Result)
 		    End If
 		  End If
 		End Sub
