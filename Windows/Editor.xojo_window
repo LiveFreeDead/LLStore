@@ -5707,6 +5707,7 @@ End
 		        SF = "LLScript.sh"
 		        SSF = "LLScript_Sudo.sh"
 		      Case "LLGame"
+		        INIFile = BT+".llg"
 		        SF = "LLScript.sh"
 		        SSF = "LLScript_Sudo.sh"
 		      End Select
@@ -5743,7 +5744,7 @@ End
 		            
 		          Else 'Linux or mac
 		            'Remove Existing Files from inside the .tar
-		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34)) 'FileINI is the name of the .tar
+		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34)) 'FileINI is the name of the .tar, IniFile is the name of the .ini file only
 		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg" + Chr(34))
 		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png" + Chr(34))
 		            ShellFast.Execute("tar --delete -f " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico" + Chr(34))
@@ -5756,6 +5757,9 @@ End
 		            
 		            If Debugging Then Debug(ShellFast.Result)
 		            
+		            'MsgBox INIFile
+		            
+		            If Exist(BTF+INIFile) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + INIFile + Chr(34) ) 'Put updated ini file into the tar
 		            If Exist(BTF+BT+".jpg" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".jpg"  + Chr(34) )
 		            If Exist(BTF+BT+".png" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".png"  + Chr(34) )
 		            If Exist(BTF+BT+".ico" ) Then ShellFast.Execute ("cd " + Chr(34) + BTF + Chr(34) + " && " + "tar -uf " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BT+".ico"  + Chr(34) )
@@ -5770,6 +5774,7 @@ End
 		            Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
 		            If Debugging Then Debug(Res)
 		            
+		            If Exist(BTF+INIFile) Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34)) 'Upgrade .ini File in 7z
 		            If Exist(BTF+BT+".jpg") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".jpg" + Chr(34))
 		            If Debugging Then Debug(Res)
 		            If Exist(BTF+BT+".png") Then Res = RunCommandResults (Win7z +" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".png" + Chr(34))
@@ -5785,6 +5790,7 @@ End
 		            ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34))
 		            If Debugging Then Debug(ShellFast.Result)
 		            
+		            If Exist(BTF+INIFile) Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+INIFile + Chr(34)) 'Upgrade .ini File in 7z
 		            If Exist(BTF+BT+".jpg") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".jpg" + Chr(34))
 		            If Debugging Then Debug(ShellFast.Result)
 		            If Exist(BTF+BT+".png") Then ShellFast.Execute (Linux7z+" u " + Chr(34) + ItemLLItem.FileINI + Chr(34) + " " + Chr(34) + BTF+BT+".png" + Chr(34))
