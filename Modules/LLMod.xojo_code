@@ -2740,14 +2740,24 @@ Protected Module LLMod
 		          If Exist(InstallToPath + "LLApp.png") Then ItemLnk(I).Icon = InstallToPath + "LLApp.png"
 		        End If
 		        
-		        'Correct Exec if missing Quotes (May neen to test/disable if breaks things)
-		        If Left(ItemLnk(I).Exec,1) <> Chr(34) And Right(ItemLnk(I).Exec,1) <> Chr(34) Then ItemLnk(I).Exec = Chr(34)+ItemLnk(I).Exec+Chr(34) 'Only quote them if none used at all
+		        'Fix missing path if exec doesn't contain the path (for linux)
+		        If Exist (Slash(ExpPath(ItemLnk(I).RunPath))+ItemLnk(I).Exec) Then
+		          ItemLnk(I).Exec = Slash(ExpPath(ItemLnk(I).RunPath))+ItemLnk(I).Exec ' <- Prefer to use the app path in .desktop files as it will fail without setting the path if the item isn't in the system wide Paths
+		        End If
+		        
+		        'Process Exec path/name
+		        ExecName = ItemLnk(I).Exec
+		        
+		        'Correct Exec if missing Quotes (May need to test/disable if breaks things)
+		        If Left(ExecName,1) <> Chr(34) And Right(ExecName,1) <> Chr(34) Then ExecName = Chr(34)+ExecName+Chr(34) 'Only quote them if none used at all
+		        
+		        If Debugging Then Debug("SHORTCUT EXEC: " + ExecName)
 		        
 		        DesktopContent = "[Desktop Entry]" + Chr(10)
 		        DesktopContent = DesktopContent + "Type=Application" + Chr(10)
 		        DesktopContent = DesktopContent + "Version=1.0" + Chr(10)
 		        DesktopContent = DesktopContent + "Name=" + ItemLnk(I).Title + Chr(10)
-		        ExecName = ExpPath(ItemLnk(I).Exec)
+		        'ExecName = ExpPath(ItemLnk(I).Exec)
 		        If ItemLLItem.BuildType = "LLApp" Or ItemLLItem.BuildType = "LLGame" Then
 		          DesktopContent = DesktopContent + "Exec=" + ExecName + Chr(10)
 		        Else
