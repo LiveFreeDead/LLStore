@@ -1531,6 +1531,13 @@ Protected Module LLMod
 		    'Update Linux Links Database
 		    If TargetLinux Then ShellFast.Execute ("update-desktop-database")
 		    
+		    'If it's a LLGame copy the uninstall.sh script to the root folder
+		    If ItemLLItem.BuildType = "LLGame"  Then
+		      If ItemLLItem.InternetRequired = False Then 'Only add this script to Offline installed items as the online ones will be tracked by the package manager used.
+		        CopyWild(Slash(ToolPath)+"uninstall.sh", InstallToPath)
+		      End If
+		    End If
+		    
 		    'Do Delete Temp Path here? if TempInstall has a path (Make sure it's in .lltemp
 		    
 		    
