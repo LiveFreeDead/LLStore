@@ -273,6 +273,8 @@ Protected Module LLMod
 		Sub EnableSudoScript()
 		  If Debugging Then Debug("--- Starting Enable Sudo Script ---")
 		  
+		  If TargetWindows Then Return 'No Need to be here, shouldn't be
+		  
 		  Dim F As FolderItem
 		  Dim Test As Boolean
 		  
@@ -286,7 +288,7 @@ Protected Module LLMod
 		    Return
 		  End If
 		  
-		  TimeOut = System.Microseconds + (2 *100000) 'Set Timeout after .2 seconds
+		  TimeOut = System.Microseconds + (6 *100000) 'Set Timeout after .6 seconds
 		  While SudoEnabled = False
 		    App.DoEvents(3)
 		    If Not Exist("/tmp/LLSudoHandShake") Then 'If deleted by Sudo script it must be running
@@ -5838,6 +5840,14 @@ Protected Module LLMod
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="KeepSudo"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
