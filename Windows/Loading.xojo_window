@@ -208,6 +208,10 @@ End
 		  Wend
 		  
 		  OnlineVersionS = LoadDataFromFile(Slash(TmpPath)+"version.ini").Trim
+		  
+		  'Delete the downloaded version file
+		  Deltree(Slash(TmpPath)+"version.ini")
+		  
 		  OnlineVersion = OnlineVersionS.ToDouble
 		  
 		  CurrentVersionS = Str(App.MajorVersion)+"."+Str(App.MinorVersion)
@@ -2952,9 +2956,10 @@ End
 		  
 		  'Enable Debugger
 		  Try
-		    DebugFile = GetFolderItem(Slash(TmpPath)+"DebugLog.txt", FolderItem.PathTypeShell)
-		    If Exist(Slash(TmpPath)+"DebugLog.txt") Then
-		      Deltree(Slash(TmpPath)+"DebugLog.txt")
+		    DebugFileName = Slash(TmpPath)+"DebugLog"+Randomiser.InRange(10000, 20000).ToString+".txt"
+		    DebugFile = GetFolderItem(DebugFileName, FolderItem.PathTypeShell)
+		    If Exist(DebugFileName) Then
+		      Deltree(DebugFileName)
 		      DebugOutput = TextOutputStream.open(DebugFile)
 		    Else
 		      DebugOutput = TextOutputStream.Create(DebugFile)

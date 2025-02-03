@@ -59,11 +59,7 @@ Protected Module LLMod
 		    If Exist(TmpPath) Then
 		      
 		      Deltree(Slash(TmpPath)+"items")
-		      Deltree(Slash(TmpPath)+"LLShorts")
-		      Deltree(Slash(TmpPath)+"Expanded_Script.cmd")
-		      Deltree(Slash(TmpPath)+"Expanded_Script.sh")
-		      Deltree(Slash(TmpPath)+"Expanded_Reg.reg")
-		      Deltree(Slash(TmpPath)+"version.ini")
+		      Deltree(DebugFileName) 'Delete the Log file from Temp, will be copied out by now
 		    End If
 		  End If
 		End Sub
@@ -1585,6 +1581,18 @@ Protected Module LLMod
 		  'Put INIPath back to what it was
 		  ItemLLItem.PathINI = TempString
 		  
+		  'Check if Install From is the temp folder and delete it if so
+		  If InstallFromPath.IndexOf(TmpPath+"install") >=0 Then
+		    If Debugging Then Debug("Delete Temp Path: "+ InstallFromPath)
+		    Deltree(InstallFromPath) 'This cleans up after itself so you can have multiple installs running at once, unless the package manager is currently used as it locks it
+		  End If
+		  
+		  'Cleanup Temp items after installed (If you have two items installing at once this may remove it's script also, I may need to make random generated number scripts to be used instead, so this wont happen)
+		  Deltree(Slash(TmpPath)+"LLShorts")
+		  Deltree(Slash(TmpPath)+"Expanded_Script.cmd")
+		  Deltree(Slash(TmpPath)+"Expanded_Script.sh")
+		  Deltree(Slash(TmpPath)+"Expanded_Reg.reg")
+		  
 		  Return True ' Successfully Installed
 		End Function
 	#tag EndMethod
@@ -1934,8 +1942,13 @@ Protected Module LLMod
 		  
 		  Dim TmpItem As String
 		  
-		  TmpItemCount = TmpItemCount + 1
-		  TmpItem = Slash(TmpPathItems+"tmp" + TmpItemCount.ToString) 'I think 30k Items will do, just in case
+		  'Make installer path more random and only do extracts in order as this is only to grab icons and details of items.
+		  If InstallItem = False Then
+		    TmpItemCount = TmpItemCount + 1
+		    TmpItem = Slash(TmpPathItems+"tmp" + TmpItemCount.ToString) 'I think 30k Items will do, just in case
+		  Else
+		    TmpItem = Slash(TmpPath+"install" + Randomiser.InRange(10000, 20000).ToString) 'I think 10k Items will do, just in case
+		  End If
 		  
 		  'Don't make folder,7z makes it MUCH faster than a Shell call
 		  'MakeFolder(TmpItem) 'Make items temp path
@@ -3282,7 +3295,7 @@ Protected Module LLMod
 		  If Debugging Then
 		    FileNameOut = "LLStore_Debug "+today.Year.ToString+"-"+today.Month.ToString+"-"+today.Day.ToString+" "+today.Hour.ToString+"-"+today.Minute.ToString+"-"+today.Second.ToString+".txt"
 		    MakeFolder (Slash(SpecialFolder.Desktop.NativePath)+"LLStore Debug-Logs")
-		    Copy(DebugFile.NativePath, Slash(SpecialFolder.Desktop.NativePath)+"LLStore Debug-Logs/"+FileNameOut) 'Copy Debug to Desktop
+		    Copy(DebugFileName, Slash(SpecialFolder.Desktop.NativePath)+"LLStore Debug-Logs/"+FileNameOut) 'Copy Debug to Desktop
 		  End If
 		  
 		  'Clean Up Temp
@@ -4289,6 +4302,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		DebugFile As FolderItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		DebugFileName As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
