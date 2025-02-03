@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -2763,7 +2759,6 @@ End
 		  Dim TI As TextInputStream
 		  Dim S, Path As String
 		  Dim Success As Boolean
-		  Dim OldAppPath As String
 		  Dim Build As Boolean = False
 		  Dim Compress As Boolean = False
 		  
@@ -2779,6 +2774,12 @@ End
 		  SudoShellLoop.ExecuteMode = Shell.ExecuteModes.Asynchronous ' Runs in background
 		  
 		  'Get App Paths
+		  If TargetLinux Then
+		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
+		  Else
+		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
+		  End If
+		  
 		  CurrentPath =  FixPath(SpecialFolder.CurrentWorkingDirectory.NativePath)
 		  F = App.ExecutableFile.Parent
 		  Do
@@ -2794,18 +2795,36 @@ End
 		        G = GetFolderItem("/bin/llfile",FolderItem.PathTypeShell) 'Hardcoded path, will exist on LastOS's
 		      End If
 		      If G.Exists Then 'Use LLFile path
-		        AppPath = G.Parent.NativePath
-		        F = G
+		        AppPath = Slash(G.Parent.NativePath)
 		        Exit Do 'Exit Loop
-		      Else
-		        MsgBox "Can't find Tool path, Exiting"
-		        Quit
-		        Exit
 		      End If
 		    End If
 		  Loop
 		  
-		  OldAppPath = AppPath
+		  If Exist (AppPath+"Tools") Then
+		  Else
+		    If TargetLinux Then
+		      If Exist("/LastOS/LLStore/Tools") Then
+		        AppPath = "/LastOS/LLStore/" 'Fall back to this version/path if I can't get the real path (due to using /bin/llfile etc)
+		      Else
+		        MsgBox "Can't find Tools path, Exiting"
+		        Quit
+		        Exit
+		      End If
+		    Else 'Windows
+		      If Exist("C:\Program Files\LLStore\Tools") Then
+		        AppPath = "C:\Program Files\LLStore\" 'Fall back to this version/path if I can't get the real path
+		      Else
+		        MsgBox "Can't find Tools path, Exiting"
+		        Quit
+		        Exit
+		      End If
+		    End If
+		  End If
+		  
+		  'If TargetLinux Then
+		  'ShellFast.Execute("echo "+Chr(34)+AppPath+Chr(34) + " > "+Slash(HomePath)+"Desktop/Debugger2.txt")
+		  'End If
 		  
 		  If TargetWindows Then 'Need to add Windows ppGames and Apps drives here
 		    HomePath = Slash(FixPath(SpecialFolder.UserHome.NativePath))
