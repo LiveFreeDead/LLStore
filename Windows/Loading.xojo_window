@@ -3074,6 +3074,8 @@ End
 		    Case "-setup", "-s"
 		      StoreMode = 4
 		      InstallStore = True
+		    Case "-keepsudo", "-ks"
+		      KeepSudo = True
 		    Case Else
 		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		    End Select
@@ -3258,7 +3260,7 @@ End
 		    If Not TargetWindows Then 'Only make Sudo in Linux
 		      If SudoEnabled = True Then
 		        SudoEnabled = False
-		        ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
+		        If KeepSudo = False Then ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
 		      End If
 		    End If
 		    PreQuitApp ' Save Debug etc

@@ -18,6 +18,10 @@ do
     fi
     #0 should give it a short delay, but try to support floating point sleep commands in compatible Linux versions should free up more cycles.
 	sleep 0 ; sleep 0.1 2>/dev/null
+
+    #Remove Handshake File, quicker to just delete it than to see if exists
+    rm -f /tmp/LLSudoHandShake
+
 done
 
 #Clean up

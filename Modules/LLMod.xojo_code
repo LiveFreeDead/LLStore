@@ -276,16 +276,42 @@ Protected Module LLMod
 		  Dim F As FolderItem
 		  Dim Test As Boolean
 		  
-		  If Not SudoShellLoop.IsRunning Then 'Just a check
-		    SudoEnabled = False
-		  Else 'Already running just get out of here
+		  ShellFast.Execute ("echo "+Chr(34)+"HandShake"+Chr(34)+" > /tmp/LLSudoHandShake")
+		  
+		  'Disable it for now, need to check it's running remotely
+		  SudoEnabled = False
+		  
+		  If SudoShellLoop.IsRunning Then 'Can check here if the current sessions one is running, no need to handshake if True
+		    SudoEnabled = True
 		    Return
 		  End If
+		  
+		  TimeOut = System.Microseconds + (2 *100000) 'Set Timeout after .2 seconds
+		  While SudoEnabled = False
+		    App.DoEvents(3)
+		    If Not Exist("/tmp/LLSudoHandShake") Then 'If deleted by Sudo script it must be running
+		      SudoEnabled = True
+		      If Debugging Then Debug ("# Sudo Script Already Active")
+		      Exit 'Quit loop
+		    End If
+		    If System.Microseconds >= TimeOut Then Exit 'Timeout after set seconds
+		  Wend
+		  Deltree("/tmp/LLSudoHandShake") 'Confirm it's gone after timeout
+		  
+		  If SudoEnabled = True Then Return ' It's ready to go
+		  
+		  'Below can't be used remotely, so use above method to check instead
+		  'If Not SudoShellLoop.IsRunning Then 'Just a check
+		  'SudoEnabled = False
+		  'Else 'Already running just get out of here
+		  'Return
+		  'End If
 		  
 		  If HasLinuxSudo = True Then ' Don't do this unless it's needed
 		    If Not TargetWindows Then 'Only make Sudo in Linux
 		      If SudoEnabled = False Then
 		        ShellFast.Execute ("rm -f /tmp/LLSudoDone") ' Remove it so will only quit once recreated
+		        'If KeepSudo = False Then 'Not needed as it's probablly not running by here
 		        ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudo")
 		        
 		        'Don't do below line, if the Sudo Script needs a file, it'll have to use the full path, else it's changes out of the Installers Path to run Sudo script.
@@ -1793,7 +1819,7 @@ Protected Module LLMod
 		    
 		    
 		    'Close Sudo Terminal
-		    ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
+		    If KeepSudo = False Then ShellFast.Execute ("echo "+Chr(34)+"Unlock"+Chr(34)+" > /tmp/LLSudoDone") 'Quits Terminal after All items have been installed.
 		  End If
 		End Sub
 	#tag EndMethod
@@ -3749,15 +3775,15 @@ Protected Module LLMod
 		  
 		  If Not TargetWindows Then
 		    
-		    if SudoShellLoop.IsRunning = False Then
+		    if SudoShellLoop.IsRunning = False Then 'Can only chekc if Local script is running, so will check sudo is enabled each time
 		      EnableSudoScript 'if SudoShellLoop.IsRunning = True Then
 		    End If
 		    
-		    if SudoShellLoop.IsRunning = True Then ' Check still running
-		      SudoEnabled = True
-		    Else
-		      SudoEnabled = False
-		    End If
+		    'if SudoShellLoop.IsRunning = True Then ' Check still running
+		    'SudoEnabled = True
+		    'Else
+		    'SudoEnabled = False
+		    'End If
 		    
 		    If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
 		      
@@ -3800,15 +3826,15 @@ Protected Module LLMod
 		    If Exist(InstallToPath+"LLScript_Sudo.sh") Then
 		      
 		      'Bring it back if it shuts down
-		      if SudoShellLoop.IsRunning = False Then
+		      if SudoShellLoop.IsRunning = False Then 'Can only check local session, will do handshake each time called
 		        EnableSudoScript 'if SudoShellLoop.IsRunning = True Then
 		      End If
 		      
-		      if SudoShellLoop.IsRunning = True Then ' Check still running
-		        SudoEnabled = True
-		      Else
-		        SudoEnabled = False
-		      End If
+		      'if SudoShellLoop.IsRunning = True Then ' Check still running - Not needed as Sudo Check above does this
+		      'SudoEnabled = True
+		      'Else
+		      'SudoEnabled = False
+		      'End If
 		      If SudoEnabled = True Then ' Only bother if the script is running, else ignore it
 		        
 		        ScriptFile = ExpScript (InstallToPath + "LLScript_Sudo.sh", True)
@@ -4458,6 +4484,10 @@ Protected Module LLMod
 
 	#tag Property, Flags = &h0
 		ItemTempPath As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		KeepSudo As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -5801,6 +5831,14 @@ Protected Module LLMod
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="DebugFileName"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module
