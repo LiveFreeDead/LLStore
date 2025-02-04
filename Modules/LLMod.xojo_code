@@ -4421,6 +4421,10 @@ Protected Module LLMod
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		ForcePostQuit As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		ForceQuit As Boolean = False
 	#tag EndProperty
 

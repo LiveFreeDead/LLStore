@@ -3050,7 +3050,6 @@ End
 		    
 		    Select Case ArgsSP(I).Lowercase.Trim
 		      
-		      
 		    Case "-launcher" , "-l"
 		      StoreMode = 1
 		    Case "-install", "-i"
@@ -3076,6 +3075,8 @@ End
 		      InstallStore = True
 		    Case "-keepsudo", "-ks"
 		      KeepSudo = True
+		    Case "-quit" , "-q"
+		      ForcePostQuit = True
 		    Case Else
 		      CommandLineFile = CommandLineFile + ArgsSP(I) + " "
 		    End Select
@@ -3095,7 +3096,8 @@ End
 		  CommandLineFile = CommandLineFile.ReplaceAll("-e ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-setup ","")
 		  CommandLineFile = CommandLineFile.ReplaceAll("-s ","")
-		  
+		  CommandLineFile = CommandLineFile.ReplaceAll("-quit ","")
+		  CommandLineFile = CommandLineFile.ReplaceAll("-q ","")
 		  
 		  CommandLineFile = CommandLineFile.ReplaceAll(Chr(34)+"C:\Program Files\LLStore\llstore.exe"+Chr(34),"") 'Remove dodgy path
 		  CommandLineFile = CommandLineFile.ReplaceAll("C:\Program Files\LLStore\llstore.exe","")

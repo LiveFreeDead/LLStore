@@ -721,7 +721,7 @@ End
 		    
 		    'Bring back main form, if enabled to
 		    MiniInstaller.Hide ' Hide the installer
-		    If Settings.SetQuitOnComplete.Value = True Then
+		    If Settings.SetQuitOnComplete.Value = True Or ForcePostQuit = True Then
 		      QuitApp 'If set to Quit on Complete then do so
 		      Exit
 		    End If
