@@ -1778,6 +1778,10 @@ Protected Module LLMod
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		    
+		    'System Wide
+		    RunSudo("sudo cp -f "+DesktopOutPath+DesktopFile+" /usr/share/applications/")
+		    
+		    
 		    DesktopOutPath = Slash(HomePath)+"Desktop/"
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
@@ -1798,6 +1802,9 @@ Protected Module LLMod
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		    
+		    'System Wide
+		    RunSudo("sudo cp -f "+DesktopOutPath+DesktopFile+" /usr/share/applications/")
+		    
 		    
 		    'Launcher
 		    DesktopContent = "[Desktop Entry]" + Chr(10)
@@ -1814,6 +1821,9 @@ Protected Module LLMod
 		    DesktopOutPath = Slash(HomePath)+".local/share/applications/"
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		    ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    'System Wide
+		    RunSudo("sudo cp -f "+DesktopOutPath+DesktopFile+" /usr/share/applications/")
 		    
 		    DesktopOutPath = Slash(HomePath)+"Desktop/"
 		    SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
@@ -5851,6 +5861,14 @@ Protected Module LLMod
 			Visible=false
 			Group="Behavior"
 			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ForcePostQuit"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty
