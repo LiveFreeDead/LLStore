@@ -2853,6 +2853,13 @@ Protected Module LLMod
 		        SaveDataToFile(DesktopContent, DesktopOutPath+DesktopFile)
 		        ShellFast.Execute ("chmod 775 "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
 		        
+		        'System Wide (LLApps only)
+		        If BT = "LLApp" Then
+		          If ItemLnk(I).RunPath.IndexOf(HomePath) = -1 Then 'If item isn't inside the users path then it is system wide
+		            RunSudo("sudo mv -f "+Chr(34)+DesktopOutPath+DesktopFile+Chr(34)+" /usr/share/applications/")
+		          End If
+		        End If
+		        
 		        If ItemLnk(I).Desktop = True Then
 		          SaveDataToFile(DesktopContent, Slash(HomePath)+"Desktop/"+DesktopFile) 'Also save to Desktop
 		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(HomePath)+"Desktop/"+DesktopFile+Chr(34)) 'Change Read/Write/Execute to defaults
