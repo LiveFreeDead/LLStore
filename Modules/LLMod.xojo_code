@@ -1759,8 +1759,15 @@ Protected Module LLMod
 		    'Make SymLinks to Store
 		    RunSudo("ln -sf "+Target+Bin+"llapp ; ln -sf "+Target+Bin+"lledit ; ln -sf "+Target+Bin+"llfile ; ln -sf "+Target+Bin+"llinstall ; ln -sf "+Target+Bin+"lllauncher ; ln -sf "+Target+Bin+"llstore" ) 'Sym Links do not need to be set to Exec
 		    
-		    'Make Associations
-		    MakeFileType("LLFile", "apz pgz tar app ppg lla llg", "Install LLFiles", Target, InstallPath, InstallPath+"llstore Resources/appicon_256.png")
+		    'Make Associations - I changed it from Target to "llfile"
+		    'MakeFileType("LLFile", "apz pgz tar app ppg lla llg", "Install LLFiles", Target, InstallPath, InstallPath+"llstore Resources/appicon_256.png", "", True) 'True is for SystemWide
+		    MakeFileType("LLFile", "apz pgz tar app ppg lla llg", "Install LLFiles", "llfile", InstallPath, InstallPath+"llstore Resources/appicon_256.png", "", True) 'True is for SystemWide
+		    
+		    'Make LLStore as default for all supported types
+		    'application/x-llfile
+		    ShellFast.Execute ("xdg-mime default llfile_filetype.desktop application/x-llfile")
+		    RunSudo ("sudo xdg-mime default llfile_filetype.desktop application/x-llfile")
+		    
 		    
 		    'Make Shortcuts
 		    Dim DesktopContent As String
@@ -2513,7 +2520,7 @@ Protected Module LLMod
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub MakeFileType(APP As String, EXT As String, COMMENT As String, EXECU As String, PathIn As String, LOGO As String, Args As String = "")
+		Sub MakeFileType(APP As String, EXT As String, COMMENT As String, EXECU As String, PathIn As String, LOGO As String, Args As String = "", SystemWide As Boolean = False)
 		  If Debugging Then Debug("--- Starting Make Associations ---")
 		  Dim OrigAppName As String
 		  Dim FileOut As String
@@ -2551,10 +2558,17 @@ Protected Module LLMod
 		    'MIME Type
 		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
 		    CurrentIconTheme = Shelly.Result
-		    CurrentIconTheme = CurrentIconTheme.ReplaceAll ("'", "")  
-		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 256 --theme " + CurrentIconTheme + " " + Chr(34) + LOGO + Chr(34) + " application-x-" + APP)
-		    
+		    CurrentIconTheme = CurrentIconTheme.ReplaceAll ("'", "") 
+		    'ShellFast.Execute ("cp "+Chr(34)+LOGO+Chr(34)+" "+"/tmp/icon.png") 
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 256 --theme " + CurrentIconTheme + " " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
 		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 256 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
+		    
+		    If  SystemWide = True Then
+		      'System wide doesn't need per theme, it's system wide
+		      RunSudo ("sudo xdg-icon-resource install --context mimetypes --size 256 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
+		    End If
+		    
+		    'Shelly.Execute ("rm /tmp/icon.png") 'I used this before I fixed the chr(34)
 		    
 		    FileOut = Slash(TmpPath) + APP + "-mime.xml"
 		    FileContent = "<?xml version=" + Chr(34) + "1.0" + Chr(34) + " encoding=" + Chr(34) + "UTF-8" + Chr(34) + "?>" + Chr(10)
@@ -2576,9 +2590,21 @@ Protected Module LLMod
 		    FileContent = FileContent + "</mime-info>" + Chr(10)
 		    SaveDataToFile(FileContent, FileOut)
 		    Shelly.Execute ("xdg-mime install " + FileOut)
-		    'I could add sudo above to install system wide then update mime database below with update-mime-database /usr/share/mime/ 'But not sure I want this yet
-		    Shelly.Execute (" rm " + FileOut)
+		    
 		    Shelly.Execute ("update-mime-database $HOME/.local/share/mime")
+		    
+		    'I could add sudo above to install system wide then update mime database below with update-mime-database /usr/share/mime/ 'But not sure I want this yet
+		    If  SystemWide = True Then
+		      RunSudo ("sudo xdg-mime install " + FileOut)
+		      RunSudo ("sudo update-mime-database /usr/share/mime/") 'This line is very slow
+		    End If
+		    Shelly.Execute ("rm " + FileOut)
+		    
+		    'I can make each added type the default, but that seems extreme
+		    'ShellFast.Execute ("xdg-mime default "+APP+"_filetype.desktop application/x-"+APP)
+		    'RunSudo ("sudo xdg-mime default "+APP+"_filetype.desktop application/x-"+APP)
+		    
+		    
 		    
 		    If EXECU.Left(5) = "wine " Then
 		      'I use the 2nd one below to make it more system compatible, but may change to installing the python requirements and script to make it perfect on every OS?
@@ -2604,11 +2630,26 @@ Protected Module LLMod
 		    FileContent = FileContent + "Categories=" + Chr(10)
 		    FileContent = FileContent + "Comment=" + COMMENT + Chr(10)
 		    SaveDataToFile(FileContent, FileOut)
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+FileOut+Chr(34)) 'Change Read/Write/Execute to defaults
+		    
+		    'Msgbox (FileOut)
+		    
+		    'Can move this to end of Mini Installer and run once (for speed increase), just set a Task Flag
+		    If  SystemWide = True Then
+		      RunSudo ("sudo desktop-file-install --dir=/usr/share/applications " + FileOut)
+		      'MsgBox ("sudo desktop-file-install --dir=/usr/share/applications " + FileOut)
+		      RunSudo ("sudo update-desktop-database /usr/share/applications")
+		      RunSudo ("sudo xdg-mime default " + APP + ".desktop application/x-" + APP)
+		      RunSudo ("sudo update-icon-caches /usr/share/icons/*")
+		    End If
+		    
 		    Shelly.Execute ("desktop-file-install --dir=$HOME/.local/share/applications " + FileOut)
 		    Shelly.Execute (" rm " + FileOut)
 		    Shelly.Execute ("update-desktop-database $HOME/.local/share/applications")
 		    Shelly.Execute ("xdg-mime default " + APP + ".desktop application/x-" + APP)
 		    Shelly.Execute ("update-icon-caches $HOME/.local/share/icons/*")
+		    
+		    ShellFast.Execute ("chmod 775 "+Chr(34)+"$HOME/.local/share/applications/"+ APP + "_filetype.desktop"+Chr(34)) 'Change Read/Write/Execute to defaults
 		  End If
 		End Sub
 	#tag EndMethod
@@ -2852,7 +2893,14 @@ Protected Module LLMod
 		        
 		        'Linux Associations
 		        If ItemLnk(I).Associations.Trim <> "" Then
-		          MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, ExecName, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
+		          'System Wide (LLApps only)
+		          If BT = "LLApp" Then
+		            If ItemLnk(I).RunPath.IndexOf(HomePath) = -1 Then 'If item isn't inside the users path then it is system wide
+		              MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, ExecName, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon, "", True) '"" is Args and True makes it copy to System Wide Mime Types
+		            Else
+		              MakeFileType(ItemLnk(I).Title, ItemLnk(I).Associations, ItemLnk(I).Comment, ExecName, ExpPath(ItemLnk(I).RunPath), ItemLnk(I).Icon)
+		            End If
+		          End If
 		        End If
 		        
 		        DesktopOutPath = Slash(HomePath)+".local/share/applications/"
