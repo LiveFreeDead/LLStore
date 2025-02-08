@@ -1714,6 +1714,11 @@ Protected Module LLMod
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"Tools"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts"+Chr(34)+" "+Chr(34)+InstallPath+Chr(34))
 		    
+		    'Copy Icons for file types
+		    If Exist(MainPath+"Tools/hicolor") Then RunSudo ("cp -R "+Chr(34)+MainPath+"Tools/hicolor"+Chr(34)+" "+Chr(34)+"/usr/share/icons/"+Chr(34))
+		    
+		    If Exist(MainPath+"Tools/hicolor") Then ShellFast.Execute ("cp -R "+Chr(34)+MainPath+"Tools/hicolor"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/icons/"+Chr(34))
+		    
 		    If SysDesktopEnvironment.Trim.Lowercase = "cinnamon" Then 'Add $HOME/.local/share/nemo/actions
 		      ShellFast.Execute("cp -R "+Chr(34)+MainPath+"scripts/actions"+Chr(34)+" "+Chr(34)+Slash(HomePath)+".local/share/nemo/"+Chr(34))
 		    End If
@@ -2547,9 +2552,9 @@ Protected Module LLMod
 		    Shelly.Execute ("gsettings get org.gnome.desktop.interface icon-theme")
 		    CurrentIconTheme = Shelly.Result
 		    CurrentIconTheme = CurrentIconTheme.ReplaceAll ("'", "")  
-		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 --theme " + CurrentIconTheme + " " + Chr(34) + LOGO + Chr(34) + " application-x-" + APP)
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 256 --theme " + CurrentIconTheme + " " + Chr(34) + LOGO + Chr(34) + " application-x-" + APP)
 		    
-		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 48 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
+		    Shelly.Execute ("xdg-icon-resource install --context mimetypes --size 256 " + Chr(34) +LOGO + Chr(34) + " application-x-" + APP)
 		    
 		    FileOut = Slash(TmpPath) + APP + "-mime.xml"
 		    FileContent = "<?xml version=" + Chr(34) + "1.0" + Chr(34) + " encoding=" + Chr(34) + "UTF-8" + Chr(34) + "?>" + Chr(10)
