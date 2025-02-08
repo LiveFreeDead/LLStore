@@ -2576,6 +2576,7 @@ Protected Module LLMod
 		    FileContent = FileContent + "</mime-info>" + Chr(10)
 		    SaveDataToFile(FileContent, FileOut)
 		    Shelly.Execute ("xdg-mime install " + FileOut)
+		    'I could add sudo above to install system wide then update mime database below with update-mime-database /usr/share/mime/ 'But not sure I want this yet
 		    Shelly.Execute (" rm " + FileOut)
 		    Shelly.Execute ("update-mime-database $HOME/.local/share/mime")
 		    
