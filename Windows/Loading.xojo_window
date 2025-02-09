@@ -199,7 +199,11 @@ End
 		  If Exist(Slash(AppPath)+"llstoreold.exe") Then Deltree Slash(AppPath)+"llstoreold.exe"
 		  
 		  'Check Version
-		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
+		  If App.MajorVersion = 1 Then
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
+		  Else
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
+		  End If
 		  
 		  TimeOut = System.Microseconds + (5 *1000000) 'Set Timeout after 5 seconds
 		  While Downloading = True
@@ -286,13 +290,13 @@ End
 		      Loading.Status.Text = "Updating Executables" +CurrentVersionS+ " to " + OnlineVersionS
 		      Loading.Refresh
 		      App.DoEvents(1)
-		      'If MajorLocal > 1 Then
-		      'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
-		      'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
-		      'Else
-		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
-		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
-		      'End If
+		      If App.MajorVersion = 1 Then
+		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
+		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		      Else
+		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
+		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		      End If
 		      
 		      While Downloading 'Wait for download to finish
 		        App.DoEvents(1)
