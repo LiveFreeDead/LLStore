@@ -234,7 +234,7 @@ End
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore_latest.zip",Slash(TmpPath)+"llstore_latest.zip")
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LastOSLinux_Repository/raw/refs/heads/main/llstore_latest.zip",Slash(TmpPath)+"llstore_latest.zip")
 		    
 		    While Downloading 'Wait for download to finish
 		      App.DoEvents(1)
@@ -286,9 +286,13 @@ End
 		      Loading.Status.Text = "Updating Executables" +CurrentVersionS+ " to " + OnlineVersionS
 		      Loading.Refresh
 		      App.DoEvents(1)
-		      
+		      'If MajorLocal > 1 Then
+		      'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
+		      'GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		      'Else
 		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
 		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		      'End If
 		      
 		      While Downloading 'Wait for download to finish
 		        App.DoEvents(1)
