@@ -25,6 +25,7 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -65,6 +66,7 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -73,6 +75,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -81,6 +84,7 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
+      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -216,15 +220,21 @@ End
 		  If Debugging Then Debug("--- Update Store Check ---")
 		  If Debugging Then Debug("Running Version: " + CurrentVersionS +" Online Version Found: " + OnlineVersionS)
 		  
-		  If OnlineVersion > CurrentVersion Then 'Is Newer, download and apply
+		  Dim MajorRemote, MajorLocal As Double
+		  MajorLocal = App.MajorVersion
+		  MajorRemote = Val(Left(OnlineVersionS,OnlineVersionS.IndexOf(".")))
+		  'MajorRemote = MajorRemote + 1
+		  
+		  If MajorRemote > MajorLocal Then
+		    Dim Success As Boolean
+		    'MsgBox "Full Update - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
 		    
 		    'Updating
-		    Loading.Status.Text = "Updating " +CurrentVersionS+ " to " + OnlineVersionS
+		    Loading.Status.Text = "Updating Full Store" +CurrentVersionS+ " to " + OnlineVersionS
 		    Loading.Refresh
 		    App.DoEvents(1)
 		    
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore_latest.zip",Slash(TmpPath)+"llstore_latest.zip")
 		    
 		    While Downloading 'Wait for download to finish
 		      App.DoEvents(1)
@@ -232,32 +242,26 @@ End
 		    
 		    If TargetWindows Then
 		      'Do Windows .exe
-		      If Exist(Slash(TmpPath)+"llstore.exe") Then
+		      If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
 		        ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
-		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		      End If
-		      
-		      If Exist(Slash(TmpPath)+"llstore") Then
-		        Deltree (Slash(AppPath)+"llstore")
-		        ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        ''ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
+		        Success = Extract(Slash(TmpPath)+"llstore_latest.zip",AppPath, "")
 		      End If
 		      
 		    Else 'Linux
-		      If Exist(Slash(TmpPath)+"llstore") Then
-		        'Rename Existing as it's running
+		      If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
+		        '''Rename Existing as it's running
 		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
-		        'Replace Original and Make Executable
-		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
+		        ''''Replace Original and Make Executable
+		        '''ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
+		        
+		        'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
+		        Success = Extract(Slash(TmpPath)+"llstore_latest.zip",AppPath, "")
+		        
 		        ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
 		      End If
-		      
-		      'Now do Windows .exe
-		      If Exist(Slash(TmpPath)+"llstore.exe") Then
-		        Deltree (Slash(AppPath)+"llstore.exe")
-		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
-		      End If
 		    End If
-		    
 		    'ReRun the newer Store version
 		    If TargetWindows Then
 		      F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
@@ -273,10 +277,71 @@ End
 		    'Main.Close
 		    QuitApp
 		    Return
-		  Else ' Continue starting up
+		    
+		  Else
+		    'MsgBox "EXE Updates - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
+		    If OnlineVersion > CurrentVersion Then 'Is Newer, download and apply executables only
+		      
+		      'Updating Executables
+		      Loading.Status.Text = "Updating Executables" +CurrentVersionS+ " to " + OnlineVersionS
+		      Loading.Refresh
+		      App.DoEvents(1)
+		      
+		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
+		      GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
+		      
+		      While Downloading 'Wait for download to finish
+		        App.DoEvents(1)
+		      Wend
+		      
+		      If TargetWindows Then
+		        'Do Windows .exe
+		        If Exist(Slash(TmpPath)+"llstore.exe") Then
+		          ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
+		          ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        End If
+		        
+		        If Exist(Slash(TmpPath)+"llstore") Then
+		          Deltree (Slash(AppPath)+"llstore")
+		          ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		        End If
+		        
+		      Else 'Linux
+		        If Exist(Slash(TmpPath)+"llstore") Then
+		          'Rename Existing as it's running
+		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
+		          'Replace Original and Make Executable
+		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
+		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
+		        End If
+		        
+		        'Now do Windows .exe
+		        If Exist(Slash(TmpPath)+"llstore.exe") Then
+		          Deltree (Slash(AppPath)+"llstore.exe")
+		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
+		        End If
+		      End If
+		      'ReRun the newer Store version
+		      If TargetWindows Then
+		        F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
+		        F.Launch
+		      Else
+		        F = GetFolderItem(Slash(AppPath)+"llstore", FolderItem.PathTypeShell)
+		        F.Launch
+		      End If
+		      
+		      'These Flags allow it to Quit after the update without rescanning when another timer triggers
+		      'ForceQuit = True ' Not required as using QuitApp now
+		      Quitting = True
+		      'Main.Close
+		      QuitApp
+		      Return
+		    Else
+		      'Continue without quitting
+		    End If 
+		    
 		    
 		  End If
-		  
 		End Sub
 	#tag EndMethod
 
