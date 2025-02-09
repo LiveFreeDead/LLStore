@@ -2851,7 +2851,7 @@ Protected Module LLMod
 		        End If
 		        
 		        'Process Exec path/name
-		        ExecName = ItemLnk(I).Exec
+		        ExecName = ExpPath(ItemLnk(I).Exec) 'I added ExpPath back to this as it wasn't expanding the %LLGames% Variable etc
 		        
 		        'Correct Exec if missing Quotes (May need to test/disable if breaks things)
 		        If Left(ExecName,1) <> Chr(34) And Right(ExecName,1) <> Chr(34) Then ExecName = Chr(34)+ExecName+Chr(34) 'Only quote them if none used at all
