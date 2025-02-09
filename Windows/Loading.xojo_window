@@ -222,127 +222,58 @@ End
 		  'MajorRemote = MajorRemote + 1
 		  
 		  'If MajorRemote > MajorLocal Then
-		  If 1 > 1 Then 'FORCED Update to v2 here
-		    Dim Success As Boolean
-		    'MsgBox "Full Update - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
-		    
-		    'Updating
-		    Loading.Status.Text = "Updating Full Store" +CurrentVersionS+ " to " + OnlineVersionS
-		    Loading.Refresh
+		  Dim Success As Boolean
+		  'MsgBox "Full Update - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
+		  
+		  'Updating
+		  Loading.Status.Text = "Updating Full Store" +CurrentVersionS+ " to " + OnlineVersionS
+		  Loading.Refresh
+		  App.DoEvents(1)
+		  
+		  GetOnlineFile ("https://github.com/LiveFreeDead/LastOSLinux_Repository/raw/refs/heads/main/llstore_latest.zip",Slash(TmpPath)+"llstore_latest.zip")
+		  
+		  While Downloading 'Wait for download to finish
 		    App.DoEvents(1)
-		    
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LastOSLinux_Repository/raw/refs/heads/main/llstore_latest.zip",Slash(TmpPath)+"llstore_latest.zip")
-		    
-		    While Downloading 'Wait for download to finish
-		      App.DoEvents(1)
-		    Wend
-		    
-		    If TargetWindows Then
-		      'Do Windows .exe
-		      If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
-		        ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
-		        ''ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		        'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
-		        Success = Extract(Slash(TmpPath)+"llstore_latest.zip",AppPath, "")
-		      End If
-		      
-		    Else 'Linux
-		      If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
-		        '''Rename Existing as it's running
-		        ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
-		        ''''Replace Original and Make Executable
-		        '''ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
-		        
-		        'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
-		        Success = Extract(Slash(TmpPath)+"llstore_latest.zip",AppPath, "")
-		        
-		        ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
-		      End If
-		    End If
-		    'ReRun the newer Store version
-		    If TargetWindows Then
-		      F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
-		      F.Launch
-		    Else
-		      F = GetFolderItem(Slash(AppPath)+"llstore", FolderItem.PathTypeShell)
-		      F.Launch
+		  Wend
+		  
+		  If TargetWindows Then
+		    'Do Windows .exe
+		    If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
+		      ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
+		      ''ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
+		      'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
+		      Success = Extract(Slash(TmpPath)+"llstore_latest.zip",AppPath, "")
 		    End If
 		    
-		    'These Flags allow it to Quit after the update without rescanning when another timer triggers
-		    'ForceQuit = True ' Not required as using QuitApp now
-		    Quitting = True
-		    'Main.Close
-		    QuitApp
-		    Return
-		    
-		  Else
-		    'MsgBox "EXE Updates - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
-		    If OnlineVersion > CurrentVersion Then 'Is Newer, download and apply executables only
+		  Else 'Linux
+		    If Exist(Slash(TmpPath)+"llstore_latest.zip") Then
+		      '''Rename Existing as it's running
+		      ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
+		      ''''Replace Original and Make Executable
+		      '''ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
 		      
-		      'Updating Executables
-		      Loading.Status.Text = "Updating Executables" +CurrentVersionS+ " to " + OnlineVersionS
-		      Loading.Refresh
-		      App.DoEvents(1)
-		      If App.MajorVersion = 1 Then
-		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
-		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
-		      Else
-		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/llstore",Slash(TmpPath)+"llstore")
-		        GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/llstore.exe",Slash(TmpPath)+"llstore.exe")
-		      End If
+		      'Extract full package here now I've renamed the main executable that is in use (Libraries may still crash things, we'll see)
+		      Success = Extract(Slash(TmpPath)+"llstore_latest.zip", AppPath, "")
 		      
-		      While Downloading 'Wait for download to finish
-		        App.DoEvents(1)
-		      Wend
-		      
-		      If TargetWindows Then
-		        'Do Windows .exe
-		        If Exist(Slash(TmpPath)+"llstore.exe") Then
-		          ShellFast.Execute ("ren "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+"llstoreold.exe") 'Rename
-		          ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		        End If
-		        
-		        If Exist(Slash(TmpPath)+"llstore") Then
-		          Deltree (Slash(AppPath)+"llstore")
-		          ShellFast.Execute ("move /y "+Chr(34)+Slash(TmpPath).ReplaceAll("/","\")+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath).ReplaceAll("/","\")+Chr(34)) 'Move 
-		        End If
-		        
-		      Else 'Linux
-		        If Exist(Slash(TmpPath)+"llstore") Then
-		          'Rename Existing as it's running
-		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstoreold"+Chr(34)) 'Move
-		          'Replace Original and Make Executable
-		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Move 
-		          ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
-		        End If
-		        
-		        'Now do Windows .exe
-		        If Exist(Slash(TmpPath)+"llstore.exe") Then
-		          Deltree (Slash(AppPath)+"llstore.exe")
-		          ShellFast.Execute ("mv -f "+Chr(34)+Slash(TmpPath)+"llstore.exe"+Chr(34) + " "+Chr(34)+Slash(AppPath)+"llstore.exe"+Chr(34)) 'Move 
-		        End If
-		      End If
-		      'ReRun the newer Store version
-		      If TargetWindows Then
-		        F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
-		        F.Launch
-		      Else
-		        F = GetFolderItem(Slash(AppPath)+"llstore", FolderItem.PathTypeShell)
-		        F.Launch
-		      End If
-		      
-		      'These Flags allow it to Quit after the update without rescanning when another timer triggers
-		      'ForceQuit = True ' Not required as using QuitApp now
-		      Quitting = True
-		      'Main.Close
-		      QuitApp
-		      Return
-		    Else
-		      'Continue without quitting
-		    End If 
-		    
-		    
+		      ShellFast.Execute ("chmod 775 "+Chr(34)+Slash(AppPath)+"llstore"+Chr(34)) 'Change Read/Write/Execute to defaults
+		    End If
 		  End If
+		  'ReRun the newer Store version
+		  If TargetWindows Then
+		    F = GetFolderItem(Slash(AppPath)+"llstore.exe", FolderItem.PathTypeShell)
+		    F.Launch
+		  Else
+		    F = GetFolderItem(Slash(AppPath)+"llstore", FolderItem.PathTypeShell)
+		    F.Launch
+		  End If
+		  
+		  'These Flags allow it to Quit after the update without rescanning when another timer triggers
+		  'ForceQuit = True ' Not required as using QuitApp now
+		  Quitting = True
+		  'Main.Close
+		  QuitApp
+		  Return
+		  
 		End Sub
 	#tag EndMethod
 
