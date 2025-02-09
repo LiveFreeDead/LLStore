@@ -25,7 +25,6 @@ Begin DesktopWindow Loading
    Visible         =   False
    Width           =   440
    Begin Timer FirstRunTime
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   50
@@ -66,7 +65,6 @@ Begin DesktopWindow Loading
       Width           =   427
    End
    Begin Timer DownloadTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   100
@@ -75,7 +73,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer VeryFirstRunTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1
@@ -84,7 +81,6 @@ Begin DesktopWindow Loading
       TabPanelIndex   =   0
    End
    Begin Timer QuitCheckTimer
-      Enabled         =   True
       Index           =   -2147483648
       LockedInPosition=   False
       Period          =   1000
@@ -199,11 +195,7 @@ End
 		  If Exist(Slash(AppPath)+"llstoreold.exe") Then Deltree Slash(AppPath)+"llstoreold.exe"
 		  
 		  'Check Version
-		  If App.MajorVersion = 1 Then
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
-		  Else
-		    GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
-		  End If
+		  GetOnlineFile ("https://github.com/LiveFreeDead/LLStore_v2/raw/refs/heads/main/version.ini",Slash(TmpPath)+"version.ini")
 		  
 		  TimeOut = System.Microseconds + (5 *1000000) 'Set Timeout after 5 seconds
 		  While Downloading = True
