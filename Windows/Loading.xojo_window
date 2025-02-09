@@ -229,7 +229,8 @@ End
 		  MajorRemote = Val(Left(OnlineVersionS,OnlineVersionS.IndexOf(".")))
 		  'MajorRemote = MajorRemote + 1
 		  
-		  If MajorRemote > MajorLocal Then
+		  'If MajorRemote > MajorLocal Then
+		  If 1 > 1 Then 'FORCED Update to v2 here
 		    Dim Success As Boolean
 		    'MsgBox "Full Update - Local: "+MajorLocal.ToString+" Remote: "+MajorRemote.ToString
 		    
